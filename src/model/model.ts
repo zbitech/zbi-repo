@@ -1,3 +1,4 @@
+import { RoleType, VolumeType, VolumeSourceType, ResourceType, StatusType, NetworkType, NodeType } from "./zbi.enum";
 
 
 export interface User {

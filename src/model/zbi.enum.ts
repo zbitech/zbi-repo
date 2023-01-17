@@ -1,34 +1,34 @@
 
-enum RoleType {
+export enum RoleType {
     admin = 'admin',
     user = 'user',
     owner = 'owner'
 }
 
-enum NetworkType {
+export enum NetworkType {
     testnet = 'testnet',
     regnet = 'regnet',
     mainnet = 'mainnet'
 }
 
-enum NodeType {
+export enum NodeType {
     zcash = 'zcash',
     lwd = 'lwd',
     zebra = 'zebra'
 }
 
-enum VolumeType {
+export enum VolumeType {
     ephemeral = 'ephemeral',
     persistentvolumeclaim = 'persistentvolumeclaim'
 }
 
-enum VolumeSourceType {
+export enum VolumeSourceType {
     new = 'new',
     volume = 'pvc',
     snapshot = 'snapshot'
 }
 
-enum ResourceType {
+export enum ResourceType {
     namespace = 'namespace',
     configmap = 'configmap',
     secret = 'secret',
@@ -41,7 +41,7 @@ enum ResourceType {
     pod = 'pod'
 }
 
-enum StatusType {
+export enum StatusType {
     pending = 'pending',
     runnning = 'running',
     stopped = 'stopped',
@@ -52,7 +52,7 @@ enum StatusType {
     deleted = 'deleted',
 }
 
-enum SnapshotScheduleType {
+export enum SnapshotScheduleType {
     daily = 'daily',
     weekly = 'weekly',
     monthly = 'monthly'
