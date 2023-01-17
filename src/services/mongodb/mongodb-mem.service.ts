@@ -1,26 +1,33 @@
 import { Database } from "../services.interface";
-
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-
-const mongod = new MongoMemoryServer();
+import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from "mongoose";
 
 export class MongoMemoryDB implements Database {
 
+    mongod: any = null;
+
+    constructor() {
+    }
+
     async connect(): Promise<void> {
-        const uri = await mongod.getConnectionString();
+
+        this.mongod = await MongoMemoryServer.create();
+        const uri = this.mongod.getUri();
+
         const mongooseOpts = {
             useNewUrlParser: true, autoReconnect: true,
             reconnectTries: Number.MAX_VALUE, reconnectInterval: 1000
         }
 
-        await mongoose.connect(uri, mongooseOpts);
+        mongoose.connect(uri, () => {
+            console.log("connected to memory server");
+        });
     }
 
     async close(): Promise<void> {
         await mongoose.connection.dropDatabase();
         await mongoose.connection.close();
-        await mongod.stop();
+        await this.mongod.stop();
     }
     
     async clear(): Promise<void> {
@@ -28,7 +35,7 @@ export class MongoMemoryDB implements Database {
 
         for(const key in collections) {
             const collection = collections[key];
-            await collection.deleteMany();
+            await collection.deleteMany({});
         }
     }
     
