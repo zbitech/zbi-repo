@@ -3,9 +3,11 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 
-import factoryService from "./services/factory.service";
-
 dotenv.config();
+
+import logger from "./logger";
+import dbFactory from "./factory/database.factory";
+
 
 if(!process.env.PORT) {
     process.exit(1);
@@ -19,12 +21,15 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-const db = factoryService.getDatabase();
+const db = dbFactory.createDatabase();
 
 app.get('/', (req, res) => {
     res.send({message: "Hello World!"});
 });
   
 app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
+    logger.info(`Running Node.js version ${process.version}`);
+    logger.info(`App environment: ${process.env.NODE_ENV}`);
+    db.connect();
+    logger.info(`App is running on port ${PORT}`);
 });
