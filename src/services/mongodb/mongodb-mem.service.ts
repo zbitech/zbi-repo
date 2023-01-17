@@ -1,4 +1,4 @@
-import { Database } from "../services.interface";
+import { Database } from "../../interfaces";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 
