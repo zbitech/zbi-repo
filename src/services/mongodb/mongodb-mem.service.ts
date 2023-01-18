@@ -2,6 +2,18 @@ import { Database } from "../../interfaces";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 
+const dbOpts = {
+    instance: {dbName: 'zbiRepo'/*, dbPath: './_db'*/},
+    binary: {downloadDir: './'},
+};
+const mongooseOpts = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+};
+
+mongoose.set('strictQuery', false);
+//const mongoServer = await MongoMemoryServer.create(dbOpts);
+
 export class MongoMemoryDB implements Database {
 
     mongod: any = null;
@@ -9,25 +21,24 @@ export class MongoMemoryDB implements Database {
     constructor() {
     }
 
+    async init(): Promise<void> {
+        console.log("initializing db");
+        this.mongod = await MongoMemoryServer.create(dbOpts);
+        console.log("db initialized");
+    }
+
     async connect(): Promise<void> {
-
-        this.mongod = await MongoMemoryServer.create();
-        const uri = this.mongod.getUri();
-
-        const mongooseOpts = {
-            useNewUrlParser: true, autoReconnect: true,
-            reconnectTries: Number.MAX_VALUE, reconnectInterval: 1000
-        }
-
-        mongoose.connect(uri, () => {
-            console.log("connected to memory server");
-        });
+        const uri = this.mongod.getUri("zbiRepo");
+        await mongoose.connect(uri);
+        console.log("connected to memory server");
     }
 
     async close(): Promise<void> {
         await mongoose.connection.dropDatabase();
         await mongoose.connection.close();
         await this.mongod.stop();
+
+        console.log("closed connection");
     }
     
     async clear(): Promise<void> {
@@ -37,9 +48,5 @@ export class MongoMemoryDB implements Database {
             const collection = collections[key];
             await collection.deleteMany({});
         }
-    }
-    
-    getDatabase() {
-        return mongoose;
     }
 }

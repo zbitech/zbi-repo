@@ -41,6 +41,12 @@ export enum ResourceType {
     pod = 'pod'
 }
 
+export enum UserStatusType {
+    invited = 'invited',
+    active = 'active',
+    inactive = 'inactive'
+}
+
 export enum StatusType {
     pending = 'pending',
     runnning = 'running',

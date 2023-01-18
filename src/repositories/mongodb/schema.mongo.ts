@@ -1,32 +1,46 @@
 import mongoose from "mongoose";
+import { NetworkType, NodeType, RoleType, UserStatusType } from "../../model/zbi.enum";
 
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    userId: {type: String, unique: true, required: true},
-    email: {type: String, unique: true, required: true},
+    userName: {type: String, unique: true, required: true, trim: true, lowercase: true},
+    email: {type: String, unique: true, required: true, trim: true, match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address.'], lowercase: true},
     name: {type: String, required: true},
-    role: {type: String, required: true, enum:['admin', 'owner', 'user']},
-    created: {type: Date, default: Date.now},
+    role: {type: String, required: true, enum:[RoleType.admin, RoleType.owner, RoleType.user]},
+    status: {type: String, enum:[UserStatusType.invited, UserStatusType.active, UserStatusType.inactive]},
+    created: {type: Date, immutable: true, default: Date.now},
     updated: {type: Date}
 });
+userSchema.pre('save', function(next){
+    this.set({updated: new Date()});
+    next();
+})
+
 
 export const UserSchema = mongoose.model("user", userSchema);
-
 const teamMemberSchema = new Schema({
-    user: {type: Schema.Types.ObjectId, ref: "user"},
-    role: {type: String, required: true, enum:['owner', 'user']},
-    created: {type: Date, default: Date.now},
+    user: {type: Schema.Types.ObjectId, unique: true, ref: "user"},
+    role: {type: String, required: true, enum:[RoleType.owner, RoleType.user]},
+    created: {type: Date, immutable: true, default: Date.now},
     updated: {type: Date}
 });
+teamMemberSchema.pre('save', function(next){
+    this.set({updated: new Date()});
+    next();
+})
 
 const teamSchema = new Schema({
-    teamId: {type: String, unique: true},
     name: {type: String},
+    owner: {type: Schema.Types.ObjectId, ref: "user"},
     members: {type: [teamMemberSchema]},
-    created: {type: Date, default: Date.now},
+    created: {type: Date, immutable: true, default: Date.now},
     updated: {type: Date}
 });
+teamSchema.pre('save', function(next){
+    this.set({updated: new Date()});
+    next();
+})
 
 export const TeamSchema = mongoose.model("team", teamSchema);
 
@@ -37,8 +51,14 @@ const resourceRequest = new Schema({
     dataSource: {type: String}, 
     cpu: {type: String}, 
     memory: {type: String},
-    peers: {type: [String]}
+    peers: {type: [String]},
+    created: {type: Date, immutable: true, default: Date.now},
+    updated: {type: Date}
 });
+resourceRequest.pre('save', function(next){
+    this.set({updated: new Date()});
+    next();
+})
 
 
 const resourceSchema = new Schema({
@@ -46,37 +66,49 @@ const resourceSchema = new Schema({
     type: {type: String}, 
     status: {type: String}, 
     properties: {type: Map, of: Object},
-    created: {type: Date, default: Date.now},
+    created: {type: Date, immutable: true, default: Date.now},
     updated: {type: Date}
 });
 resourceSchema.index({name: 1, type: 1}, {unique: true});
+resourceSchema.pre('save', function(next){
+    this.set({updated: new Date()});
+    next();
+})
 
 
 const instanceSchema = new Schema({
     name: {type: String}, 
-    type: {type: String, index: {unique: false}, enum: ['zcash', 'lwd', 'zebra']}, 
+    type: {type: String, index: {unique: false}, enum: [NodeType.zcash, NodeType.lwd, NodeType.zebra]}, 
     description: {type: String}, 
     status: {type: String},
     request: {type: resourceRequest}, 
     resources: {type: [resourceSchema]}, 
 //    activities: {type: [activitySchema]}, 
 //    policy: {type: instancePolicySchema},
-    created: {type: Date, default: Date.now},
+    created: {type: Date, immutable: true, default: Date.now},
     updated: {type: Date}
 });
 instanceSchema.index({name: 1, type: 1}, {unique: true});
+instanceSchema.pre('save', function(next){
+    this.set({updated: new Date()});
+    next();
+})
 
 
 const projectSchema = new Schema({
     name: {type: String}, 
-    network: {type: String, required: true, enum: ['testnet', 'regnet', 'mainnet']}, 
+    network: {type: String, required: true, enum: [NetworkType.testnet, NetworkType.regnet, NetworkType.mainnet]}, 
     status: {type: String},
     owner: {type: Schema.Types.ObjectId, ref: "user"},
     team: {type: Schema.Types.ObjectId, ref: "team"},
     description: {type: String},
     instances: {type: [instanceSchema]},
-    created: {type: Date, default: Date.now},
+    created: {type: Date, immutable: true, default: Date.now},
     updated: {type: Date}
 });
+projectSchema.pre('save', function(next){
+    this.set({updated: new Date()});
+    next();
+})
 
 export const ProjectSchema = mongoose.model("project", projectSchema);

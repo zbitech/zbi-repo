@@ -15,6 +15,9 @@ export class MongoDB implements Database {
         serverSelectionTimeoutMS: ServerSelectionTimeout
     };
 
+    async init(): Promise<void> {
+    }
+
     async connect(): Promise<void> {
 
         mongoose.connect(ConnectionString, this.mongooseOptions)
@@ -28,9 +31,5 @@ export class MongoDB implements Database {
 
     async clear(): Promise<void> {
         mongoose.connection.dropDatabase();
-    }
-
-    getDatabase() {
-        return mongoose;
-    }    
+    }  
 }

@@ -1,14 +1,6 @@
 import { Instance, Project, Team, User, KubernetesResource } from "../model/model";
 import { ResourceType } from "../model/zbi.enum";
 
-
-export interface IUserRepository {
-    create(data: User): Promise<User|undefined>;
-    update(data: User): Promise<User|undefined>;
-    findByEmail(email: string): Promise<User|undefined>;
-    findByUserName(userName: string): Promise<User|undefined>;
-}
-
 export interface IAMRepository {
     createUser(user: User): Promise<User|undefined>;
     updateUser(user: User): Promise<User|undefined>;
@@ -20,10 +12,12 @@ export interface IAMRepository {
     validateAuth(type: string, value: string): Promise<boolean>;
     findUserTeamMemberships(): Promise<void>;
 
-    findTeams(): Promise<Array<Team>|undefined>;
+    createTeam(ownerId: string, name: string): Promise<Team|undefined>;
+    findTeams(limit: number, skip: number): Promise<Array<Team>|undefined>;
     findTeam(teamId: string): Promise<Team|undefined>;
-    findTeamMemberships(params: {}): Promise<Array<Team>|undefined>
-    removeTeamMembership(teamId: string): Promise<Team|undefined>;
+    findTeamMemberships(userId: string): Promise<Array<Team>|undefined>
+    removeTeamMembership(teamId: string, userId: string): Promise<Team|undefined>;
+    addTeamMembership(teamId: string, userId: string): Promise<Team|undefined>;
 }
 
 export interface ProjectRepository {
