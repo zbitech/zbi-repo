@@ -5,7 +5,7 @@ const { combine, label, timestamp, printf } = format;
 const console = new transports.Console();
 
 const logFormat = printf(({level, message, label: logLabel, timestamp: logTimeStamp}) => {
-    return `${logTimeStamp} [${logLabel}]: ${message}`;
+    return `${logTimeStamp} [${level}]: ${message}`;
 });
 
 const logger = createLogger({

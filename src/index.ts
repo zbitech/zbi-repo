@@ -27,9 +27,10 @@ app.get('/', (req, res) => {
     res.send({message: "Hello World!"});
 });
   
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     logger.info(`Running Node.js version ${process.version}`);
     logger.info(`App environment: ${process.env.NODE_ENV}`);
-    db.connect();
+    await db.init();
+    await db.connect();
     logger.info(`App is running on port ${PORT}`);
 });

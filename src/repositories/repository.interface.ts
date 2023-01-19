@@ -2,22 +2,22 @@ import { Instance, Project, Team, User, KubernetesResource } from "../model/mode
 import { ResourceType } from "../model/zbi.enum";
 
 export interface IAMRepository {
-    createUser(user: User): Promise<User|undefined>;
-    updateUser(user: User): Promise<User|undefined>;
-    findUsers(params: {}, limit: number, skip: number): Promise<Array<User>|undefined>;
-    findUser(params: {}): Promise<User|undefined>;
+    createUser(user: User): Promise<User>;
+    updateUser(user: User): Promise<User>;
+    findUsers(params: {}, limit: number, skip: number): Promise<Array<User>>;
+    findUser(params: {}): Promise<User>;
     resetUserPassword(userName: string): Promise<void>;
     activateUser(userName: string): Promise<void>;
     deactivateUser(userName: string): Promise<void>;
     validateAuth(type: string, value: string): Promise<boolean>;
-    findUserTeamMemberships(): Promise<void>;
 
-    createTeam(ownerId: string, name: string): Promise<Team|undefined>;
-    findTeams(limit: number, skip: number): Promise<Array<Team>|undefined>;
-    findTeam(teamId: string): Promise<Team|undefined>;
-    findTeamMemberships(userId: string): Promise<Array<Team>|undefined>
-    removeTeamMembership(teamId: string, userId: string): Promise<Team|undefined>;
-    addTeamMembership(teamId: string, userId: string): Promise<Team|undefined>;
+    createTeam(ownerId: string, name: string): Promise<Team>;
+    findTeams(limit: number, skip: number): Promise<Array<Team>>;
+    findTeam(teamId: string): Promise<Team>;
+    findTeamMemberships(userId: string): Promise<Array<Team>>
+    removeTeamMembership(teamId: string, userId: string): Promise<Team>;
+    addTeamMembership(teamId: string, userId: string): Promise<Team>;
+    findPendingMemberships(): Promise<Array<Team>>;
 }
 
 export interface ProjectRepository {

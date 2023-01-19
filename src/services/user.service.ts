@@ -11,4 +11,12 @@ export default class UserService {
     setUserRepository(repo: IAMRepository) {
         this.iamRepository = repo;
     }
+
+    inviteUser() {
+
+    }
+
+    inviteOwner() {
+
+    }
 }

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { NetworkType, NodeType, RoleType, UserStatusType } from "../../model/zbi.enum";
+import { NetworkType, NodeType, RoleType, UserStatusType, InviteStatusType } from "../../model/zbi.enum";
 
 const Schema = mongoose.Schema;
 
@@ -8,7 +8,7 @@ const userSchema = new Schema({
     email: {type: String, unique: true, required: true, trim: true, match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address.'], lowercase: true},
     name: {type: String, required: true},
     role: {type: String, required: true, enum:[RoleType.admin, RoleType.owner, RoleType.user]},
-    status: {type: String, enum:[UserStatusType.invited, UserStatusType.active, UserStatusType.inactive]},
+    status: {type: String, enum:[UserStatusType.invited, UserStatusType.active, UserStatusType.inactive], default: UserStatusType.invited},
     created: {type: Date, immutable: true, default: Date.now},
     updated: {type: Date}
 });
@@ -17,11 +17,12 @@ userSchema.pre('save', function(next){
     next();
 })
 
-
 export const UserSchema = mongoose.model("user", userSchema);
+
 const teamMemberSchema = new Schema({
-    user: {type: Schema.Types.ObjectId, unique: true, ref: "user"},
-    role: {type: String, required: true, enum:[RoleType.owner, RoleType.user]},
+    user: {type: Schema.Types.ObjectId, ref: "user"},
+    role: {type: String, required: true, enum:[RoleType.user]},
+    status: {type: String, required: true, enum:[InviteStatusType.pending, InviteStatusType.accepted, InviteStatusType.rejected], default: InviteStatusType.pending},
     created: {type: Date, immutable: true, default: Date.now},
     updated: {type: Date}
 });
@@ -40,7 +41,12 @@ const teamSchema = new Schema({
 teamSchema.pre('save', function(next){
     this.set({updated: new Date()});
     next();
-})
+});
+// teamSchema.pre('findOneAndUpdate', function(next){
+//     this.set({updated: new Date()});
+//     next();
+// })
+
 
 export const TeamSchema = mongoose.model("team", teamSchema);
 
@@ -73,16 +79,22 @@ resourceSchema.index({name: 1, type: 1}, {unique: true});
 resourceSchema.pre('save', function(next){
     this.set({updated: new Date()});
     next();
-})
+});
 
+const resourcesSchema = new Schema({
+    resources: {type: [resourceSchema]},
+    snapshots: {type: [resourceSchema]},
+    schedule: {type: resourceSchema}
+});
 
 const instanceSchema = new Schema({
     name: {type: String}, 
     type: {type: String, index: {unique: false}, enum: [NodeType.zcash, NodeType.lwd, NodeType.zebra]}, 
     description: {type: String}, 
     status: {type: String},
+    project: {type: Schema.Types.ObjectId, ref: "project"},
     request: {type: resourceRequest}, 
-    resources: {type: [resourceSchema]}, 
+    resources: {type: resourcesSchema}, 
 //    activities: {type: [activitySchema]}, 
 //    policy: {type: instancePolicySchema},
     created: {type: Date, immutable: true, default: Date.now},
@@ -93,6 +105,7 @@ instanceSchema.pre('save', function(next){
     this.set({updated: new Date()});
     next();
 })
+export const InstanceSchema = mongoose.model("instance", instanceSchema);
 
 
 const projectSchema = new Schema({
@@ -102,7 +115,7 @@ const projectSchema = new Schema({
     owner: {type: Schema.Types.ObjectId, ref: "user"},
     team: {type: Schema.Types.ObjectId, ref: "team"},
     description: {type: String},
-    instances: {type: [instanceSchema]},
+//    instances: {type: [instanceSchema]},
     created: {type: Date, immutable: true, default: Date.now},
     updated: {type: Date}
 });

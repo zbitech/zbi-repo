@@ -5,6 +5,12 @@ export enum RoleType {
     owner = 'owner'
 }
 
+export enum InviteStatusType {
+    pending = 'pending',
+    accepted = 'accepted',
+    rejected = 'rejected'
+}
+
 export enum NetworkType {
     testnet = 'testnet',
     regnet = 'regnet',

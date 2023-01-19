@@ -1,4 +1,4 @@
-import { RoleType, VolumeType, VolumeSourceType, ResourceType, StatusType, NetworkType, NodeType, UserStatusType } from "./zbi.enum";
+import { RoleType, VolumeType, VolumeSourceType, ResourceType, StatusType, NetworkType, NodeType, UserStatusType, InviteStatusType } from "./zbi.enum";
 
 
 export interface User {
@@ -12,8 +12,9 @@ export interface User {
 
 export interface TeamMember {
     user: User;
-    age: string;
+    age?: string;
     role?: RoleType;
+    status?: InviteStatusType;
 }
 
 export interface Team {
@@ -41,6 +42,12 @@ export interface KubernetesResource {
     properties: {};
 }
 
+export interface Resources {
+    resources?: Array<KubernetesResource>;
+    snapshots?: Array<KubernetesResource>;
+    schedule?: KubernetesResource;
+}
+
 export interface Project {
     name: string;
     owner: User;
@@ -55,5 +62,5 @@ export interface Instance {
     type: NodeType;
     description: string;
     request: ResourceRequest;
-    resources: Array<KubernetesResource>;
+    resources?: Resources;
 }

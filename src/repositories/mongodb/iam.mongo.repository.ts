@@ -1,16 +1,13 @@
 import { Team, User, TeamMember } from "../../model/model";
-import { RoleType, UserStatusType } from "../../model/zbi.enum";
+import { InviteStatusType, RoleType, UserStatusType } from "../../model/zbi.enum";
 import { IAMRepository } from "../repository.interface";
 import { UserSchema, TeamSchema } from "./schema.mongo";
 
 export default class IAMMongoRepository implements IAMRepository {
 
-    async createUser(user: User): Promise<User | undefined> {
+    async createUser(user: User): Promise<User> {
         try {
             const uc = new UserSchema({...user});
-            if(!uc.status) {
-                uc.status = UserStatusType.invited;
-            }
             await uc.save();
             return createUser(uc);
         } catch(err) {
@@ -18,7 +15,7 @@ export default class IAMMongoRepository implements IAMRepository {
         }
     }
 
-    async updateUser(user: User): Promise<User | undefined> {
+    async updateUser(user: User): Promise<User> {
         try {
             const uc = await UserSchema.findOne({userName: user.userName});
             if(uc) {
@@ -26,7 +23,7 @@ export default class IAMMongoRepository implements IAMRepository {
                 uc.email = uc.email;
                 uc.name = user.name;
                 uc.role = user.role!;
-                uc.status = user.status;
+                uc.status = user.status!;
                 uc.updated = new Date();
                 await uc.save();
 
@@ -40,7 +37,7 @@ export default class IAMMongoRepository implements IAMRepository {
         }
     }
 
-    async findUsers(params: {}, limit: number, skip: number): Promise<User[] | undefined> {
+    async findUsers(params: {}, limit: number, skip: number): Promise<User[]> {
         try {
             const uc = await UserSchema.find(params).limit(limit).skip(skip);
             if(uc) {
@@ -52,7 +49,7 @@ export default class IAMMongoRepository implements IAMRepository {
         }
     }
 
-    async findUser(params: {}): Promise<User | undefined> {
+    async findUser(params: {}): Promise<User> {
         try {
             const uc = await UserSchema.findOne(params);
             if(uc) {
@@ -98,11 +95,7 @@ export default class IAMMongoRepository implements IAMRepository {
         throw new Error("Method not implemented.");
     }
 
-    async findUserTeamMemberships(): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-
-    async createTeam(ownerId: string, name: string): Promise<Team|undefined> {
+    async createTeam(ownerId: string, name: string): Promise<Team> {
         try {
             const team = {name, owner: ownerId};
             const tc = new TeamSchema(team);
@@ -115,12 +108,13 @@ export default class IAMMongoRepository implements IAMRepository {
         }
     }
 
-    async findTeams(limit: number, skip: number): Promise<Team[] | undefined> {
+    async findTeams(limit: number, skip: number): Promise<Team[]> {
         try {
-            const tc = await TeamSchema.find().populate({
-                path: "owner", select: {username: 1, email: 1, name: 1}
-            }).limit(limit).skip(skip);
+            const tc = await TeamSchema.find({}, {_id: 1, name: 1, owner: 1, created: 1, updated: 1}).populate({
+                path: "owner", select: {userName: 1, email: 1, name: 1}
+            }); //.limit(limit).skip(skip);
             if(tc) {
+                console.log(JSON.stringify(tc));
                 return createTeams(tc);
             }
             return [];
@@ -129,7 +123,7 @@ export default class IAMMongoRepository implements IAMRepository {
         }
     }
 
-    async findTeam(teamId: string): Promise<Team | undefined> {
+    async findTeam(teamId: string): Promise<Team> {
         try {
             const tc = await TeamSchema.findById(teamId).populate({
                 path: "owner", select: {userName: 1, email: 1, name: 1}
@@ -146,25 +140,28 @@ export default class IAMMongoRepository implements IAMRepository {
         }
     }
 
-    async findTeamMemberships(userId: string): Promise<Array<Team>|undefined> {
+    async findTeamMemberships(userId: string): Promise<Array<Team>> {
         try {
-            const tcagg = await TeamSchema.aggregate([
-                {$match: {"members.user": userId}},
-                {$project: {_id: 1, name: 1, members: 1}}
-            ]);
-            const tc = await TeamSchema.populate(tcagg, {path: "members.user"});
-            console.log(JSON.stringify(tc));
-            return undefined;
+            const tc = await TeamSchema.find({"members.user": userId}, {
+                name: 1,
+                members: {
+                    $elemMatch: {user: userId}
+                }
+            }).populate({path: "members.user", select: {userName: 1, email: 1, name: 1}});
+
+            if(tc) return createTeams(tc);
+
+            throw new Error("team memberships not found");
         } catch(err) {
             throw err;
         }
     }
 
-    async removeTeamMembership(teamId: string, userId: string): Promise<Team|undefined> {
+    async removeTeamMembership(teamId: string, userId: string): Promise<Team> {
         try {
             const tc = await TeamSchema.findOneAndUpdate({"_id": teamId}, {"$pull": {
                 "members": {"user": userId}
-            }});
+            }}).populate({path: "members.user", select: {username: 1, email: 1, name: 1}});
             if(tc) return createTeam(tc);
             throw new Error("team not found");
         } catch(err) {
@@ -172,20 +169,36 @@ export default class IAMMongoRepository implements IAMRepository {
         }
     }
 
-    async addTeamMembership(teamId: string, userId: string): Promise<Team|undefined> {
+    async addTeamMembership(teamId: string, userId: string): Promise<Team> {
         try {
-            try {
-                const tc = await TeamSchema.findById(teamId);
-                if(tc) {
-                    tc.members.push({userId, role: RoleType.user});
-                    await tc.save();
-                    return createTeam(tc);
-                }
-    
-                throw new Error("team not found");
-            } catch(err) {
-                throw err;
+            const tc = await TeamSchema.findById(teamId);
+            if(tc) {
+                tc.members.push({userId, role: RoleType.user});
+                await tc.save();
+
+                await (await tc.populate({path: "owner", select: {username: 1, email: 1, name: 1}}))
+                        .populate({path: "members.user", select: {username: 1, email: 1, name: 1}})
+                return createTeam(tc);
             }
+    
+            throw new Error("team not found");
+        } catch(err) {
+            throw err;
+        }
+    }
+
+    async findPendingMemberships(): Promise<Array<Team>> {
+        try {
+            const tc = await TeamSchema.find({"members.status": InviteStatusType.pending}, {
+                name: 1,
+                members: {
+                    $elemMatch: {status: InviteStatusType.pending}
+                }
+            }).populate({path: "members.user", select: {userName: 1, email: 1, name: 1}});
+
+            if(tc) return createTeams(tc);
+
+            throw new Error("pending memberships not found");
         } catch(err) {
             throw err;
         }
@@ -214,16 +227,17 @@ function createTeam(tc: any): Team {
         id: tc._id,
         name: tc.name,
         owner: createUser(tc.owner),
-        members: tc.members.map((mbr:any) => createTeamMember(mbr))
+        members: tc.members ? tc.members.map((mbr:any) => createTeamMember(mbr)) : undefined
     }
 }
 
 function createTeamMember(tmc: any): TeamMember {
     return {
-        user: tmc.user, age: "", role: tmc.role
+        user: tmc.user, role: tmc.role, status: tmc.status
     }
 }
 
 function createTeams(tc: Array<any>): Array<Team> {
-    return tc.map( team => createTeam(tc) );
+//    console.log("processing array: ", tc.length);
+    return tc.map( team => createTeam(team) );
 }

@@ -1,0 +1,8 @@
+{
+  "team":{"name": "My Team"},
+  "owner": {"userName": "owner", "email": "owner@zbitech.net", "name": "Resource Owner", "status": "active", "role": "owner"},
+  "members": [
+    {"userName": "user1", "email": "user1@zbitech.net", "name": "User One", "status": "active", "role": "user"},
+    {"userName": "user2", "email": "user2@zbitech.net", "name": "User Two", "status": "active", "role": "user"}
+  ]
+}
