@@ -7,6 +7,7 @@ const DATABASE = process.env.DATABASE || "mongodb-mem";
 class DatabaseFactory {
 
     createDatabase(): Database {
+        const DATABASE = process.env.DATABASE || "mongodb-mem";
         if(DATABASE === "mongodb-mem") {
             return new MongoMemoryDB();
         } else {

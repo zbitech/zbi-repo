@@ -1,13 +1,22 @@
+import { IAMRepository } from "../../interfaces";
 import { Team, User, TeamMember } from "../../model/model";
 import { InviteStatusType, RoleType, UserStatusType } from "../../model/zbi.enum";
-import { IAMRepository } from "../repository.interface";
-import { UserSchema, TeamSchema } from "./schema.mongo";
+import model from "./mongo.model";
+//import { UserSchema, TeamSchema } from "./schema.mongo";
 
 export default class IAMMongoRepository implements IAMRepository {
 
+    userModel: any;
+    teamModel: any;
+    
+    constructor() {
+        this.userModel = model.userModel;
+        this.teamModel = model.teamModel;
+    }
+
     async createUser(user: User): Promise<User> {
         try {
-            const uc = new UserSchema({...user});
+            const uc = new this.userModel({...user});
             await uc.save();
             return createUser(uc);
         } catch(err) {
@@ -17,7 +26,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async updateUser(user: User): Promise<User> {
         try {
-            const uc = await UserSchema.findOne({userName: user.userName});
+            const uc = await this.userModel.findOne({userName: user.userName});
             if(uc) {
                 uc.userName = uc.userName;
                 uc.email = uc.email;
@@ -39,7 +48,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async findUsers(params: {}, limit: number, skip: number): Promise<User[]> {
         try {
-            const uc = await UserSchema.find(params).limit(limit).skip(skip);
+            const uc = await this.userModel.find(params).limit(limit).skip(skip);
             if(uc) {
                 return createUsers(uc);
             }
@@ -51,7 +60,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async findUser(params: {}): Promise<User> {
         try {
-            const uc = await UserSchema.findOne(params);
+            const uc = await this.userModel.findOne(params);
             if(uc) {
                 return createUser(uc);
             }
@@ -67,7 +76,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async activateUser(userName: string): Promise<void> {
         try {
-            const uc = await UserSchema.findOne({userName});
+            const uc = await this.userModel.findOne({userName});
             if(uc) {
                 uc.status = UserStatusType.active;
                 await uc.save();
@@ -80,7 +89,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async deactivateUser(userName: string): Promise<void> {
         try {
-            const uc = await UserSchema.findOne({userName});
+            const uc = await this.userModel.findOne({userName});
             if(uc) {
                 uc.status = UserStatusType.inactive;
                 await uc.save();
@@ -98,7 +107,7 @@ export default class IAMMongoRepository implements IAMRepository {
     async createTeam(ownerId: string, name: string): Promise<Team> {
         try {
             const team = {name, owner: ownerId};
-            const tc = new TeamSchema(team);
+            const tc = new this.teamModel(team);
             await tc.save();
 
             await tc.populate({path: "owner", select: {userName: 1, email: 1, name: 1}});
@@ -110,7 +119,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async findTeams(limit: number, skip: number): Promise<Team[]> {
         try {
-            const tc = await TeamSchema.find({}, {_id: 1, name: 1, owner: 1, created: 1, updated: 1}).populate({
+            const tc = await this.teamModel.find({}, {_id: 1, name: 1, owner: 1, created: 1, updated: 1}).populate({
                 path: "owner", select: {userName: 1, email: 1, name: 1}
             }); //.limit(limit).skip(skip);
             if(tc) {
@@ -125,7 +134,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async findTeam(teamId: string): Promise<Team> {
         try {
-            const tc = await TeamSchema.findById(teamId).populate({
+            const tc = await this.teamModel.findById(teamId).populate({
                 path: "owner", select: {userName: 1, email: 1, name: 1}
             }).populate({
                 path: "members.user", select: {userName: 1, email: 1, name: 1}
@@ -142,7 +151,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async findTeamMemberships(userId: string): Promise<Array<Team>> {
         try {
-            const tc = await TeamSchema.find({"members.user": userId}, {
+            const tc = await this.teamModel.find({"members.user": userId}, {
                 name: 1,
                 members: {
                     $elemMatch: {user: userId}
@@ -159,7 +168,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async removeTeamMembership(teamId: string, userId: string): Promise<Team> {
         try {
-            const tc = await TeamSchema.findOneAndUpdate({"_id": teamId}, {"$pull": {
+            const tc = await this.teamModel.findOneAndUpdate({"_id": teamId}, {"$pull": {
                 "members": {"user": userId}
             }}).populate({path: "members.user", select: {username: 1, email: 1, name: 1}});
             if(tc) return createTeam(tc);
@@ -171,7 +180,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async addTeamMembership(teamId: string, userId: string): Promise<Team> {
         try {
-            const tc = await TeamSchema.findById(teamId);
+            const tc = await this.teamModel.findById(teamId);
             if(tc) {
                 tc.members.push({userId, role: RoleType.user});
                 await tc.save();
@@ -189,7 +198,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async findPendingMemberships(): Promise<Array<Team>> {
         try {
-            const tc = await TeamSchema.find({"members.status": InviteStatusType.pending}, {
+            const tc = await this.teamModel.find({"members.status": InviteStatusType.pending}, {
                 name: 1,
                 members: {
                     $elemMatch: {status: InviteStatusType.pending}
