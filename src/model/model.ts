@@ -1,4 +1,5 @@
-import { RoleType, VolumeType, VolumeSourceType, ResourceType, StatusType, NetworkType, NodeType, UserStatusType, InviteStatusType } from "./zbi.enum";
+import { interfaces } from "inversify";
+import { RoleType, VolumeType, VolumeSourceType, ResourceType, StatusType, NetworkType, NodeType, UserStatusType, InviteStatusType, SnapshotScheduleType } from "./zbi.enum";
 
 
 export interface User {
@@ -33,22 +34,25 @@ export interface ResourceRequest {
     cpu: string;
     memory: string;
     peers: Array<string>;
+    properties: Map<string, string>;
 }
 
 export interface KubernetesResource {
+    id?: string;
     name: string;
     type: ResourceType;
     status: StatusType;
     properties: {};
 }
 
-export interface Resources {
+export interface KubernetesResources {
     resources?: Array<KubernetesResource>;
     snapshots?: Array<KubernetesResource>;
     schedule?: KubernetesResource;
 }
 
 export interface Project {
+    id?: string;
     name: string;
     owner: User;
     team: Team;
@@ -58,9 +62,21 @@ export interface Project {
 }
 
 export interface Instance {
+    id?: string;
     name: string;
     type: NodeType;
     description: string;
     request: ResourceRequest;
-    resources?: Resources;
+}
+
+export interface SnapshotScheduleRequest {
+    schedule: SnapshotScheduleType;
+    hourOfDay?: number;
+    dayOfWeek?: number;
+    dayOfMonth?: number;
+}
+
+export interface QueryParams {
+    page: number;
+    itemsPerPage: number;
 }
