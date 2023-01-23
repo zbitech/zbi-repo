@@ -2,7 +2,6 @@ import { IAMRepository } from "../../interfaces";
 import { Team, User, TeamMember } from "../../model/model";
 import { InviteStatusType, RoleType, UserStatusType } from "../../model/zbi.enum";
 import model from "./mongo.model";
-//import { UserSchema, TeamSchema } from "./schema.mongo";
 
 export default class IAMMongoRepository implements IAMRepository {
 

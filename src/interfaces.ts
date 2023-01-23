@@ -41,18 +41,27 @@ export interface ProjectRepository {
     updateInstance(instance: Instance): Promise<Instance>;
     deleteInstance(instance: Instance): Promise<Instance>;
 
-    getInstanceResources(instanceId: string): Promise<KubernetesResource[]>;
+    createInstanceResources(instanceId: string, resources: KubernetesResources): Promise<void>;
+    getInstanceResources(instanceId: string): Promise<KubernetesResources>;
     getInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<KubernetesResource>;
     updateInstanceResource(resource: KubernetesResource): Promise<KubernetesResource>;
     deleteInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<void> 
 }
 
 export interface IAMService {
-//    createUser(user: User): Promise<User>;
+//    createResourceOwner(user: User): Promise<User>;
+//  createTeamMember(user: User): Promise<User>
+//  updateUser(user: User): Promise<User>;
     findUsers(limit: number, page: number): Promise<User[]>;
     findByUserID(userId: string): Promise<User>;
-//    activateUser(): Promise<void>;
-//    deactivateUser(): Promise<void>;
+// findByEmail(email: string): Promise<User>;
+//    activateUser(userId: string): Promise<void>;
+//    deactivateUser(userId: string): Promise<void>;
+//  resetPassword(userId: string): Promise<void>;
+// findTeams(teamId: string): Promise<Team>;
+// findUserMemberships(userId: string): Promise<Team>;
+// addTeamMember(teamId: string, email: string): Promise<Team>;
+// removeTeamMember(teamId: string, memberId: string): Promise<Team>;
 }
 
 export interface ProjectService {
