@@ -10,8 +10,8 @@ const { combine, label, timestamp, printf, json, colorize } = format;
 addColors({error: 'red', warn: 'yellow', info: 'green', http: 'magenta', debug: 'white'});
 const console = new transports.Console();
 
-const logFormat = printf(({level, message, label: logLabel, timestamp: logTimeStamp, requestId, user, service}) => {
-    return `${level} | ${logTimeStamp} | ${requestId} | ${user} | ${service} | ${message}`;
+const logFormat = printf(({level, message, label: logLabel, timestamp: logTimeStamp, requestId, user}) => {
+    return `${level} | ${logTimeStamp} | ${requestId} | ${user} | ${message}`;
 });
 
 export const defaultLogger = createLogger({
@@ -22,20 +22,9 @@ export const defaultLogger = createLogger({
 
 export const morganStream: StreamOptions = {write: (message: string) => logger.http(message)};
 
-export const logger = new Proxy(defaultLogger.child({requestId: uuidv4(), user: "zbi", service: "main"}), {
+export const logger = new Proxy(defaultLogger/*.child({requestId: uuidv4(), user: "zbi"})*/, {
     get(target, property, receiver) {
       target = context.getStore()?.get('logger') || target;
       return Reflect.get(target, property, receiver);
     },
 });
-
-module.exports.contextMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const child = logger.child({ requestId: uuidv4() });
-    const store = new Map();
-  
-    return context.run(store, () => {
-        store.set('logger', child);
-
-        next();
-    });
-};
