@@ -7,12 +7,9 @@ import morgan from "morgan";
 dotenv.config();
 
 import {logger, morganStream} from "./logger";
-//import dbFactory from "./factory/database.factory";
 import beanFactory from "./bean.factory";
 import routes from "./routes";
-import { appendFileSync } from "fs";
-
-//import {morganMiddleware} from "./middlewares/morgan.middleware";
+import { initRequest } from "./middlewares/request.middleware";
 
 if(!process.env.PORT) {
     process.exit(1);
@@ -28,6 +25,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+app.use(initRequest);
 
 // app.get('/', (req, res) => {
 //     res.send({message: "Hello World!"});
