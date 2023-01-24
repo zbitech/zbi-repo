@@ -1,9 +1,15 @@
-import { ProjectService } from "src/interfaces";
+import { ProjectRepository, ProjectService } from "src/interfaces";
 import { Project, QueryParams, KubernetesResource, Instance, SnapshotScheduleRequest, KubernetesResources } from "src/model/model";
 import IAMMongoRepository from "../repositories/mongodb/iam.mongo.repository";
 
 export class DefaultProjectService implements ProjectService {
 
+    private projectRepository: ProjectRepository;
+
+    constructor(projectRepository: ProjectRepository) {
+        this.projectRepository = projectRepository;
+    }
+    
     async createProject(project: Project): Promise<Project> {
         throw new Error("Method not implemented.");
     }

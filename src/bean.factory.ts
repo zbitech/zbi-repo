@@ -4,6 +4,7 @@ import databaseFactory from "./factory/database.factory";
 import repositoryFactory from "./factory/repository.factory";
 import serviceFactory from "./factory/service.factory";
 import UserController from "./controllers/user.controller";
+import ProjectController from "./controllers/project.controller";
 
 class BeanFactory {
 
@@ -20,10 +21,13 @@ class BeanFactory {
         this.controllers = new Map();
 
         this.repositories.set("iam", repositoryFactory.createIAMRepository());
+        this.repositories.set("project", repositoryFactory.createProjectRepository());
 
         this.services.set("iam", serviceFactory.createIAMService(this.getRepository("iam")));
+        this.services.set("project", serviceFactory.createProjectService(this.getRepository("project")));
 
         this.controllers.set("user", new UserController(this.getService("iam")));
+        this.controllers.set("project", new ProjectController(this.getService("iam"), this.getService("project")));
 
         this.database.set("database", databaseFactory.createDatabase());
     }
@@ -31,6 +35,7 @@ class BeanFactory {
     async init() {
         let db: Database = this.database.get("database");
         await db.init();
+        await db.connect();
     }
 
     getRepository(name: string) {

@@ -1,6 +1,7 @@
 import { Database } from "../../interfaces";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
+import { logger } from "../../logger";
 
 const dbOpts = {
     instance: {dbName: 'zbiRepo'/*, dbPath: './_db'*/},
@@ -12,7 +13,6 @@ const mongooseOpts = {
 };
 
 mongoose.set('strictQuery', false);
-//const mongoServer = await MongoMemoryServer.create(dbOpts);
 
 export class MongoMemoryDB implements Database {
 
@@ -22,15 +22,15 @@ export class MongoMemoryDB implements Database {
     }
 
     async init(): Promise<void> {
-        console.log("initializing db");
+        logger.info("initializing db");
         this.mongod = await MongoMemoryServer.create(dbOpts);
-        console.log("db initialized");
+        logger.info("db initialized");
     }
 
     async connect(): Promise<void> {
         const uri = this.mongod.getUri("zbiRepo");
         await mongoose.connect(uri);
-        console.log("connected to memory server");
+        logger.info("connected to memory server");
     }
 
     async close(): Promise<void> {
@@ -38,7 +38,7 @@ export class MongoMemoryDB implements Database {
         await mongoose.connection.close();
         await this.mongod.stop();
 
-        console.log("closed connection");
+        logger.info("closed connection");
     }
     
     async clear(): Promise<void> {
