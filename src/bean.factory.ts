@@ -26,8 +26,8 @@ class BeanFactory {
         this.services.set("iam", serviceFactory.createIAMService(this.getRepository("iam")));
         this.services.set("project", serviceFactory.createProjectService(this.getRepository("project")));
 
-        this.controllers.set("user", new UserController(this.getService("iam")));
-        this.controllers.set("project", new ProjectController(this.getService("iam"), this.getService("project")));
+        this.controllers.set("user", new UserController());
+        this.controllers.set("project", new ProjectController());
 
         this.database.set("database", databaseFactory.createDatabase());
     }

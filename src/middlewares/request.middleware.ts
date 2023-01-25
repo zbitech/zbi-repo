@@ -11,10 +11,10 @@ export const initRequest = (req: Request, res: Response, next: NextFunction) => 
     let requestid = uuidv4();
     let userid = "user";
 
-//    ({requestId: uuidv4(), user: "zbi", service: "main"})
+
     return context.run(store, () => {
         const child = logger.child({ requestid, userid });
-        child.info("created child logger");
+
         store.set(Constants.REQUEST_ID, requestid);
         store.set(Constants.USER_ID, userid);
         store.set('logger', child);

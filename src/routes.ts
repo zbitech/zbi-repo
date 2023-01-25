@@ -9,15 +9,15 @@ export default function (app: Application) {
     logger.info("initializing routes");
     const userController: UserController = beanFactory.getController("user");
     const projController: ProjectController = beanFactory.getController("project");
-
+    
     app.route(`/users`)
         .all()
         .get(userController.findUsers) // get all users
-        .post() // new user
+        .post(userController.createUser) // new user
 
     app.route(`/users/:userid`)
         .all()
-        .get() // get user
+        .get(userController.findUser) // get user
         .put() // update user
         .delete() // delete user
     

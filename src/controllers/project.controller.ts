@@ -3,12 +3,7 @@ import { IAMService, ProjectService } from "src/interfaces";
 
 export default class ProjectController {
 
-    private iamService: IAMService;
-    private projectService: ProjectService;
-
-    constructor(iamService: IAMService, projectService: ProjectService) {
-        this.iamService = iamService;
-        this.projectService = projectService;
+    constructor() {
     }
 
     async createProject(request: Request, response: Response): Promise<void> {
