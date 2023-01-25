@@ -25,6 +25,15 @@ export interface Team {
     members?: Array<TeamMember>;
 }
 
+export interface TeamMembership {
+    teamId: string;
+    teamName: string;
+    memberId: string;
+    memberRole: RoleType;
+    status: InviteStatusType;
+    permissions: string[];
+};
+
 export interface ResourceRequest {
     volumeType: VolumeType;
     volumeSize: string;
