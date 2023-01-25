@@ -31,6 +31,8 @@ export const morganStream: StreamOptions = {write: (message: string) => mainLogg
 // });
 
 export const getLogger = (service: string) => {
+    let x = context.getStore()?.get('logger');
+
     let logger = context.getStore()?.get('logger') || mainLogger;
     return logger.child({service});
 }
