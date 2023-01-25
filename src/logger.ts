@@ -1,4 +1,3 @@
-import {Request, Response, NextFunction} from 'express';
 import { createLogger, format, transports, addColors } from "winston";
 import context from "./context";
 import {v4 as uuidv4} from 'uuid';
@@ -10,8 +9,8 @@ const { combine, label, timestamp, printf, json, colorize } = format;
 addColors({error: 'red', warn: 'yellow', info: 'green', http: 'magenta', debug: 'white'});
 const console = new transports.Console();
 
-const logFormat = printf(({level, message, label: logLabel, timestamp: logTimeStamp, requestId, user}) => {
-    return `${level} | ${logTimeStamp} | ${requestId} | ${user} | ${message}`;
+const logFormat = printf(({level, message, label: logLabel, timestamp: logTimeStamp, requestid, userid, service}) => {
+    return `${level} | ${logTimeStamp} | ${requestid} | ${userid} | ${service} | ${message}`;
 });
 
 export const defaultLogger = createLogger({
@@ -20,11 +19,18 @@ export const defaultLogger = createLogger({
     transports: [console],
 });
 
-export const morganStream: StreamOptions = {write: (message: string) => logger.http(message)};
+export const mainLogger = defaultLogger.child({requestid: uuidv4(), userid: "zbi", service: "main"});
 
-export const logger = new Proxy(defaultLogger/*.child({requestId: uuidv4(), user: "zbi"})*/, {
-    get(target, property, receiver) {
-      target = context.getStore()?.get('logger') || target;
-      return Reflect.get(target, property, receiver);
-    },
-});
+export const morganStream: StreamOptions = {write: (message: string) => mainLogger.http(message)};
+
+// export const logger = new Proxy(defaultLogger/*.child({requestId: uuidv4(), user: "zbi"})*/, {
+//     get(target, property, receiver) {
+//       target = context.getStore()?.get('logger') || target;
+//       return Reflect.get(target, property, receiver);
+//     },
+// });
+
+export const getLogger = (service: string) => {
+    let logger = context.getStore()?.get('logger') || mainLogger;
+    return logger.child({service});
+}

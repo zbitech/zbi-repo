@@ -2,7 +2,7 @@ import { Application } from "express";
 import beanFactory from "./bean.factory";
 import ProjectController from "./controllers/project.controller";
 import UserController from "./controllers/user.controller";
-import { logger } from "./logger";
+import { mainLogger as logger } from "./logger";
 
 export default function (app: Application) {
  

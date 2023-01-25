@@ -1,6 +1,8 @@
 import {Request, Response} from 'express';
 import { IAMService } from '../interfaces';
 
+import { getLogger } from "../logger";
+
 export default class UserController {
 
     private iamService: IAMService;
@@ -11,7 +13,16 @@ export default class UserController {
 
     async findUsers(request: Request, response: Response): Promise<void> {
 
-        response.end();
+        let logger = getLogger('uc');
+        try {
+            const users = await this.iamService.findUsers(10, 1);
+            response.json(users);
+        } catch(err:any) {
+            response.status(500).json({message: err.message});
+        } finally {
+            
+        }
+
     }
 
     async inviteUser(request: Request, response: Response): Promise<void> {

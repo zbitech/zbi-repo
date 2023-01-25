@@ -6,7 +6,7 @@ import morgan from "morgan";
 
 dotenv.config();
 
-import {logger, morganStream} from "./logger";
+import {mainLogger as logger, morganStream} from "./logger";
 import beanFactory from "./bean.factory";
 import routes from "./routes";
 import { initRequest } from "./middlewares/request.middleware";
@@ -37,7 +37,7 @@ beanFactory.init().then(async () => {
         logger.info(`Running Node.js version ${process.version}`);
         logger.info(`App environment: ${process.env.NODE_ENV}`);
     
-        logger.info(`App is running on port ${PORT}`);
+        logger.info(`App is running on port ${PORT}`, `{request: '55'}`);
     });        
 }).catch(error => {
     logger.error(`failed to initialize database: ${error}`);
