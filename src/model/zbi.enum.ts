@@ -62,6 +62,7 @@ export enum StatusType {
     failed = 'failed',
     active = 'active',
     deleted = 'deleted',
+    new = 'new'
 }
 
 export enum SnapshotScheduleType {

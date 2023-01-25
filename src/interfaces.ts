@@ -1,6 +1,5 @@
 import { Instance, KubernetesResource, KubernetesResources, Project, QueryParams, SnapshotScheduleRequest, Team, User } from "./model/model";
-import { ResourceType, SnapshotScheduleType } from "./model/zbi.enum";
-
+import { ResourceType, SnapshotScheduleType, NetworkType, StatusType } from "./model/zbi.enum";
 export interface Database {
     init(): Promise<void>;
     connect(): Promise<void>;
@@ -29,11 +28,12 @@ export interface IAMRepository {
 }
 
 export interface ProjectRepository {
-    createProject(project: Project): Promise<Project>;
-    findProjects(params: {}, limit: number, skip: number): Promise<Project[]>;
-    findProject(instanceId: string): Promise<Project>;
+
+    createProject(name: string, owner: any, team: any, network: NetworkType, status: StatusType, description: string): Promise<Project>;
+    findProjects(params: {}, size: number, page: number): Promise<Project[]>;
+    findProject(projectId: string): Promise<Project>;
     updateProject(project: Project): Promise<Project>;
-    deleteProject(instanceId: string): Promise<void>;
+    deleteProject(projectId: string): Promise<void>;
 
     createInstance(instance: Instance): Promise<Instance>;
     findInstances(params: {}): Promise<Instance[]>;

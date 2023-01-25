@@ -1,14 +1,17 @@
 import { MongoMemoryDB } from "../../../../src/services/mongodb/mongodb-mem.service";
 import IAMMongoRepository from "../../../../src/repositories/mongodb/iam.mongo.repository";
 import model from "../../../../src/repositories/mongodb/mongo.model";
-//import { UserSchema, TeamSchema } from "../../../../src/repositories/mongodb/schema.mongo";
 import { User } from "../../../../src/model/model";
 import { RoleType, UserStatusType } from "../../../../src/model/zbi.enum";
+import { getLogger } from "../../../../src/logger";
+import { Logger } from "winston";
 
 let instance: IAMMongoRepository;
 let db: MongoMemoryDB = new MongoMemoryDB();
+let logger: Logger;
 
 beforeAll(async () => {
+    logger = getLogger("test-iam-repo");
     await db.init();
     await db.connect();
 });
@@ -32,7 +35,7 @@ describe('IAMMongoRepository', () => {
         const user: User = {userName: "user1", email: "user1@zbitech.net", name: "User One", role: RoleType.owner};
 
         const newUser = await instance.createUser(user);
-        console.log("created: ", JSON.stringify(newUser));
+        logger.info("created: ", JSON.stringify(newUser));
     });
     
     test('should create a team', async () => {
@@ -40,7 +43,7 @@ describe('IAMMongoRepository', () => {
         const user = await model.userModel.create({userName: "test", email: "test@ups.com", name: "Tester", status: UserStatusType.active, role: RoleType.owner});
 
         const team = await instance.createTeam(user._id.toString(), "My Team");
-        console.log("team: ", JSON.stringify(team));
+        logger.info("team: ", JSON.stringify(team));
     });
 
     test('should find a team', async () => {
@@ -53,7 +56,7 @@ describe('IAMMongoRepository', () => {
         ]});
 
         const newTeam = await instance.findTeam(team._id.toString());
-        console.log("team: ", JSON.stringify(newTeam));
+        logger.info("team: ", JSON.stringify(newTeam));
     });
 
     test('should find teams', async () => {
@@ -68,7 +71,7 @@ describe('IAMMongoRepository', () => {
         const team2 = await model.teamModel.create({name: "My Team 2", owner: owner2._id, members:[{user: user2._id, role: RoleType.user}]});
 
         const teams = await instance.findTeams(10, 10);
-        console.log("teams: ", JSON.stringify(teams));
+        logger.info("teams: ", JSON.stringify(teams));
     });
 
     test('should find team memberships', async () => {
@@ -85,6 +88,6 @@ describe('IAMMongoRepository', () => {
 //        console.log("Teams: ", JSON.stringify(teams));
 
         const memberships = await instance.findTeamMemberships(user1._id.toString());
-        console.log("memberships: ", JSON.stringify(memberships));
+        logger.info("memberships: ", JSON.stringify(memberships));
     })
 });

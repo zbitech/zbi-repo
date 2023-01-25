@@ -1,6 +1,6 @@
-import { ProjectMongoRepository } from "../repositories/mongodb/project.mongo.repository";
-import { IAMRepository } from "../interfaces";
+import { IAMRepository, ProjectRepository } from "../interfaces";
 import IAMMongoRepository from "../repositories/mongodb/iam.mongo.repository";
+import ProjectMongoRepository from "../repositories/mongodb/project.mongo.repository";
 
 const DATABASE = process.env.DATABASE || "mongodb-mem";
 
@@ -18,7 +18,7 @@ class RepositoryFactory {
         throw new Error("No repository defined");
     }
 
-    createProjectRepository() {
+    createProjectRepository(): ProjectRepository {
         
         if(DATABASE === "mongodb-mem" || DATABASE === "mongodb") {
             return new ProjectMongoRepository();

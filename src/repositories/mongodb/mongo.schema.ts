@@ -66,7 +66,7 @@ class MongoSchema {
         });
 
         this.instanceSchema = new Schema({
-            name: {type: String},
+            name: {type: String, required: true},
             type: {type: String, index: {unique: false}, enum: [NodeType.zcash, NodeType.lwd, NodeType.zebra]},
             description: {type: String},
             status: {type: String},
@@ -81,11 +81,11 @@ class MongoSchema {
         this.instanceSchema.index({name: 1, type: 1}, {unique: true});
         
         this.projectSchema = new Schema({
-            name: {type: String},
+            name: {type: String, required: true},
             network: {type: String, required: true, enum: [NetworkType.testnet, NetworkType.regnet, NetworkType.mainnet]},
             status: {type: String},
-            owner: {type: Schema.Types.ObjectId, ref: "user"},
-            team: {type: Schema.Types.ObjectId, ref: "team"},
+            owner: {type: Schema.Types.ObjectId, ref: "user", required: true},
+            team: {type: Schema.Types.ObjectId, ref: "team", required: true},
             description: {type: String},
             created: {type: Date, immutable: true, default: Date.now},
             updated: {type: Date}
