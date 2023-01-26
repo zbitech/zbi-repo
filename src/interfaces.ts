@@ -35,7 +35,7 @@ export interface ProjectRepository {
     updateProject(project: Project): Promise<Project>;
     deleteProject(projectId: string): Promise<void>;
 
-    createInstance(instance: Instance): Promise<Instance>;
+    createInstance(projectId: string, instance: Instance): Promise<Instance>;
     findInstances(params: {}): Promise<Instance[]>;
     findInstance(instanceId: string): Promise<Instance>;
     updateInstance(instance: Instance): Promise<Instance>;

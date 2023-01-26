@@ -10,6 +10,14 @@ export function getRandom(elems: any[]): any {
     return elems[index];
 }
 
+export function generatePhrase(length: number) {
+    const words: string[] = [];
+    for (let index = 0; index < length; index++) {
+        words.push(generateString(Math.floor(Math.random() * 10)));
+    }
+    return words.join(" ");
+}
+ 
 export function generateString(length: number) {
     let result = ' ';
     const charactersLength = characters.length;

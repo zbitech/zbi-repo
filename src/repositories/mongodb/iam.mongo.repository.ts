@@ -2,6 +2,7 @@ import { IAMRepository } from "../../interfaces";
 import { Team, User, TeamMember } from "../../model/model";
 import { InviteStatusType, RoleType, UserStatusType } from "../../model/zbi.enum";
 import model from "./mongo.model";
+import * as helper from "./helper";
 
 export default class IAMMongoRepository implements IAMRepository {
 
@@ -17,7 +18,7 @@ export default class IAMMongoRepository implements IAMRepository {
         try {
             const uc = new this.userModel({...user});
             await uc.save();
-            return createUser(uc);
+            return helper.createUser(uc);
         } catch(err) {
             throw err;
         }
@@ -35,7 +36,7 @@ export default class IAMMongoRepository implements IAMRepository {
                 uc.updated = new Date();
                 await uc.save();
 
-                return createUser(uc);
+                return helper.createUser(uc);
             
             } else {
                 throw Error("user not found!");
@@ -49,7 +50,7 @@ export default class IAMMongoRepository implements IAMRepository {
         try {
             const uc = await this.userModel.find(params).limit(limit).skip(skip);
             if(uc) {
-                return createUsers(uc);
+                return helper.createUsers(uc);
             }
             return [];
         } catch (err) {
@@ -61,7 +62,7 @@ export default class IAMMongoRepository implements IAMRepository {
         try {
             const uc = await this.userModel.findOne(params);
             if(uc) {
-                return createUser(uc);
+                return helper.createUser(uc);
             }
             throw Error("user not found");
         } catch(err) {
@@ -110,7 +111,7 @@ export default class IAMMongoRepository implements IAMRepository {
             await tc.save();
 
             await tc.populate({path: "owner", select: {userName: 1, email: 1, name: 1}});
-            return createTeam(tc);
+            return helper.createTeam(tc);
         } catch(err) {
             throw err;
         }
@@ -123,7 +124,7 @@ export default class IAMMongoRepository implements IAMRepository {
             }); //.limit(limit).skip(skip);
             if(tc) {
                 console.log(JSON.stringify(tc));
-                return createTeams(tc);
+                return helper.createTeams(tc);
             }
             return [];
         } catch (err) {
@@ -139,7 +140,7 @@ export default class IAMMongoRepository implements IAMRepository {
                 path: "members.user", select: {userName: 1, email: 1, name: 1}
             });
             if(tc) {
-                return createTeam(tc);
+                return helper.createTeam(tc);
             }
 
             throw new Error("team not found");
@@ -157,7 +158,7 @@ export default class IAMMongoRepository implements IAMRepository {
                 }
             }).populate({path: "members.user", select: {userName: 1, email: 1, name: 1}});
 
-            if(tc) return createTeams(tc);
+            if(tc) return helper.createTeams(tc);
 
             throw new Error("team memberships not found");
         } catch(err) {
@@ -170,7 +171,7 @@ export default class IAMMongoRepository implements IAMRepository {
             const tc = await this.teamModel.findOneAndUpdate({"_id": teamId}, {"$pull": {
                 "members": {"user": userId}
             }}).populate({path: "members.user", select: {username: 1, email: 1, name: 1}});
-            if(tc) return createTeam(tc);
+            if(tc) return helper.createTeam(tc);
             throw new Error("team not found");
         } catch(err) {
             throw err;
@@ -186,7 +187,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
                 await (await tc.populate({path: "owner", select: {username: 1, email: 1, name: 1}}))
                         .populate({path: "members.user", select: {username: 1, email: 1, name: 1}})
-                return createTeam(tc);
+                return helper.createTeam(tc);
             }
     
             throw new Error("team not found");
@@ -204,7 +205,7 @@ export default class IAMMongoRepository implements IAMRepository {
                 }
             }).populate({path: "members.user", select: {userName: 1, email: 1, name: 1}});
 
-            if(tc) return createTeams(tc);
+            if(tc) return helper.createTeams(tc);
 
             throw new Error("pending memberships not found");
         } catch(err) {
@@ -212,40 +213,4 @@ export default class IAMMongoRepository implements IAMRepository {
         }
     }
 
-}
-
-function createUser(uc: any): User {
-    if(uc) {
-        return {
-            userId: uc._id,
-            userName: uc.userName, name: uc.name, email: uc.email, 
-            status: uc.status, role: uc.role
-        }
-    }
-
-    return uc;
-}
-
-function createUsers(uc: Array<any>): Array<User> {
-    return uc.map( user => createUser(user));
-}
-
-function createTeam(tc: any): Team {
-    return {
-        id: tc._id,
-        name: tc.name,
-        owner: createUser(tc.owner),
-        members: tc.members ? tc.members.map((mbr:any) => createTeamMember(mbr)) : undefined
-    }
-}
-
-function createTeamMember(tmc: any): TeamMember {
-    return {
-        user: tmc.user, role: tmc.role, status: tmc.status
-    }
-}
-
-function createTeams(tc: Array<any>): Array<Team> {
-//    console.log("processing array: ", tc.length);
-    return tc.map( team => createTeam(team) );
 }

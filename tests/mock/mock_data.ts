@@ -1,14 +1,17 @@
-import { User, Project, Team, TeamMember } from "../../src/model/model";
-import { NetworkType, RoleType, StatusType, InviteStatusType, UserStatusType } from "../../src/model/zbi.enum";
-import { getRandom, generateString, generateId, generateName, generateEmail } from "./util";
+import { User, Project, Team, TeamMember, Instance, ResourceRequest } from "../../src/model/model";
+import { NetworkType, RoleType, StatusType, InviteStatusType, UserStatusType, NodeType, VolumeType, VolumeSourceType } from "../../src/model/zbi.enum";
+import { getRandom, generateString, generateId, generateName, generateEmail, generatePhrase } from "./util";
 import model from "../../src/repositories/mongodb/mongo.model";
 import mongoose from 'mongoose';
 import { getLogger } from "../../src/logger";
+import { stringify } from "querystring";
 
 
 const logger = getLogger('mock-data');
 
 const USER_ROLES: RoleType[] = [RoleType.owner, RoleType.user];
+const INST_TYPES: NodeType[]= [NodeType.zcash, NodeType.lwd];
+const INST_STATUS: StatusType[] = [StatusType.runnning, StatusType.stopped, StatusType.new, StatusType.pending, StatusType.failed];
 
 export function createUser(user: any): User {
     return {
@@ -36,33 +39,6 @@ export function createTeamMember(member: any): TeamMember {
         role: member.role ? member.role : RoleType.user,
         status: member.status ? member.status : InviteStatusType.pending
     }
-}
-
-export function createProject(project: any): Project {
-
-    return {
-        id: project.id ? project.id : generateId(),
-        name: project.name ? project.name : generateString(7),
-        owner: project.owner ? project.owner : createUser({role: RoleType.owner}),
-        team: project.team ? project.team : createTeam({}),
-        network: project.network ? project.network : NetworkType.testnet,
-        status: project.status ? project.status : StatusType.new,
-        description: project.description ? project.description : generateString(20)
-    }
-}
-
-export function createProjectSchema(project: any): any {
-    return model.projectModel({
-        _id: project.id ? project.id : generateId(),
-        name: project.name ? project.name : generateString(7),
-        network: project.network ? project.network : NetworkType.testnet ,
-        status: project.status ? project.status : StatusType.new,
-        owner: new mongoose.Types.ObjectId(project.owner.userId),
-        team: new mongoose.Types.ObjectId(project.team.id),
-        description: project.description ? project.description : generateString(20),
-        created: project.created,
-        updated: project.updated
-    });
 }
 
 export function createUserSchema(user: any): any {
@@ -96,5 +72,46 @@ export function createTeamMemberSchema(member: any): any {
         status: member.status ? member.status : InviteStatusType.pending,
         created: member.created,
         updated: member.updated
+    }
+}
+
+export function createProject(project: any): Project {
+
+    return {
+        id: project.id ? project.id : generateId(),
+        name: project.name ? project.name : generateString(7),
+        owner: project.owner ? project.owner : createUser({role: RoleType.owner}),
+        team: project.team ? project.team : createTeam({}),
+        network: project.network ? project.network : NetworkType.testnet,
+        status: project.status ? project.status : StatusType.new,
+        description: project.description ? project.description : generateString(20)
+    }
+}
+
+export function createInstance(instance: any): Instance {
+
+    const itype = instance.type ? instance.type : getRandom(INST_TYPES);
+
+    return {
+        id: instance.id ? instance.id : generateId(),
+        name: instance.name ? instance.name : generateString(7),
+        type: itype,
+        description: instance.description ? instance.description : generatePhrase(5),
+        status: instance.status ? instance.status : getRandom(INST_STATUS),
+        request: createResourceRequest(instance.request)
+    }
+}
+
+export function createResourceRequest(request: any): ResourceRequest {
+    return {
+        volumeType: request?.volumeType ? request.volumeType : VolumeType.persistentvolumeclaim,
+        volumeSize: request?.volumeSize ? request.volumeSize : "1Gi",
+        volumeSourceType: request?.volumeSourceType ? request.volumeSourceType : VolumeSourceType.new,
+        volumeSource: request?.volumeSource,
+        volumeSourceProject: request?.volumeSourceProject,
+        cpu: request?.cpu ? request.cpu : "0.5",
+        memory: request?.memory ? request.memory : "0.5",
+        peers: request?.peers ? request.peers : [],
+        properties: request?.properties ? request.properties : new Map<string, string>()
     }
 }

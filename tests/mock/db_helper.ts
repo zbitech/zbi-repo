@@ -50,8 +50,8 @@ export function createProjectSchema(project: any): any {
         name: project.name ? project.name : generateString(7),
         network: project.network ? project.network : NetworkType.testnet ,
         status: project.status ? project.status : StatusType.new,
-        owner: project.owner.userId,
-        team: project.team.id,
+        owner: project.owner,
+        team: project.team,
         description: project.description ? project.description : generateString(20),
         created: project.created,
         updated: project.updated
@@ -59,7 +59,8 @@ export function createProjectSchema(project: any): any {
 }
 
 export async function createUserObject(user: any) {
-    return await model.userModel.create(createUserSchema(user));
+    const schema = createUserSchema(user);
+    return await model.userModel.create(schema);
 }
 
 export async function createTeamObject(team: any) {
@@ -68,4 +69,18 @@ export async function createTeamObject(team: any) {
 
 export async function createProjectObject(project: any) {
     return await model.projectModel.create(createProjectSchema(project));
+}
+
+export async function createProjectObjects(length: number) {
+    logger.info(`creating ${length} projects`);
+    var projects:any[] = [];
+    for (let index = 0; index < length; index++) {
+        const owner: any = await createUserObject({role: RoleType.owner});
+        const team: any = await createTeamObject({owner: owner._id});
+
+        const project: any = await createProjectObject({owner: owner._id, team: team._id});
+        projects.push(project);
+   } 
+
+   return projects;
 }

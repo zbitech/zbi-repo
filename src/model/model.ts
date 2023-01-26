@@ -38,11 +38,11 @@ export interface ResourceRequest {
     volumeType: VolumeType;
     volumeSize: string;
     volumeSourceType: VolumeSourceType;
-    volumeSource: string;
-    volumeSourceProject: string;
-    cpu: string;
-    memory: string;
-    peers: Array<string>;
+    volumeSource?: string;
+    volumeSourceProject?: string;
+    cpu?: string;
+    memory?: string;
+    peers?: Array<string>;
     properties: Map<string, string>;
 }
 
@@ -76,6 +76,7 @@ export interface Instance {
     type: NodeType;
     description: string;
     request: ResourceRequest;
+    status: StatusType;
 }
 
 export interface SnapshotScheduleRequest {
