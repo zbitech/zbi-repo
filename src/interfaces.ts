@@ -39,12 +39,12 @@ export interface ProjectRepository {
     findInstances(params: {}): Promise<Instance[]>;
     findInstance(instanceId: string): Promise<Instance>;
     updateInstance(instance: Instance): Promise<Instance>;
-    deleteInstance(instance: Instance): Promise<Instance>;
+    deleteInstance(instanceId: string): Promise<void>;
 
-    createInstanceResources(instanceId: string, resources: KubernetesResources): Promise<void>;
+    createInstanceResources(instanceId: string, resources: KubernetesResources): Promise<KubernetesResources>;
     getInstanceResources(instanceId: string): Promise<KubernetesResources>;
     getInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<KubernetesResource>;
-    updateInstanceResource(resource: KubernetesResource): Promise<KubernetesResource>;
+    updateInstanceResource(instanceId: string, resource: KubernetesResource): Promise<KubernetesResource>;
     deleteInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<void> 
 }
 

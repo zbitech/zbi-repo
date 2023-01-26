@@ -55,8 +55,8 @@ export interface KubernetesResource {
 }
 
 export interface KubernetesResources {
-    resources?: Array<KubernetesResource>;
-    snapshots?: Array<KubernetesResource>;
+    resources?: KubernetesResource[];
+    snapshots?: KubernetesResource[];
     schedule?: KubernetesResource;
 }
 

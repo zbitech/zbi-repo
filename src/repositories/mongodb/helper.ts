@@ -1,4 +1,4 @@
-import { User, Team, TeamMember, Project, Instance, ResourceRequest } from "src/model/model";
+import { User, Team, TeamMember, Project, Instance, ResourceRequest, KubernetesResource, KubernetesResources } from "src/model/model";
 
 
 export function createUser(uc: any): User {
@@ -47,6 +47,10 @@ export function createInstance(instance: any): Instance {
     }
 }
 
+export function createInstances(instances: any[]): Instance[] {
+    return instances.map( instance => createInstance(instance));
+}
+
 export function createResourceRequest(request: any): ResourceRequest {
     return {
         volumeType: request.volumeType,
@@ -58,6 +62,24 @@ export function createResourceRequest(request: any): ResourceRequest {
         memory: request.memory,
         peers: request.peers,
         properties: request.properties,
+    }
+}
+
+export function createKubernetesResource(resource: any): KubernetesResource {
+    return {
+        id: resource._id,
+        name: resource.name,
+        type: resource.type,
+        status: resource.status,
+        properties: resource.properties
+    }
+}
+
+export function createKubernetesResources(resources: any): KubernetesResources {
+    return {
+        resources: resources.resources.map((resource:any) => createKubernetesResource(resource)),
+        snapshots: resources.snapshots.map((resource:any) => createKubernetesResource(resource)),
+        schedule: createKubernetesResource(resources.schedule)    
     }
 }
 

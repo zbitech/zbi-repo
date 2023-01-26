@@ -1,5 +1,5 @@
 import { User, Project, Team, TeamMember } from "../../src/model/model";
-import { NetworkType, RoleType, StatusType, InviteStatusType, UserStatusType } from "../../src/model/zbi.enum";
+import { NetworkType, RoleType, StatusType, InviteStatusType, UserStatusType, VolumeType, VolumeSourceType } from "../../src/model/zbi.enum";
 import { getRandom, generateString, generateId, generateName, generateEmail } from "./util";
 import model from "../../src/repositories/mongodb/mongo.model";
 import mongoose from 'mongoose';
@@ -58,6 +58,32 @@ export function createProjectSchema(project: any): any {
     });
 }
 
+export function createResourceRequestSchema(request: any): any {
+    return {
+        volumeType: request?.volumeType ? request.volumeType : VolumeType.persistentvolumeclaim,
+        volumeSize: request?.volumeSize ? request.volumeSize : "1Gi",
+        volumeSourceType: request?.volumeSourceType ? request.volumeSourceType : VolumeSourceType.new,
+        volumeSource: request?.volumeSource,
+        volumeSourceProject: request?.volumeSourceProject,
+        cpu: request?.cpu ? request.cpu : "0.5",
+        memory: request?.memory ? request.memory : "0.5",
+        peers: request?.peers ? request.peers : [],
+        properties: request?.properties ? request.properties : new Map<string, string>()
+    }
+}
+
+export function createInstanceSchema(instance: any): any {
+    return model.instanceModel({
+        id: instance.id,
+        name: instance.name ? instance.name : generateString(7),
+        project: instance.project,
+        type: instance.NodeType,
+        description: instance.description,
+        status: instance.status,
+        request: createResourceRequestSchema(instance.request)
+    });
+}
+
 export async function createUserObject(user: any) {
     const schema = createUserSchema(user);
     return await model.userModel.create(schema);
@@ -67,7 +93,7 @@ export async function createTeamObject(team: any) {
     return await model.teamModel.create(createTeamSchema(team));
 }
 
-export async function createProjectObject(project: any) {
+export async function createProjectObject(project: any) {    
     return await model.projectModel.create(createProjectSchema(project));
 }
 

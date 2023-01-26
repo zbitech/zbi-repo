@@ -117,7 +117,7 @@ class MongoModel {
             status: {type: String},
             project: {type: Schema.Types.ObjectId, ref: "project"},
             request: {type: resourceRequest},
-            resources: {type: resourcesSchema},
+            resources: {type: resourcesSchema, default: {}},
         //    activities: {type: [activitySchema]},
         //    policy: {type: instancePolicySchema},
             created: {type: Date, immutable: true, default: Date.now},
