@@ -1,10 +1,11 @@
-import { ProjectRepository } from "src/interfaces";
-import { Project, Instance, KubernetesResource, KubernetesResources } from "src/model/model";
-import { ResourceType, NetworkType, StatusType } from "src/model/zbi.enum";
+import { ProjectRepository } from "../../interfaces";
+import { Project, Instance, KubernetesResource, KubernetesResources } from "../../model/model";
+import { ResourceType, NetworkType, StatusType } from "../../model/zbi.enum";
 import model from "./mongo.model";
 import mongoose from 'mongoose';
 import { getLogger } from "../../logger"
 import * as helper from "./helper";
+import { loggers } from "winston";
 
 export default class ProjectMongoRepository implements ProjectRepository {
 
@@ -68,7 +69,7 @@ export default class ProjectMongoRepository implements ProjectRepository {
                 return helper.createProject(proj);
             }   
             
-            throw new Error("item not found!");
+            throw new Error("item not found");
         } catch (err) {
             throw err;
         }
@@ -103,9 +104,16 @@ export default class ProjectMongoRepository implements ProjectRepository {
     }
 
     async findInstance(instanceId: string): Promise<Instance> {
+        let logger = getLogger('pmr.findInstance');
         try {
             const inst = await this.instanceModel.findById(instanceId);
-            return helper.createInstance(inst);
+            if(inst) {
+                logger.info(`found instance: ${JSON.stringify(inst)}`);
+                return helper.createInstance(inst);
+            }
+
+            logger.error(`item ${instanceId} not found`);
+            throw new Error("item not found");
         } catch (err) {
             throw err;
         }
@@ -128,9 +136,11 @@ export default class ProjectMongoRepository implements ProjectRepository {
     }
 
     async deleteInstance(instanceId: string): Promise<void> {
+        let logger = getLogger('pmr.deleteInstance');
         try {
             const inst = await this.instanceModel.findByIdAndDelete(instanceId);
-            if(inst._id !== instanceId) throw new Error("item not found");
+            logger.info(`deleted instance (${instanceId}) => ${JSON.stringify(inst)}`);
+            if(inst?._id.toString() !== instanceId) throw new Error("item not found");
         } catch (err) {
             throw err;
         }
@@ -160,39 +170,62 @@ export default class ProjectMongoRepository implements ProjectRepository {
     }
 
     async getInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<KubernetesResource> {
+        let logger = getLogger('pmr.getInstanceResource');
         try {
-            if( resourceType == ResourceType.snapshotschedule ) {
-                const tc = await this.instanceModel.find({"resources.schedule.type": resourceType, "resources.schedule.name": name}, {
-                    name: 1,
-                    resources: {
-                        $elemMatch: {"schedule.name": name}
-                    }
-                })
 
-                return helper.createKubernetesResource(tc.resources.schedule);
-            } else if (resourceType == ResourceType.volumesnapshot) {
-                const tc = await this.instanceModel.find({"resources.snapshots.type": resourceType, "resources.snapshots.name": name}, {
-                    name: 1,
-                    resources: {
-                        $elemMatch: {"snapshots.name": name}
-                    }
-                });
+            const ic = await this.instanceModel.find({"_id": instanceId}, {
+                name: 1,
+                resources: 1
+            });
+            logger.info(`found resources => ${JSON.stringify(ic)}`);
 
-                if(tc.resources.snapshots.length > 0)
-                    return helper.createKubernetesResource(tc.resources.snapshot[0]);
-                throw new Error("item not found");
-            } else {
-                const tc = await this.instanceModel.find({"resources.resources.type": resourceType, "resources.resources.name": name}, {
-                    name: 1,
-                    resources: {
-                        $elemMatch: {"schedule.name": name}
-                    }
-                });
-
-                if(tc.resources.resources.length > 0)
-                    return helper.createKubernetesResource(tc.resources.resources[0]);
-                throw new Error("item not found");
+            if( ic.length > 0 ) {
+                if( resourceType == ResourceType.snapshotschedule ) {
+                    if(ic[0].resources.schedule) return helper.createKubernetesResource(ic[0].resources.schedule);
+                } else if (resourceType == ResourceType.volumesnapshot) {
+                    const resources:any = ic[0].resources.snapshots.filter( (resource:any) => resource.name == name);
+                    if(resources.length>0) return helper.createKubernetesResource(resources[0]);
+                } else {
+                    const resources:any = (ic[0].resources.resources.filter( (resource:any) => resource.name === name) );
+                    if(resources.length>0) return helper.createKubernetesResource(resources[0]);
+                }
             }
+
+            throw new Error("item not found");
+
+            // if( resourceType == ResourceType.snapshotschedule ) {
+            //     const tc = await this.instanceModel.find({"resources.schedule.type": resourceType, "resources.schedule.name": name}, {
+            //         name: 1,
+            //         resources: {
+            //             $elemMatch: {"schedule.name": name}
+            //         }
+            //     })
+
+            //     return helper.createKubernetesResource(tc.resources.schedule);
+            // } else if (resourceType == ResourceType.volumesnapshot) {
+            //     const tc = await this.instanceModel.find({"resources.snapshots.type": resourceType, "resources.snapshots.name": name}, {
+            //         name: 1,
+            //         resources: {
+            //             $elemMatch: {"snapshots.name": name}
+            //         }
+            //     });
+
+            //     if(tc.resources.snapshots.length > 0)
+            //         return helper.createKubernetesResource(tc.resources.snapshot[0]);
+            //     throw new Error("item not found");
+            // } else {
+            //     const tc = await this.instanceModel.find({"_id": instanceId, "resources.resources.name": name}, {
+            //         name: 1,
+            //         resources: {
+            //             $elemMatch: {"resources.name": name}
+            //         }
+            //     });
+
+            //     logger.info(`found resource => ${JSON.stringify(tc)}`);
+            //     if(tc[0].resources.resources.length > 0)
+            //         return helper.createKubernetesResource(tc[0].resources.resources[0]);
+            //     throw new Error("item not found");
+            // }
 
         } catch (err) {
             throw err;

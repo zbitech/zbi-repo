@@ -1,5 +1,5 @@
 import { User, Project, Team, TeamMember } from "../../src/model/model";
-import { NetworkType, RoleType, StatusType, InviteStatusType, UserStatusType, VolumeType, VolumeSourceType } from "../../src/model/zbi.enum";
+import { NetworkType, RoleType, StatusType, InviteStatusType, UserStatusType, VolumeType, VolumeSourceType, NodeType, ResourceType } from "../../src/model/zbi.enum";
 import { getRandom, generateString, generateId, generateName, generateEmail } from "./util";
 import model from "../../src/repositories/mongodb/mongo.model";
 import mongoose from 'mongoose';
@@ -58,6 +58,36 @@ export function createProjectSchema(project: any): any {
     });
 }
 
+export function createKubernetesDeploymentResources(): any {
+    return [
+        {name: "deployment", type: ResourceType.deployment, status: StatusType.runnning, properties: {}},
+        {name: "configmap", type: ResourceType.configmap, status: StatusType.runnning, properties: {}},
+        {name: "secret", type: ResourceType.secret, status: StatusType.runnning, properties: {}},
+        {name: "pvc", type: ResourceType.persistentvolumeclaim, status: StatusType.runnning, properties: {}},
+        {name: "service", type: ResourceType.deployment, status: StatusType.runnning, properties: {}},
+    ];
+}
+
+export function createKubernetesSnapshotResources(length: number): any {
+    var resources: any[] = [];
+    for (let index = 0; index < length; index++) {
+        resources.push({name: `snapshot-${index+1}`, type: ResourceType.volumesnapshot, status: StatusType.runnning, properties: {}});
+    }
+    return resources;
+}
+
+export function createKubernetesScheduleResource(): any {
+    return {name: "schedule", type: ResourceType.snapshotschedule, status: StatusType.runnning, properties: {}}
+}
+
+export function createKubernetesResourcesSchema(snapshots: number): any {
+    return {
+        resources: createKubernetesDeploymentResources(),
+        snapshots: createKubernetesSnapshotResources(snapshots),
+        schedule: createKubernetesScheduleResource()
+    };
+}
+
 export function createResourceRequestSchema(request: any): any {
     return {
         volumeType: request?.volumeType ? request.volumeType : VolumeType.persistentvolumeclaim,
@@ -77,10 +107,23 @@ export function createInstanceSchema(instance: any): any {
         id: instance.id,
         name: instance.name ? instance.name : generateString(7),
         project: instance.project,
-        type: instance.NodeType,
+        type: instance.type,
         description: instance.description,
         status: instance.status,
         request: createResourceRequestSchema(instance.request)
+    });
+}
+
+export function createInstanceSchemaWithResources(instance: any, snapshots: number): any {
+    return model.instanceModel({
+        id: instance.id,
+        name: instance.name ? instance.name : generateString(7),
+        project: instance.project,
+        type: instance.type,
+        description: instance.description,
+        status: instance.status,
+        request: createResourceRequestSchema(instance.request),
+        resources: createKubernetesResourcesSchema(snapshots)
     });
 }
 
@@ -95,6 +138,37 @@ export async function createTeamObject(team: any) {
 
 export async function createProjectObject(project: any) {    
     return await model.projectModel.create(createProjectSchema(project));
+}
+
+export async function createInstanceObject(instance: any) {
+    return await model.instanceModel.create(createInstanceSchema(instance));
+}
+
+export async function createInstanceObjectWithResources(instance: any, snapshots: number) {
+    return await model.instanceModel.create(createInstanceSchemaWithResources(instance, snapshots));
+}
+
+export async function createCompleteProjectObject(network: NetworkType) {
+
+    const owner: any = await createUserObject({role: RoleType.owner});
+    const team: any = await createTeamObject({owner: owner._id});
+    const project: any = await createProjectObject({network, owner: owner._id, team: team._id});
+
+    return {owner, team, project};
+}
+
+export async function createCompleteInstanceObject(itype: NodeType, network: NetworkType) {
+    const {owner, team, project}: any = await createCompleteProjectObject(network);
+
+    const instance: any = await createInstanceObject({type: itype, project: project._id});
+    return {owner, team, project, instance};
+}
+
+export async function createCompleteInstanceObjectWithResources(itype: NodeType, network: NetworkType, snapshots: number) {
+    const {owner, team, project}: any = await createCompleteProjectObject(network);
+
+    const instance: any = await createInstanceObjectWithResources({type: itype, project: project._id}, snapshots);
+    return {owner, team, project, instance};
 }
 
 export async function createProjectObjects(length: number) {

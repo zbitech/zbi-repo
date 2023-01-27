@@ -1,12 +1,14 @@
 import { MongoMemoryDB } from "../../../../src/services/mongodb/mongodb-mem.service";
 import ProjectMongoRepository from "../../../../src/repositories/mongodb/project.mongo.repository";
-import model from "../../../../src/repositories/mongodb/mongo.model";
+import * as mongoHelper from "../../../../src/repositories/mongodb/helper";
+
 import { getLogger } from "../../../../src/logger";
 import { Logger } from "winston";
-import { createProject, createInstance } from "../../../mock/mock_data";
-import { createUserObject, createTeamObject, createProjectObject, createProjectObjects } from "../../../mock/db_helper";
-import { Project, User, Team, Instance } from "../../../../src/model/model";
-import { RoleType } from "../../../../src/model/zbi.enum";
+import { createProject, createInstance, createKubernetesResources } from "../../../mock/mock_data";
+import { createUserObject, createTeamObject, createProjectObject, createProjectObjects, createCompleteProjectObject, createCompleteInstanceObject, createInstanceObject, createCompleteInstanceObjectWithResources } from "../../../mock/db_helper";
+import { Project, Instance, KubernetesResources, KubernetesResource } from "../../../../src/model/model";
+import { NetworkType, NodeType, ResourceType, RoleType } from "../../../../src/model/zbi.enum";
+import { generateId } from "../../../mock/util";
 
 let instance: ProjectMongoRepository;
 let db: MongoMemoryDB = new MongoMemoryDB();
@@ -77,5 +79,88 @@ describe('ProjectMongoRepository', () => {
         const inst = await instance.createInstance(project._id, node);
 
         logger.info(`create instance: ${JSON.stringify(inst)}`);
+    });
+
+    test('should find instance', async() => {
+        expect(instance).toBeInstanceOf(ProjectMongoRepository);
+
+        const {owner, team, project, instance: node} = await createCompleteInstanceObject(NodeType.zcash, NetworkType.testnet);
+        const inst = await instance.findInstance(node._id);
+
+        logger.info(`found instance: ${JSON.stringify(inst)}`);
+    });
+
+    test('should not find instance', async() => {
+        expect(instance).toBeInstanceOf(ProjectMongoRepository);
+
+        await expect(instance.findInstance(generateId())).rejects.toThrow("item not found");
+    });
+ 
+    test('should update instance', async() => {
+        expect(instance).toBeInstanceOf(ProjectMongoRepository);
+
+        const {owner, team, project} = await createCompleteProjectObject(NetworkType.testnet);
+        const node:any = await createInstanceObject({project: project._id, type: NodeType.zcash, description: "test instance"});
+
+        const node1:Instance = mongoHelper.createInstance(node);
+        node1.description = "updated description";
+        const newNode = await instance.updateInstance(node1);
+        expect(newNode.description).toBe(node1.description);
+    });
+
+    test(`should delete instance`, async() => {
+        expect(instance).toBeInstanceOf(ProjectMongoRepository);
+
+        const {owner, team, project, instance: node} = await createCompleteInstanceObject(NodeType.zcash, NetworkType.testnet);
+        logger.info(`created instance: ${JSON.stringify(node)}`);
+        await expect(instance.deleteInstance(node._id.toString())).resolves.toBeUndefined();
+    });
+
+    test(`should fail to delete non-existent instance`, async() => {
+        expect(instance).toBeInstanceOf(ProjectMongoRepository);
+
+        const {owner, team, project, instance: node} = await createCompleteInstanceObject(NodeType.zcash, NetworkType.testnet);
+        logger.info(`created instance: ${JSON.stringify(node)}`);
+        await expect(instance.deleteInstance(generateId())).rejects.toThrow(Error);
+    });
+
+    test(`should create kubernetes resources`, async() => {
+        expect(instance).toBeInstanceOf(ProjectMongoRepository);
+
+        const {owner, team, project, instance: node} = await createCompleteInstanceObject(NodeType.zcash, NetworkType.testnet);
+        const resources: KubernetesResources = createKubernetesResources(3);        
+
+        const newResources: KubernetesResources = await instance.createInstanceResources(node._id.toString(), resources);
+        logger.info(`resources => ${JSON.stringify(newResources)}`);
+    });
+
+    test('should get kubernetes resources', async() => {
+        expect(instance).toBeInstanceOf(ProjectMongoRepository);
+        const {owner, team, project, instance: node} = await createCompleteInstanceObjectWithResources(NodeType.zcash, NetworkType.testnet, 3);
+
+        const resources: KubernetesResources = await instance.getInstanceResources(node._id.toString());
+        logger.info(`received => ${JSON.stringify(resources)}`);
+    });
+
+    test('should get deployment kubernetes resource', async() => {
+        expect(instance).toBeInstanceOf(ProjectMongoRepository);
+        const {owner, team, project, instance: node} = await createCompleteInstanceObjectWithResources(NodeType.zcash, NetworkType.testnet, 1);
+
+        const _deployment: any = node.resources.resources.filter( (resource:any) => resource.type === ResourceType.deployment)[0];
+        const deployment: KubernetesResource = await instance.getInstanceResource(node._id.toString(), ResourceType.deployment, _deployment.name);
+        expect(deployment.name).toBe(_deployment.name);
+
+        const _config: any = node.resources.resources.filter( (resource:any) => resource.type == ResourceType.configmap)[0];
+        const config: KubernetesResource = await instance.getInstanceResource(node._id.toString(), ResourceType.configmap, _config.name);
+        expect(config.name).toBe(_config.name);
+
+        const _snapshot: any = node.resources.snapshots.filter( (resource:any) => resource.type == ResourceType.volumesnapshot)[0];
+        const snapshot: KubernetesResource = await instance.getInstanceResource(node._id.toString(), ResourceType.volumesnapshot, _snapshot.name);
+        expect(snapshot.name).toBe(_snapshot.name);
+
+        const _schedule: any = node.resources.schedule;
+        const schedule: KubernetesResource = await instance.getInstanceResource(node._id.toString(), ResourceType.snapshotschedule, _config.name);
+        expect(schedule.name).toBe(_schedule.name);
+
     });
 });

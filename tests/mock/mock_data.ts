@@ -1,5 +1,5 @@
 import { User, Project, Team, TeamMember, Instance, ResourceRequest } from "../../src/model/model";
-import { NetworkType, RoleType, StatusType, InviteStatusType, UserStatusType, NodeType, VolumeType, VolumeSourceType } from "../../src/model/zbi.enum";
+import { NetworkType, RoleType, StatusType, InviteStatusType, UserStatusType, NodeType, VolumeType, VolumeSourceType, ResourceType } from "../../src/model/zbi.enum";
 import { getRandom, generateString, generateId, generateName, generateEmail, generatePhrase } from "./util";
 import model from "../../src/repositories/mongodb/mongo.model";
 import mongoose from 'mongoose';
@@ -114,4 +114,34 @@ export function createResourceRequest(request: any): ResourceRequest {
         peers: request?.peers ? request.peers : [],
         properties: request?.properties ? request.properties : new Map<string, string>()
     }
+}
+
+export function createKubernetesDeploymentResources(): any {
+    return [
+        {name: "deployment", type: ResourceType.deployment, status: StatusType.runnning, properties: {}},
+        {name: "configmap", type: ResourceType.configmap, status: StatusType.runnning, properties: {}},
+        {name: "secret", type: ResourceType.secret, status: StatusType.runnning, properties: {}},
+        {name: "pvc", type: ResourceType.persistentvolumeclaim, status: StatusType.runnning, properties: {}},
+        {name: "service", type: ResourceType.deployment, status: StatusType.runnning, properties: {}},
+    ];
+}
+
+export function createKubernetesSnapshotResources(length: number): any {
+    var resources: any[] = [];
+    for (let index = 0; index < length; index++) {
+        resources.push({name: `snapshot-${index+1}`, type: ResourceType.volumesnapshot, status: StatusType.runnning, properties: {}});
+    }
+    return resources;
+}
+
+export function createKubernetesScheduleResource(): any {
+    return {name: "schedule", type: ResourceType.snapshotschedule, status: StatusType.runnning, properties: {}}
+}
+
+export function createKubernetesResources(snapshots: number): any {
+    return {
+        resources: createKubernetesDeploymentResources(),
+        snapshots: createKubernetesSnapshotResources(snapshots),
+        schedule: createKubernetesScheduleResource()
+    };
 }

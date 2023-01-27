@@ -58,8 +58,8 @@ class MongoModel {
         this.teamModel = mongoose.model("team", this.teamSchema);
         
         this.projectSchema = new Schema({
-            name: {type: String},
-            network: {type: String, required: true, enum: [NetworkType.testnet, NetworkType.regnet, NetworkType.mainnet]},
+            name: {type: String, required: true, immutable: true},
+            network: {type: String, required: true, immutable: true, enum: [NetworkType.testnet, NetworkType.regnet, NetworkType.mainnet]},
             status: {type: String},
             owner: {type: Schema.Types.ObjectId, ref: "user"},
             team: {type: Schema.Types.ObjectId, ref: "team"},
@@ -111,11 +111,11 @@ class MongoModel {
         });
 
         this.instanceSchema = new Schema({
-            name: {type: String},
-            type: {type: String, index: {unique: false}, enum: [NodeType.zcash, NodeType.lwd, NodeType.zebra]},
+            name: {type: String, required: true, immutable: true},
+            type: {type: String, required: true, immutable: true, enum: [NodeType.zcash, NodeType.lwd, NodeType.zebra]},
             description: {type: String},
             status: {type: String},
-            project: {type: Schema.Types.ObjectId, ref: "project"},
+            project: {type: Schema.Types.ObjectId, ref: "project", immutable: true},
             request: {type: resourceRequest},
             resources: {type: resourcesSchema, default: {}},
         //    activities: {type: [activitySchema]},
