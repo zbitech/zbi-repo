@@ -44,8 +44,8 @@ export interface ProjectRepository {
     createInstanceResources(instanceId: string, resources: KubernetesResources): Promise<KubernetesResources>;
     getInstanceResources(instanceId: string): Promise<KubernetesResources>;
     getInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<KubernetesResource>;
-    updateInstanceResource(instanceId: string, resource: KubernetesResource): Promise<KubernetesResource>;
-    deleteInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<void> 
+    updateInstanceResource(instanceId: string, resource: KubernetesResource, upddated: Date): Promise<KubernetesResource>;
+    deleteInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<void>;
 }
 
 export interface IAMService {

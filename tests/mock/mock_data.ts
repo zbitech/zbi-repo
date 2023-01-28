@@ -116,16 +116,6 @@ export function createResourceRequest(request: any): ResourceRequest {
     }
 }
 
-export function createKubernetesDeploymentResources(): any {
-    return [
-        {name: "deployment", type: ResourceType.deployment, status: StatusType.runnning, properties: {}},
-        {name: "configmap", type: ResourceType.configmap, status: StatusType.runnning, properties: {}},
-        {name: "secret", type: ResourceType.secret, status: StatusType.runnning, properties: {}},
-        {name: "pvc", type: ResourceType.persistentvolumeclaim, status: StatusType.runnning, properties: {}},
-        {name: "service", type: ResourceType.deployment, status: StatusType.runnning, properties: {}},
-    ];
-}
-
 export function createKubernetesSnapshotResources(length: number): any {
     var resources: any[] = [];
     for (let index = 0; index < length; index++) {
@@ -134,14 +124,15 @@ export function createKubernetesSnapshotResources(length: number): any {
     return resources;
 }
 
-export function createKubernetesScheduleResource(): any {
-    return {name: "schedule", type: ResourceType.snapshotschedule, status: StatusType.runnning, properties: {}}
-}
-
 export function createKubernetesResources(snapshots: number): any {
     return {
-        resources: createKubernetesDeploymentResources(),
-        snapshots: createKubernetesSnapshotResources(snapshots),
-        schedule: createKubernetesScheduleResource()
+        configmap: {name: "configmap", type: ResourceType.configmap, status: StatusType.new, properties: {}},
+        secret: {name: "secret", type: ResourceType.secret, status: StatusType.new, properties: {}},
+        persistentvolumeclaim: {name: "persistentvolumeclaim", type: ResourceType.persistentvolumeclaim, status: StatusType.new, properties: {}},
+        deployment: {name: "deployment", type: ResourceType.deployment, status: StatusType.new, properties: {}},
+        service: {name: "service", type: ResourceType.service, status: StatusType.new, properties: {}},
+        httpproxy: {name: "httpproxy", type: ResourceType.httpproxy, status: StatusType.new, properties: {}},
+        volumesnapshot: createKubernetesSnapshotResources(snapshots),
+        snapshotschedule: {name: "schedule", type: ResourceType.snapshotschedule, status: StatusType.new, properties: {}}
     };
 }

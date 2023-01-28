@@ -77,9 +77,14 @@ export function createKubernetesResource(resource: any): KubernetesResource {
 
 export function createKubernetesResources(resources: any): KubernetesResources {
     return {
-        resources: resources.resources.map((resource:any) => createKubernetesResource(resource)),
-        snapshots: resources.snapshots.map((resource:any) => createKubernetesResource(resource)),
-        schedule: createKubernetesResource(resources.schedule)    
+        configmap: createKubernetesResource(resources.configmap),
+        secret: createKubernetesResource(resources.secret),
+        persistentvolumeclaim: createKubernetesResource(resources.persistentvolumeclaim),
+        deployment: createKubernetesResource(resources.deployment),
+        service: createKubernetesResource(resources.service),
+        httpproxy: createKubernetesResource(resources.httpproxy),
+        volumesnapshot: resources.volumesnapshot.map((resource:any) => createKubernetesResource(resource)),
+        snapshotschedule: createKubernetesResource(resources.snapshotschedule)
     }
 }
 

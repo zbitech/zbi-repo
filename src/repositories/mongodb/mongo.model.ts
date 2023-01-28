@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { NetworkType, NodeType, RoleType, UserStatusType, InviteStatusType } from "../../model/zbi.enum";
+import { NetworkType, NodeType, RoleType, UserStatusType, InviteStatusType, ResourceType } from "../../model/zbi.enum";
 
 class MongoModel {
 
@@ -92,22 +92,28 @@ class MongoModel {
 
         const resourceSchema = new Schema({
             name: {type: String},
-            type: {type: String},
+            type: {type: String, enum:[ResourceType.configmap, ResourceType.secret, ResourceType.persistentvolumeclaim, ResourceType.deployment, 
+                                        ResourceType.httpproxy, ResourceType.service, ResourceType.snapshotschedule, ResourceType.volumesnapshot]},
             status: {type: String},
             properties: {type: Map, of: Object},
             created: {type: Date, immutable: true, default: Date.now},
             updated: {type: Date}
         });
         resourceSchema.index({name: 1, type: 1}, {unique: true});
-        resourceSchema.pre('save', function(next){
-            this.set({updated: new Date()});
-            next();
-        });
+        // resourceSchema.pre('save', function(next){
+        //     this.set({updated: new Date()});
+        //     next();
+        // });
 
         const resourcesSchema = new Schema({
-            resources: {type: [resourceSchema]},
-            snapshots: {type: [resourceSchema]},
-            schedule: {type: resourceSchema}
+            configmap: {type: resourceSchema, default: {}},
+            secret: {type: resourceSchema, default: {}},
+            persistentvolumeclaim: {type: resourceSchema, default: {}},
+            deployment: {type: resourceSchema, default: {}},
+            service: {type: resourceSchema, default: {}},
+            httpproxy: {type: resourceSchema, default: {}},
+            volumesnapshot: {type: [resourceSchema], default: []},
+            snapshotschedule: {type: resourceSchema, default: {}}
         });
 
         this.instanceSchema = new Schema({

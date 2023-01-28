@@ -181,13 +181,22 @@ export default class ProjectMongoRepository implements ProjectRepository {
 
             if( ic.length > 0 ) {
                 if( resourceType == ResourceType.snapshotschedule ) {
-                    if(ic[0].resources.schedule) return helper.createKubernetesResource(ic[0].resources.schedule);
+                    if(ic[0].resources.snapshotschedule) return helper.createKubernetesResource(ic[0].resources.snapshotschedule);
                 } else if (resourceType == ResourceType.volumesnapshot) {
-                    const resources:any = ic[0].resources.snapshots.filter( (resource:any) => resource.name == name);
+                    const resources:any = ic[0].resources.volumesnapshot.filter( (resource:any) => resource.name == name);
                     if(resources.length>0) return helper.createKubernetesResource(resources[0]);
-                } else {
-                    const resources:any = (ic[0].resources.resources.filter( (resource:any) => resource.name === name) );
-                    if(resources.length>0) return helper.createKubernetesResource(resources[0]);
+                } else if (resourceType == ResourceType.configmap) {
+                    if(ic[0].resources.configmap) return helper.createKubernetesResource(ic[0].resources.configmap);
+                } else if (resourceType == ResourceType.secret) {
+                    if(ic[0].resources.secret) return helper.createKubernetesResource(ic[0].resources.secret);
+                } else if (resourceType == ResourceType.persistentvolumeclaim) {
+                    if(ic[0].resources.persistentvolumeclaim) return helper.createKubernetesResource(ic[0].resources.persistentvolumeclaim);
+                } else if (resourceType == ResourceType.deployment) {
+                    if(ic[0].resources.deployment) return helper.createKubernetesResource(ic[0].resources.deployment);
+                } else if (resourceType == ResourceType.service) {
+                    if(ic[0].resources.service) return helper.createKubernetesResource(ic[0].resources.service);
+                } else if (resourceType == ResourceType.httpproxy) {
+                    if(ic[0].resources.httpproxy) return helper.createKubernetesResource(ic[0].resources.httpproxy);
                 }
             }
 
@@ -232,53 +241,101 @@ export default class ProjectMongoRepository implements ProjectRepository {
         }
     }
 
-    async updateInstanceResource(instanceId: string, resource: KubernetesResource): Promise<KubernetesResource> {
+    async updateInstanceResource(instanceId: string, resource: KubernetesResource, updated: Date): Promise<KubernetesResource> {
         try {
             const instance = await this.instanceModel.findById(instanceId);
 
-            if( resource.type == ResourceType.snapshotschedule ) {
+            let newResource: any;
 
-                instance.resources.schedule.status = resource.status;
-                instance.resources.schedule.properties = resource.properties; 
-
-            } else if (resource.type == ResourceType.volumesnapshot) {
-
+            if (resource.type == ResourceType.volumesnapshot) {
                 let found:boolean = false;
-                instance.resources.snapshots = instance.resources.snapshots.map((snapshot:any) => {
-                    if(snapshot.name == resource.name) {
-                        snapshot.schedule.status = resource.status;
-                        snapshot.schedule.properties = resource.properties;
+                instance.resources.volumesnapshot = instance.resources.volumesnapshot.map((snapshot:any) => {
+                    if(snapshot.name == name) {
+                        snapshot.status = resource.status;
+                        snapshot.properties = resource.properties;
+                        snapshot.updated = updated;
                         found = true;
                     }
                 });
 
                 if(!found) {
-                    instance.resources.snapshots.push({
-                        name: resource.name, type: resource.type, status: resource.status, properties: resource.properties
-                    });
+                    newResource = {...resource, created: updated, updated};
+                    instance.resources.snapshots.push(newResource);
                 }
 
-                await instance.save();
+                //TODO - check the length and generate event to remove snapshot if needed. This should be in a service-layer
             } else {
-                let found:boolean = false;
-                instance.resources.resources = instance.resources.resources.map((snapshot:any) => {
-                    if(snapshot.name == resource.name) {
-                        snapshot.schedule.status = resource.status;
-                        snapshot.schedule.properties = resource.properties;
-                        found = true;
-                    }
-                });
 
-                if(!found) {
-                    instance.resources.snapshots.push({
-                        name: resource.name, type: resource.type, status: resource.status, properties: resource.properties
-                    });
+                if( resource.type == ResourceType.snapshotschedule ) {
+                    newResource = instance.resources.snapshotschedule;
+                } else if (resource.type == ResourceType.configmap) {
+                    newResource = instance.resources.configmap;
+                } else if (resource.type == ResourceType.secret) {
+                    newResource = instance.resources.secret;
+                } else if (resource.type == ResourceType.persistentvolumeclaim) {
+                    newResource = instance.resources.persistentvolumeclaim;
+                } else if (resource.type == ResourceType.deployment) {
+                    newResource = instance.resources.deployment;
+                } else if (resource.type == ResourceType.service) {
+                    newResource = instance.resources.service;
+                } else if (resource.type == ResourceType.httpproxy) {
+                    newResource = instance.resources.httpproxy;
+                } else {
+                    throw new Error("item not found");
                 }
 
-                await instance.save();
+                newResource.status = resource.status;
+                newResource.properties = resource.properties;
+                newResource.updated = updated;
             }
 
-            return resource;
+            await instance.save();
+            return helper.createKubernetesResource(newResource);
+
+            // if( resourceType == ResourceType.snapshotschedule ) {
+
+            //     instance.resources.schedule.status = status;
+            //     instance.resources.schedule.properties = properties; 
+            //     instance.resources.schedule.updated = updated;
+
+            // } else if (resourceType == ResourceType.volumesnapshot) {
+
+            //     let found:boolean = false;
+            //     instance.resources.snapshots = instance.resources.snapshots.map((snapshot:any) => {
+            //         if(snapshot.name == name) {
+            //             snapshot.status = status;
+            //             snapshot.properties = properties;
+            //             snapshot.updated = updated;
+            //             found = true;
+            //         }
+            //     });
+
+            //     if(!found) {
+            //         instance.resources.snapshots.push({
+            //             name, type: resourceType, status, properties, updated
+            //         });
+            //     }
+
+            //     await instance.save();
+            // } else {
+            //     let found:boolean = false;
+            //     instance.resources.resources = instance.resources.resources.map((resource:any) => {
+            //         if(resource.name == name) {
+            //             resource.status = status;
+            //             resource.properties = properties;
+            //             resource.updated = updated;
+            //             found = true;
+            //         }
+            //     });
+
+            //     if(!found) {
+            //         instance.resources.resources.push({name, type: resourceType, status, properties, updated});
+            //     }
+
+            //     await instance.save();
+            // }
+
+
         } catch (err) {
             throw err;
         }
@@ -299,6 +356,5 @@ export default class ProjectMongoRepository implements ProjectRepository {
         } catch (err) {
             throw err;
         }
-    }
-    
+    }    
 }

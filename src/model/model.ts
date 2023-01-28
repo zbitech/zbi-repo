@@ -55,9 +55,16 @@ export interface KubernetesResource {
 }
 
 export interface KubernetesResources {
+    configmap?: KubernetesResource,
+    secret?: KubernetesResource,
+    persistentvolumeclaim?: KubernetesResource,
+    deployment?: KubernetesResource,
+    service?: KubernetesResource,
+    httpproxy?: KubernetesResource,
+
     resources?: KubernetesResource[];
-    snapshots?: KubernetesResource[];
-    schedule?: KubernetesResource;
+    volumesnapshot?: KubernetesResource[];
+    snapshotschedule?: KubernetesResource;
 }
 
 export interface Project {
