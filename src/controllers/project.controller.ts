@@ -1,5 +1,8 @@
 import {Request, Response} from 'express';
-import { IAMService, ProjectService } from "src/interfaces";
+import beanFactory from '../bean.factory';
+import { ProjectRequest } from '../model/model';
+import { IAMService, ProjectService } from "../interfaces";
+import { getLogger } from '../logger';
 
 export default class ProjectController {
 
@@ -7,6 +10,22 @@ export default class ProjectController {
     }
 
     async createProject(request: Request, response: Response): Promise<void> {
+        let projectService = beanFactory.getService("project");
+        let logger = getLogger('pc.createProject');
+
+        try {
+
+            logger.info(`headers: ${JSON.stringify(request.headers.authorization)}`)
+            logger.info(`create request: ${JSON.stringify(request.body)}`);
+            const projectRequest: ProjectRequest = request.body;
+
+  //          projectService.createProject();            
+
+            response.end();
+        } catch (err:any) {
+            logger.error(`failed to create project: ${err}`)
+            response.status(500).json({message: err.message});            
+        }
 
     }
 

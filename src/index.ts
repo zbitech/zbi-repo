@@ -10,6 +10,7 @@ import {mainLogger as logger, morganStream} from "./logger";
 import beanFactory from "./bean.factory";
 import routes from "./routes";
 import { initRequest } from "./middlewares/request.middleware";
+import { auth0jwtVerifier } from "./middlewares/auth.middleware";
 
 if(!process.env.PORT) {
     process.exit(1);
@@ -25,6 +26,8 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+
+app.use(auth0jwtVerifier);
 app.use(initRequest);
 
 // app.get('/', (req, res) => {

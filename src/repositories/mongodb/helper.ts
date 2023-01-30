@@ -41,6 +41,7 @@ export function createInstance(instance: any): Instance {
         id: instance._id,
         name: instance.name,
         type: instance.type,
+        project: instance.project?.name,
         description: instance.description,
         status: instance.status,
         request: createResourceRequest(instance.request)

@@ -1,4 +1,4 @@
-import { Instance, KubernetesResource, KubernetesResources, Project, QueryParams, SnapshotScheduleRequest, Team, User } from "./model/model";
+import { Instance, KubernetesResource, KubernetesResources, Project, QueryFilter, SnapshotScheduleRequest, Team, User } from "./model/model";
 import { ResourceType, SnapshotScheduleType, NetworkType, StatusType } from "./model/zbi.enum";
 export interface Database {
     init(): Promise<void>;
@@ -28,8 +28,7 @@ export interface IAMRepository {
 }
 
 export interface ProjectRepository {
-
-    createProject(name: string, owner: any, team: any, network: NetworkType, status: StatusType, description: string): Promise<Project>;
+    createProject(project: Project): Promise<Project>;
     findProjects(params: {}, size: number, page: number): Promise<Project[]>;
     findProject(projectId: string): Promise<Project>;
     updateProject(project: Project): Promise<Project>;
@@ -66,17 +65,17 @@ export interface IAMService {
 
 export interface ProjectService {
     createProject(project: Project): Promise<Project>;
-    findProjects(params: QueryParams): Promise<Project[]>;
+    findProjects(params: QueryFilter): Promise<Project[]>;
     findProject(projectId: string): Promise<Project>;
-    updateProject(projectId: string, project: Project): Promise<Project>;
+    updateProject(project: Project): Promise<Project>;
     repairProject(projectId: string): Promise<Project>;
     deleteProject(projectId: string): Promise<Project>;
-    purgeProject(projectId: string): Promise<Project>;
-    updateProjectResource(): Promise<KubernetesResource>
+    purgeProject(projectId: string): Promise<void>;
+    updateProjectResource(projectId: string, resource: KubernetesResource): Promise<void>
 
     createInstance(project: Project, instance: Instance): Promise<Instance>;
     findAllInstances(): Promise<Instance[]>;
-    findInstances(params: QueryParams): Promise<Instance[]>;
+    findInstances(params: QueryFilter): Promise<Instance[]>;
     findInstance(instanceId: string): Promise<Instance>;
     updateInstance(instanceId: string, instance: Instance): Promise<Instance>;
     repairInstance(instanceId: string): Promise<Instance>;
@@ -88,7 +87,28 @@ export interface ProjectService {
     purgeInstance(instanceId: string): Promise<void>;
 
     getInstanceResources(instanceId: string): Promise<KubernetesResources>;
-    getInstanceResource(instanceId: string): Promise<KubernetesResource>;
-    updateInstanceResource(instanceId: string, resource: KubernetesResource): Promise<KubernetesResource>;
-    deleteInstanceResource(instanceId: string, resourceId: string): Promise<void>;
+    getInstanceResource(instanceId: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource>;
+    updateInstanceResource(instanceId: string, resource: KubernetesResource, updated: Date): Promise<KubernetesResource>;
+    deleteInstanceResource(instanceId: string, resourceType: ResourceType, resourceName: string): Promise<void>;
+}
+
+export interface ControllerService {
+    getStatus(): Promise<void>;
+
+    getProject(projectName: string): Promise<Project>;
+    createProject(project: Project): Promise<Project>;
+    repairProject(Project: Project): Promise<Project>;
+    deleteProject(Project: Project): Promise<void>;
+
+    getInstance(projectName: string, instanceName: string): Promise<Instance>;
+    createInstance(project: Project, instance: Instance): Promise<void>;
+    repairInstance(project: Project, instance: Instance): Promise<Instance>;
+    stopInstance(projectName: string, instanceName: string): Promise<Instance>;
+    startInstance(projectName: string, instanceName: string): Promise<Instance>;
+    createInstanceBackup(projectName: string, instanceName: string): Promise<Instance>;
+    createInstanceBackupSchedule(projectName: string, instanceName: string, schedule: SnapshotScheduleRequest): Promise<Instance>;
+ 
+    getInstanceResources(projectName: string, instanceName: string): Promise<KubernetesResources>;
+    getInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource>;
+    deleteInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<void>;
 }

@@ -9,7 +9,6 @@ import { createUserObject, createTeamObject, createProjectObject, createProjectO
 import { Project, Instance, KubernetesResources, KubernetesResource } from "../../../../src/model/model";
 import { NetworkType, NodeType, ResourceType, RoleType, StatusType } from "../../../../src/model/zbi.enum";
 import { generateId } from "../../../mock/util";
-import { dnsPrefetchControl } from "helmet";
 
 let instance: ProjectMongoRepository;
 let db: MongoMemoryDB = new MongoMemoryDB();
@@ -44,7 +43,10 @@ describe('ProjectMongoRepository', () => {
         logger.info("created team: " + JSON.stringify(team));
 
         const project: Project = createProject({})
-        const newProject = await instance.createProject(project.name, owner._id, team._id, project.network, project.status, project.description);
+        project.owner = mongoHelper.createUser(owner);
+        project.team = mongoHelper.createTeam(team);
+
+        const newProject = await instance.createProject(project);
         logger.info("created schema: " + JSON.stringify(newProject));
     });
 

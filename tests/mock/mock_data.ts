@@ -96,6 +96,7 @@ export function createInstance(instance: any): Instance {
         id: instance.id ? instance.id : generateId(),
         name: instance.name ? instance.name : generateString(7),
         type: itype,
+        project: instance.project,
         description: instance.description ? instance.description : generatePhrase(5),
         status: instance.status ? instance.status : getRandom(INST_STATUS),
         request: createResourceRequest(instance.request)

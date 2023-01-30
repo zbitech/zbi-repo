@@ -5,7 +5,6 @@ import model from "./mongo.model";
 import mongoose from 'mongoose';
 import { getLogger } from "../../logger"
 import * as helper from "./helper";
-import { loggers } from "winston";
 
 export default class ProjectMongoRepository implements ProjectRepository {
 
@@ -17,10 +16,10 @@ export default class ProjectMongoRepository implements ProjectRepository {
         this.instanceModel = model.instanceModel;
     }
 
-    async createProject(name: string, owner: any, team: any, network: NetworkType, status: StatusType, description: string): Promise<Project> {
-        let logger = getLogger('pmr');
+    async createProject(project: Project): Promise<Project> {
+        let logger = getLogger('pmr.createProject');
         try {
-            const obj:any = {name, owner, team, network, status, description};
+            const obj:any = {...project, owner: project.owner.userId, team: project.team.id};
             logger.info("creating project " + JSON.stringify(obj) );
             const proj = new this.projectModel(obj);
             await proj.save();
@@ -88,6 +87,7 @@ export default class ProjectMongoRepository implements ProjectRepository {
         try {
             const inst = new this.instanceModel({...instance, project: projectId});
             await inst.save();
+            await inst.populate({path: "project", select: {name: 1}});
             return helper.createInstance(inst);
         } catch (err) {
             throw err;
@@ -106,7 +106,8 @@ export default class ProjectMongoRepository implements ProjectRepository {
     async findInstance(instanceId: string): Promise<Instance> {
         let logger = getLogger('pmr.findInstance');
         try {
-            const inst = await this.instanceModel.findById(instanceId);
+            const inst = await this.instanceModel.findById(instanceId)
+                                .populate({path: "project", select: {name: 1}});
             if(inst) {
                 logger.info(`found instance: ${JSON.stringify(inst)}`);
                 return helper.createInstance(inst);
@@ -127,7 +128,8 @@ export default class ProjectMongoRepository implements ProjectRepository {
             inst.status = instance.status;
             inst.request = instance.request;
             await inst.save();
-
+            await inst.populate({path: "project", select: {name: 1}});
+            
             return helper.createInstance(inst);
         } catch (err) {
             throw err;

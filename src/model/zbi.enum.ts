@@ -70,3 +70,37 @@ export enum SnapshotScheduleType {
     weekly = 'weekly',
     monthly = 'monthly'
 }
+
+export enum ProjectFilterType {
+    name = "name",
+    network = "network",
+    owner = "owner",
+    team = "team",
+    status = "status"
+}
+
+export enum InstanceFilterType {
+    name = "name",
+    type = "type",
+    project = "project"
+}
+
+export enum TeamFilterType {
+    name = "name",
+    owner = "owner",
+    status = "status"
+}
+
+export enum FilterConditionType {
+    equal = "equal",
+    notequal = "notequal",
+    in = "in",
+    notin = "notin",
+    like = "like",
+    notlike = "notlike"
+}
+
+// export type ProjectFilter = "name" | "network" | "owner" | "team" | "status";
+// export type InstanceFilter = "name" | "type" | "project";
+// export type TeamFilter = "name" | "owner" 
+// export type FilterCondition = "eq" | "neq" | "in" | "nin" | "like" | "nlike";

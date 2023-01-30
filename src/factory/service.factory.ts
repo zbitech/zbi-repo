@@ -1,4 +1,5 @@
-import { DefaultProjectService } from "../services/default.project.service";
+import DefaultProjectService from "../services/default.project.service";
+import KubernetesControllerService from "../services/k8s.controller.service";
 import { IAMRepository, IAMService, ProjectRepository } from "../interfaces";
 import DefaultIAMService from "../services/default.iam.service";
 
@@ -9,7 +10,7 @@ class ServiceFactory {
     }
 
     createProjectService(project: ProjectRepository) {
-        return new DefaultProjectService(project);
+        return new DefaultProjectService(project, new KubernetesControllerService());
     }
 }
 

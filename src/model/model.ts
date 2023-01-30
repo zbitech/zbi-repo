@@ -1,5 +1,5 @@
 import { interfaces } from "inversify";
-import { RoleType, VolumeType, VolumeSourceType, ResourceType, StatusType, NetworkType, NodeType, UserStatusType, InviteStatusType, SnapshotScheduleType } from "./zbi.enum";
+import { RoleType, VolumeType, VolumeSourceType, ResourceType, StatusType, NetworkType, NodeType, UserStatusType, InviteStatusType, SnapshotScheduleType, FilterConditionType, ProjectFilterType, InstanceFilterType, TeamFilterType } from "./zbi.enum";
 
 
 export interface User {
@@ -77,13 +77,28 @@ export interface Project {
     description: string;
 }
 
+export interface ProjectRequest {
+    name: string;
+    team: string;
+    network: NetworkType;
+    description: string;
+}
+
 export interface Instance {
     id?: string;
     name: string;
     type: NodeType;
+    project: string;
     description: string;
     request: ResourceRequest;
     status: StatusType;
+}
+
+export interface InstanceRequest {
+    name: string;
+    type: NodeType;
+    description: string;
+    request: ResourceRequest;
 }
 
 export interface SnapshotScheduleRequest {
@@ -93,7 +108,10 @@ export interface SnapshotScheduleRequest {
     dayOfMonth?: number;
 }
 
-export interface QueryParams {
+export interface QueryFilter {
+    param: ProjectFilterType | InstanceFilterType | TeamFilterType;
+    condition: FilterConditionType;
+    value: string;
     page: number;
     itemsPerPage: number;
 }
