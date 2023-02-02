@@ -7,8 +7,8 @@ export enum ServiceErrorType {
 }
 
 export class FieldError {
-    public readonly name: string = "";
-    public readonly error: string = "";
+    public readonly name: string;
+    public readonly error: string;
 
     constructor(name: string, error: string) {
         this.name = name;

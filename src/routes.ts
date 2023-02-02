@@ -3,6 +3,8 @@ import beanFactory from "./bean.factory";
 import ProjectController from "./controllers/project.controller";
 import UserController from "./controllers/user.controller";
 import { mainLogger as logger } from "./logger";
+import { validator } from "./middlewares/validation.middleware";
+import { schemas } from "./model/schema";
 
 export default function (app: Application) {
  
@@ -37,7 +39,7 @@ export default function (app: Application) {
     app.route(`/projects`)
         .all()
         .get(projController.findProjects)
-        .post(projController.createProject);
+        .post(validator(schemas.projectRequest), projController.createProject);
 
     app.route(`/projects/:projectid`)
         .all()

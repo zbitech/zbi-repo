@@ -10,7 +10,7 @@ import {mainLogger as logger, morganStream} from "./logger";
 import beanFactory from "./bean.factory";
 import routes from "./routes";
 import { initRequest } from "./middlewares/request.middleware";
-import { auth0jwtVerifier } from "./middlewares/auth.middleware";
+import { jwtVerifier } from "./middlewares/auth.middleware";
 
 if(!process.env.PORT) {
     process.exit(1);
@@ -27,12 +27,8 @@ app.use(cors());
 app.use(express.json());
 
 
-app.use(auth0jwtVerifier);
+app.use(jwtVerifier);
 app.use(initRequest);
-
-// app.get('/', (req, res) => {
-//     res.send({message: "Hello World!"});
-// });
 
 beanFactory.init().then(async () => {
     routes(app);
@@ -43,6 +39,6 @@ beanFactory.init().then(async () => {
         logger.info(`App is running on port ${PORT}`, `{request: '55'}`);
     });        
 }).catch(error => {
-    logger.error(`failed to initialize database: ${error}`);
-})
+   logger.error(`failed to initialize database: ${error}`);
+});
 
