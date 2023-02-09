@@ -23,8 +23,9 @@ export const validator = (schema: ObjectSchema) => {
                     errors: fieldErrors
                 });
             }   
-        } catch (err) {
+        } catch (err: any) {
             logger.error(`validation error: ${JSON.stringify(err)}`);
+            response.status(HttpStatusCode.InternalServerError).json({message: err.message});
         }
 
         next();
