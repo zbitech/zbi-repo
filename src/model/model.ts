@@ -109,7 +109,7 @@ export interface SnapshotScheduleRequest {
 }
 
 export interface QueryFilter {
-    param: ProjectFilterType | InstanceFilterType | TeamFilterType;
+    name: ProjectFilterType | InstanceFilterType | TeamFilterType;
     condition: FilterConditionType;
     value: string;
     page: number;

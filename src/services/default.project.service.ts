@@ -28,15 +28,15 @@ export default class DefaultProjectService implements ProjectService {
         }
     }
 
-    async findProjects(params: QueryFilter): Promise<Project[]> {
+    async findProjects(filter: QueryFilter): Promise<Project[]> {
         let logger = getLogger('psvc.findProjects');
         try {
 
-            const filter:string = params.param;
+            const param:ProjectFilterType = filter.name as ProjectFilterType;
             const p:any = {};
-            p[filter] = params.value; 
+            p[param] = filter.value; 
             
-            return await this.projectRepository.findProjects(p, params.itemsPerPage, params.page);
+            return await this.projectRepository.findProjects(p, filter.itemsPerPage, filter.page);
         } catch (err) {
             throw err;
         }
@@ -175,7 +175,6 @@ export default class DefaultProjectService implements ProjectService {
         try {
             const instance = await this.projectRepository.findInstance(instanceId);
 
-            //this.controllerService?.repairInstance()
             //this.controllerService.repairInstance()
             return instance;
         } catch (err) {
@@ -188,7 +187,7 @@ export default class DefaultProjectService implements ProjectService {
         try {
             const instance = await this.projectRepository.findInstance(instanceId);
 
-
+            await this.controllerService.startInstance(instance.project, instance.name)
         } catch (err) {
             throw err;
         }
@@ -199,7 +198,7 @@ export default class DefaultProjectService implements ProjectService {
         try {
             const instance = await this.projectRepository.findInstance(instanceId);
 
-            //this.controllerService?.repairInstance()
+            await this.controllerService.stopInstance(instance.project, instance.name)
         } catch (err) {
             throw err;
         }
@@ -210,7 +209,7 @@ export default class DefaultProjectService implements ProjectService {
         try {
             const instance = await this.projectRepository.findInstance(instanceId);
 
-            //this.controllerService?.repairInstance()
+            await this.controllerService.createInstanceBackup(instance.project, instance.name);
         } catch (err) {
             throw err;
         }

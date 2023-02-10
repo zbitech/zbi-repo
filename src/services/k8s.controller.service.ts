@@ -29,8 +29,17 @@ export default class KubernetesControllerService implements ControllerService {
         }
     }
 
-    async repairProject(Project: Project): Promise<Project> {
-        throw new Error("Method not implemented.");
+    async repairProject(project: Project): Promise<Project> {
+        try {            
+            const response = await axios.post(`${ControllerURL}/projects/${project.id}`, JSON.stringify(project), {headers: HEADERS});
+            if( response.status === HttpStatusCode.Created ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }    
     }
 
     async deleteProject(Project: Project): Promise<void> {
