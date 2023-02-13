@@ -1,4 +1,5 @@
 import Joi, { ObjectSchema } from "joi";
+import { NodeType } from "./zbi.enum";
 
 export const schemas = {
 
@@ -18,6 +19,9 @@ export const schemas = {
     }),
 
     newInstanceRequest: Joi.object({
+        name: Joi.string().alphanum().required(),
+        type: Joi.string().valid(NodeType.zcash, NodeType.lwd).required(),
+        description: Joi.string()
 
     }),
 

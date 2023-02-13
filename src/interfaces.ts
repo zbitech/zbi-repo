@@ -1,4 +1,4 @@
-import { Instance, KubernetesResource, KubernetesResources, Project, QueryFilter, SnapshotScheduleRequest, Team, User } from "./model/model";
+import { Instance, KubernetesResource, KubernetesResources, Project, ProjectRequest, QueryFilter, SnapshotScheduleRequest, Team, User } from "./model/model";
 import { ResourceType, SnapshotScheduleType, NetworkType, StatusType } from "./model/zbi.enum";
 export interface Database {
     init(): Promise<void>;
@@ -28,15 +28,17 @@ export interface IAMRepository {
 }
 
 export interface ProjectRepository {
-    createProject(project: Project): Promise<Project>;
+    createProject(project: ProjectRequest): Promise<Project>;
     findProjects(params: {}, size: number, page: number): Promise<Project[]>;
     findProject(projectId: string): Promise<Project>;
+    findProjectByName(name: string): Promise<Project>;
     updateProject(project: Project): Promise<Project>;
     deleteProject(projectId: string): Promise<void>;
 
     createInstance(projectId: string, instance: Instance): Promise<Instance>;
     findInstances(params: {}): Promise<Instance[]>;
     findInstance(instanceId: string): Promise<Instance>;
+    findInstanceByName(project: string, name: string): Promise<Instance>;
     updateInstance(instance: Instance): Promise<Instance>;
     deleteInstance(instanceId: string): Promise<void>;
 
@@ -64,7 +66,7 @@ export interface IAMService {
 }
 
 export interface ProjectService {
-    createProject(project: Project): Promise<Project>;
+    createProject(project: ProjectRequest): Promise<Project>;
     findProjects(params: QueryFilter): Promise<Project[]>;
     findProject(projectId: string): Promise<Project>;
     updateProject(project: Project): Promise<Project>;
@@ -103,10 +105,12 @@ export interface ControllerService {
     getInstance(projectName: string, instanceName: string): Promise<Instance>;
     createInstance(project: Project, instance: Instance): Promise<void>;
     repairInstance(project: Project, instance: Instance): Promise<Instance>;
-    stopInstance(projectName: string, instanceName: string): Promise<Instance>;
-    startInstance(projectName: string, instanceName: string): Promise<Instance>;
-    createInstanceBackup(projectName: string, instanceName: string): Promise<Instance>;
-    createInstanceBackupSchedule(projectName: string, instanceName: string, schedule: SnapshotScheduleRequest): Promise<Instance>;
+    deleteInstance(projectName: string, instanceName: string): Promise<void>;
+    stopInstance(project: Project, instance: Instance): Promise<Instance>;
+    startInstance(project: Project, instance: Instance): Promise<Instance>;
+    rotateInstanceCredentials(project: Project, instance: Instance): Promise<Instance>;
+    createInstanceBackup(project: Project, instance: Instance): Promise<Instance>;
+    createInstanceBackupSchedule(project: Project, instance: Instance, schedule: SnapshotScheduleRequest): Promise<Instance>;
  
     getInstanceResources(projectName: string, instanceName: string): Promise<KubernetesResources>;
     getInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource>;

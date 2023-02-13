@@ -1,6 +1,7 @@
+import { getCurrentUser} from '../context';
 import {Request, Response} from 'express';
 import beanFactory from '../bean.factory';
-import { ProjectRequest } from '../model/model';
+import { Project, ProjectRequest } from '../model/model';
 import { IAMService, ProjectService } from "../interfaces";
 import { getLogger } from '../logger';
 import { HttpStatusCode } from 'axios';
@@ -11,25 +12,35 @@ export default class ProjectController {
     }
 
     async createProject(request: Request, response: Response): Promise<void> {
-        let projectService = beanFactory.getService("project");
+        let projectService: ProjectService = beanFactory.getService("project");
         let logger = getLogger('pc.createProject');
 
         try {
             logger.info(`headers: ${JSON.stringify(request.auth)}`);
             const projectRequest: ProjectRequest = request.body;
+            projectRequest.owner = getCurrentUser();
+
             logger.info(`create request: ${JSON.stringify(projectRequest)}`);
 
-            
-
-            response.status(HttpStatusCode.Created).json();
+            const project: Project = await projectService.createProject(projectRequest)
+            response.status(HttpStatusCode.Created).json(project);
         } catch (err:any) {
             logger.error(`failed to create project: ${err}`)
             response.status(500).json({message: err.message});            
         }
-
     }
 
     async findProjects(request: Request, response: Response): Promise<void> {
+        let projectService: ProjectService = beanFactory.getService("project");
+        let logger = getLogger('pc.findProjects');
+
+        try {
+            
+            response.status(HttpStatusCode.Ok).json();
+        } catch (err:any) {
+            logger.error(`failed to create project: ${err}`)
+            response.status(500).json({message: err.message});
+        }
 
     }
 

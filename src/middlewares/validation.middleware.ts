@@ -22,6 +22,7 @@ export const validator = (schema: ObjectSchema) => {
                     message: 'Invalid request',
                     errors: fieldErrors
                 });
+                return;
             }   
         } catch (err: any) {
             logger.error(`validation error: ${JSON.stringify(err)}`);

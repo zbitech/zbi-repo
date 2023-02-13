@@ -1,5 +1,5 @@
 import { ProjectRepository, ProjectService, ControllerService } from "../interfaces";
-import { Project, QueryFilter, KubernetesResource, Instance, SnapshotScheduleRequest, KubernetesResources } from "../model/model";
+import { Project, QueryFilter, KubernetesResource, Instance, SnapshotScheduleRequest, KubernetesResources, ProjectRequest } from "../model/model";
 import { ProjectFilterType, ResourceType, StatusType } from "../model/zbi.enum";
 import { getLogger } from "../logger"
 
@@ -13,7 +13,7 @@ export default class DefaultProjectService implements ProjectService {
         this.controllerService = controllerService;
     }
     
-    async createProject(project: Project): Promise<Project> {
+    async createProject(project: ProjectRequest): Promise<Project> {
         let logger = getLogger('psvc.createProject');
         try {
             // TODO - validate project
@@ -186,8 +186,9 @@ export default class DefaultProjectService implements ProjectService {
         let logger = getLogger('psvc.startInstance');
         try {
             const instance = await this.projectRepository.findInstance(instanceId);
+            const project = await this.projectRepository.findProjectByName(instance.name);
 
-            await this.controllerService.startInstance(instance.project, instance.name)
+            await this.controllerService.startInstance(project, instance);
         } catch (err) {
             throw err;
         }
@@ -197,8 +198,9 @@ export default class DefaultProjectService implements ProjectService {
         let logger = getLogger('psvc.stopInstance');
         try {
             const instance = await this.projectRepository.findInstance(instanceId);
+            const project = await this.projectRepository.findProjectByName(instance.name);
 
-            await this.controllerService.stopInstance(instance.project, instance.name)
+            await this.controllerService.stopInstance(project, instance);
         } catch (err) {
             throw err;
         }
@@ -208,8 +210,9 @@ export default class DefaultProjectService implements ProjectService {
         let logger = getLogger('psvc.createInstanceBackup');
         try {
             const instance = await this.projectRepository.findInstance(instanceId);
+            const project = await this.projectRepository.findProjectByName(instance.name);
 
-            await this.controllerService.createInstanceBackup(instance.project, instance.name);
+            await this.controllerService.createInstanceBackup(project, instance);
         } catch (err) {
             throw err;
         }
@@ -219,8 +222,9 @@ export default class DefaultProjectService implements ProjectService {
         let logger = getLogger('psvc.createInstanceBackupSchedule');
         try {
             const instance = await this.projectRepository.findInstance(instanceId);
+            const project = await this.projectRepository.findProjectByName(instance.name);
 
-            //this.controllerService?.repairInstance()
+            await this.controllerService.createInstanceBackupSchedule(project, instance, request);
         } catch (err) {
             throw err;
         }
@@ -229,10 +233,11 @@ export default class DefaultProjectService implements ProjectService {
     async deleteInstance(instanceId: string): Promise<void> {
         let logger = getLogger('psvc.deleteInstance');
         try {
+
             const instance = await this.projectRepository.findInstance(instanceId);
+            const project = await this.projectRepository.findProjectByName(instance.name);
 
-
-            //this.controllerService?.repairInstance()
+            await this.controllerService.deleteInstanceResource
         } catch (err) {
             throw err;
         }

@@ -1,5 +1,5 @@
 import { ProjectRepository } from "../../interfaces";
-import { Project, Instance, KubernetesResource, KubernetesResources } from "../../model/model";
+import { Project, Instance, KubernetesResource, KubernetesResources, ProjectRequest } from "../../model/model";
 import { ResourceType, NetworkType, StatusType } from "../../model/zbi.enum";
 import model from "./mongo.model";
 import mongoose from 'mongoose';
@@ -16,10 +16,10 @@ export default class ProjectMongoRepository implements ProjectRepository {
         this.instanceModel = model.instanceModel;
     }
 
-    async createProject(project: Project): Promise<Project> {
+    async createProject(project: ProjectRequest): Promise<Project> {
         let logger = getLogger('pmr.createProject');
         try {
-            const obj:any = {...project, owner: project.owner.userId, team: project.team.id};
+            const obj:any = {...project, owner: project.owner, team: project.team};
             logger.info("creating project " + JSON.stringify(obj) );
             const proj = new this.projectModel(obj);
             await proj.save();
@@ -54,6 +54,18 @@ export default class ProjectMongoRepository implements ProjectRepository {
             throw err;
         }
     }
+
+    async findProjectByName(name: string): Promise<Project> {
+        try {
+            const project = await this.projectModel.findById({name})
+                                        .populate({path: "owner", select: {userName: 1, email: 1, name: 1}})
+                                        .populate({path: "team", select:{name: 1}});
+            return helper.createProject(project);
+        } catch(err) {
+            throw err;
+        }
+    }
+
 
     async updateProject(project: Project): Promise<Project> {
         try {
@@ -114,6 +126,23 @@ export default class ProjectMongoRepository implements ProjectRepository {
             }
 
             logger.error(`item ${instanceId} not found`);
+            throw new Error("item not found");
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async findInstanceByName(project: string, name: string): Promise<Instance> {
+        let logger = getLogger('pmr.findInstance');
+        try {
+            const inst = await this.instanceModel.find({name, project})
+                                .populate({path: "project", select: {name: 1}});
+            if(inst) {
+                logger.info(`found instance: ${JSON.stringify(inst)}`);
+                return helper.createInstance(inst);
+            }
+
+            logger.error(`item ${project}.${name} not found`);
             throw new Error("item not found");
         } catch (err) {
             throw err;

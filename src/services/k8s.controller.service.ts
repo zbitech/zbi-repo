@@ -13,7 +13,16 @@ export default class KubernetesControllerService implements ControllerService {
     }
 
     async getProject(projectName: string): Promise<Project> {
-        throw new Error("Method not implemented.");
+        try {            
+            const response = await axios.post(`${ControllerURL}/projects`, projectName, {headers: HEADERS});
+            if( response.status === HttpStatusCode.Created ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
     }
 
     async createProject(project: Project): Promise<Project> {
@@ -31,7 +40,7 @@ export default class KubernetesControllerService implements ControllerService {
 
     async repairProject(project: Project): Promise<Project> {
         try {            
-            const response = await axios.post(`${ControllerURL}/projects/${project.id}`, JSON.stringify(project), {headers: HEADERS});
+            const response = await axios.patch(`${ControllerURL}/projects/${project.id}`, JSON.stringify(project), {headers: HEADERS});
             if( response.status === HttpStatusCode.Created ) {
                 return JSON.parse(response.data);
             } else {
@@ -42,47 +51,186 @@ export default class KubernetesControllerService implements ControllerService {
         }    
     }
 
-    async deleteProject(Project: Project): Promise<void> {
-        throw new Error("Method not implemented.");
+    async deleteProject(project: Project): Promise<void> {
+        try {            
+            const response = await axios.delete(`${ControllerURL}/projects/${project.id}`, {
+                headers: HEADERS,
+                data: JSON.stringify(project)
+            });
+            if( response.status === HttpStatusCode.Created ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }    
     }
 
     async getInstance(projectName: string, instanceName: string): Promise<Instance> {
-        throw new Error("Method not implemented.");
+        try {            
+            const response = await axios.get(`${ControllerURL}/projects/${projectName}/instances/${instanceName}`, {headers: HEADERS});
+            if( response.status === HttpStatusCode.Ok ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
+
     }
 
     async createInstance(project: Project, instance: Instance): Promise<void> {
-        throw new Error("Method not implemented.");
+        try {            
+            const response = await axios.post(`${ControllerURL}/projects/${project.name}/instances`, JSON.stringify({project, instance}), {headers: HEADERS});
+            if( response.status === HttpStatusCode.Created ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
     }
 
     async repairInstance(project: Project, instance: Instance): Promise<Instance> {
-        throw new Error("Method not implemented.");
+        try {            
+            const response = await axios.patch(`${ControllerURL}/projects/${project.name}/instances/${instance.name}`, 
+                JSON.stringify({project, instance}), {headers: HEADERS});
+            if( response.status === HttpStatusCode.Ok ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
     }
 
-    async stopInstance(projectName: string, instanceName: string): Promise<Instance> {
-        throw new Error("Method not implemented.");
+    async stopInstance(project: Project, instance: Instance): Promise<Instance> {
+        try {            
+            const response = await axios.put(`${ControllerURL}/projects/${project.name}/instances/${instance.name}/stop`, 
+                JSON.stringify({project, instance}), {headers: HEADERS});
+            if( response.status === HttpStatusCode.Ok ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
     }
 
-    async startInstance(projectName: string, instanceName: string): Promise<Instance> {
-        throw new Error("Method not implemented.");
+    async startInstance(project: Project, instance: Instance): Promise<Instance> {
+        try {            
+            const response = await axios.put(`${ControllerURL}/projects/${project.name}/instances/${instance.name}/start`, 
+                JSON.stringify({project, instance}), {headers: HEADERS});
+            if( response.status === HttpStatusCode.Ok ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
     }
 
-    async createInstanceBackup(projectName: string, instanceName: string): Promise<Instance> {
-        throw new Error("Method not implemented.");
+    async rotateInstanceCredentials(project: Project, instance: Instance): Promise<Instance> {
+        try {            
+            const response = await axios.put(`${ControllerURL}/projects/${project.name}/instances/${instance.name}/rotate`, 
+                JSON.stringify({project, instance}), {headers: HEADERS});
+            if( response.status === HttpStatusCode.Ok ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
     }
 
-    async createInstanceBackupSchedule(projectName: string, instanceName: string, schedule: SnapshotScheduleRequest): Promise<Instance> {
-        throw new Error("Method not implemented.");
+    async createInstanceBackup(project: Project, instance: Instance): Promise<Instance> {
+        try {            
+            const response = await axios.put(`${ControllerURL}/projects/${project.name}/instances/${instance.name}/snapshot`, 
+                JSON.stringify({project, instance}), {headers: HEADERS});
+            if( response.status === HttpStatusCode.Ok ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
+    }
+
+    async createInstanceBackupSchedule(project: Project, instance: Instance, schedule: SnapshotScheduleRequest): Promise<Instance> {
+        try {            
+            const response = await axios.put(`${ControllerURL}/projects/${project.name}/instances/${instance.name}/schedule`, 
+                JSON.stringify({project, instance, schedule}), {headers: HEADERS});
+            if( response.status === HttpStatusCode.Ok ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
+
+    }
+
+    async deleteInstance(projectName: string, instanceName: string): Promise<void> {
+        try {            
+            const response = await axios.delete(`${ControllerURL}/projects/${projectName}/instances/${instanceName}`, {headers: HEADERS});
+            if( response.status === HttpStatusCode.Ok ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
     }
 
     async getInstanceResources(projectName: string, instanceName: string): Promise<KubernetesResources> {
-        throw new Error("Method not implemented.");
+        try {            
+            const response = await axios.get(`${ControllerURL}/projects/${projectName}/instances/${instanceName}/resources`, {headers: HEADERS});
+            if( response.status === HttpStatusCode.Ok ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
     }
 
     async getInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource> {
-        throw new Error("Method not implemented.");
+        try {            
+            const response = await axios.get(`${ControllerURL}/projects/${projectName}/instances/${instanceName}/resources//${resourceName}/${resourceType}`, 
+                        {headers: HEADERS});
+            if( response.status === HttpStatusCode.Ok ) {
+                return JSON.parse(response.data);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
+
     }
 
     async deleteInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<void> {
-        throw new Error("Method not implemented.");
+        try {            
+            const response = await axios.delete(`${ControllerURL}/projects/${projectName}/instances/${instanceName}/resources//${resourceName}/${resourceType}`, 
+                        {headers: HEADERS});
+            if( response.status === HttpStatusCode.Ok ) {
+ 
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+            throw err
+        }
     }
 }

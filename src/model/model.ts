@@ -79,6 +79,7 @@ export interface Project {
 
 export interface ProjectRequest {
     name: string;
+    owner?: string;
     team: string;
     network: NetworkType;
     description: string;
