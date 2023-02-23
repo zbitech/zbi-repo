@@ -12,9 +12,6 @@ export const initRequest = (req: Request, res: Response, next: NextFunction) => 
     let requestid = uuidv4();
     let userid = req.auth && req.auth.payload ? req.auth.payload.sub : "user";
 
-//    req.body.userid = userid;
-//    req.body.requestid = requestid;
-
     return context.run(store, () => {
         const child = logger.child({ requestid, userid });
 
@@ -25,6 +22,3 @@ export const initRequest = (req: Request, res: Response, next: NextFunction) => 
         next();
     });
 };
-
-//export const 
-//jwtValidation

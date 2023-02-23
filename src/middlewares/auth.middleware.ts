@@ -10,11 +10,10 @@ const CLIENT_SECRET = process.env.AUTH0_CLIENT_SECRET
 const AUDIENCE = process.env.AUTH0_AUDIENCE
 
 const auth0jwtVerifier = auth({
-//    issuer: `https://${TENANT_ID}.${DOMAIN}`,
-    audience: `https://zbi-control-plane`,
-    issuerBaseURL: `https://dev-18udhi373ksoxehw.us.auth0.com/`,
+    audience: `${AUDIENCE}`,
+    issuerBaseURL: `https://${TENANT_ID}.${DOMAIN}/`,
     tokenSigningAlg: 'RS256',
-    jwksUri: `https://dev-18udhi373ksoxehw.us.auth0.com/.well-known/jwks.json`
+    jwksUri: `https://${TENANT_ID}.${DOMAIN}/.well-known/jwks.json`
 });
 
 const basicJwtVerifier = function(request: Request, response: Response, next: NextFunction) {

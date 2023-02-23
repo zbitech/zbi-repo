@@ -1,3 +1,4 @@
+import { HttpStatusCode } from "axios";
 
 export enum ServiceErrorType {
     UNAVAILABLE = "unavailable",
@@ -45,27 +46,27 @@ export class ApplicationError extends Error {
 
 export class BadRequestError extends ApplicationError {
     constructor(message: string, ...args: any) {
-        super(400, message, ...args);
+        super(HttpStatusCode.BadRequest, message, ...args);
     }
 }
 
-export class ValidationError extends BadRequestError {
+export class ValidationError extends ApplicationError {
     public fields: FieldError[];
 
     constructor(message: string, fields: FieldError[], ...args: any) {
-        super(message, ...args);
+        super(HttpStatusCode.UnprocessableEntity, message, ...args);
         this.fields = fields;
     }
 }
 
 export class NotFoundError extends ApplicationError {
     constructor(message: string) {
-      super(404, message, arguments);
+      super(HttpStatusCode.NotFound, message, arguments);
     }
 }
 
-export class InternalError extends ApplicationError {
+export class InternalServerError extends ApplicationError {
     constructor(message: string) {
-      super(500, message, arguments);
+      super(HttpStatusCode.InternalServerError, message, arguments);
     }
 }
