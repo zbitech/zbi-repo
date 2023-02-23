@@ -50,7 +50,8 @@ export interface ProjectRepository {
 }
 
 export interface IAMService {
-//    createResourceOwner(user: User): Promise<User>;
+    createUser(user: User): Promise<User>;
+//    inviteUser(user: User): Promise<User>;
 //  createTeamMember(user: User): Promise<User>
 //  updateUser(user: User): Promise<User>;
     findUsers(limit: number, page: number): Promise<User[]>;

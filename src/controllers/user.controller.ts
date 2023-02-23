@@ -30,8 +30,10 @@ export default class UserController {
         let logger = getLogger('uc');
         try {
 
-            logger.info(`creating user ... ${request.body}`);
+            logger.info(`creating user ... ${JSON.stringify(request.body)}`);
 //            const user: User = iamService.
+
+            response.end();
         } catch(err:any) {
             logger.error(`failed to find users: ${err}`)
             response.status(500).json({message: err.message});

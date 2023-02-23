@@ -12,36 +12,46 @@ export default function (app: Application) {
     const userController: UserController = beanFactory.getController("user");
     const projController: ProjectController = beanFactory.getController("project");
     
-    app.route(`/users`)
+
+    app.route(`/api/account`)
+        .all()
+        .get(userController.findUser) // get user information
+        .post() // confirm account - accept invitation
+        .put()    // update account - change password, update profile, reject team, accept team
+        .delete() // cancel account - delete account
+
+    app.route(`/api/profile/register`)
+
+    app.route(`/api/users`)
         .all()
         .get(userController.findUsers) // get all users
-        .post(userController.createUser) // new user
+        .post(userController.createUser) // createnew user
 
-    app.route(`/users/:userid`)
+    app.route(`/api/users/:userid`)
         .all()
         .get(userController.findUser) // get user
-        .put() // update user
+        .put() // update user - reset password, update user, invite to team, expire invitation
         .delete() // delete user
     
-    app.route(`/teams`)
+    app.route(`/api/teams`)
         .all()
-        .get()
-        .post()
+        .get() // find teams
+        .post() // create team
 
-    app.route(`/teams/:teamid`)
+    app.route(`/api/teams/:teamid`)
         .all()
         .get()
         .post() // add new member
-        .put()
+        .put() // update membership - add member, remove member
         .patch()
         .delete();
 
-    app.route(`/projects`)
+    app.route(`/api/projects`)
         .all()
         .get(projController.findProjects)
         .post(validator(schemas.projectRequest), projController.createProject);
 
-    app.route(`/projects/:projectid`)
+    app.route(`/api/projects/:projectid`)
         .all()
         .get(projController.findProject)
         .put(projController.updateProject)
@@ -49,21 +59,21 @@ export default function (app: Application) {
         .delete(projController.deleteProject)
         .purge(projController.purgeProject);
 
-    app.route(`/projects/:projectid/resources`)
+    app.route(`/api/projects/:projectid/resources`)
         .get()
         .put()
         .delete()
         
-    app.route(`/instances`)
+    app.route(`/api/instances`)
         .all()
         .get(projController.findAllInstances)
 
-    app.route(`/projects/:projectid/instances`)
+    app.route(`/api/projects/:projectid/instances`)
         .all()
         .get(projController.findInstances)
         .post(projController.createInstance)
     
-    app.route(`/instances/:instanceid`)
+    app.route(`/api/instances/:instanceid`)
         .all()
         .get(projController.findInstance)
         .post(projController.updateInstance)
@@ -72,11 +82,11 @@ export default function (app: Application) {
         .delete(projController.deleteInstance)
         .purge(projController.purgeInstance)
 
-    app.route(`/instances/:instanceid/resources`)
+    app.route(`/api/instances/:instanceid/resources`)
         .all()
         .get(projController.getInstanceResources)
 
-    app.route(`/instances/:instanceid/resources/:resourceid`)
+    app.route(`/api/instances/:instanceid/resources/:resourceid`)
         .all()
         .get(projController.getInstanceResource)
         .put(projController.updateInstanceResource)

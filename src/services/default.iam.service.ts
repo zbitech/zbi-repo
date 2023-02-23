@@ -11,6 +11,17 @@ export default class DefaultIAMService implements IAMService {
         this.iamRepository = iamRepository;
     }
 
+
+    async createUser(user: User): Promise<User> {
+        try {
+            // invite user in auth0
+            return user;            
+        } catch(err) {
+            throw err;
+        }
+    }
+
+
     async inviteOwner(userName: string, email: string, name: string): Promise<User> {
         try {
             let u:User = {userName, email, name, role: RoleType.owner, status: UserStatusType.invited};

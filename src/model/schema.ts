@@ -1,10 +1,12 @@
 import Joi, { ObjectSchema } from "joi";
-import { NodeType } from "./zbi.enum";
+import { NodeType, RoleType } from "./zbi.enum";
 
 export const schemas = {
 
-    userRequest: Joi.object({
-
+    newUser: Joi.object({
+        name: Joi.string().required(),
+        email: Joi.string().email().required(),
+        role: Joi.string().valid(RoleType.owner)
     }),
 
     ownerRequest: Joi.object({
