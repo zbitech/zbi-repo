@@ -22,5 +22,5 @@ const basicJwtVerifier = function(request: Request, response: Response, next: Ne
     next();
 }
 
-// export const jwtVerifier = basicJwtVerifier;
-export const jwtVerifier = auth0jwtVerifier;
+export const jwtVerifier = basicJwtVerifier;
+// export const jwtVerifier = auth0jwtVerifier;
