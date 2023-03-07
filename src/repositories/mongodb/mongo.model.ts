@@ -7,11 +7,15 @@ class MongoModel {
     private teamSchema: Schema;
     private instanceSchema: Schema;
     private projectSchema: Schema;
+    private projectJobSchema: Schema;
+    private instanceJobSchema: Schema;
 
     userModel: any;
     teamModel: any;
     projectModel: any;
     instanceModel: any;
+    projectJobModel: any;
+    instanceJobModel: any;
 
     constructor() {
 
@@ -136,8 +140,33 @@ class MongoModel {
         });
         
         this.instanceModel = mongoose.model("instance", this.instanceSchema);
-    }
 
+        this.projectJobSchema = new Schema({
+            user: {type: Schema.Types.ObjectId, ref: "user", immutable: true},
+            id: {type: Schema.Types.ObjectId, ref: "project", immutable: true},
+            payload: {type: String},
+            type: {type: String, enum: ["create_project", "delete_project", "repair_project"]},
+            scheduled: {type: Date},
+            completed: {type: Date},
+            status: {type: String, enum: ["pending", "scheduled", "started", "failed", "completed"]}
+        }, { timestamps: true});
+
+        this.projectJobSchema.index({"completedAt": 1}, {expireAfterSeconds: 86400});
+        this.projectJobModel = mongoose.model("project_jobs", this.projectJobSchema);
+
+        this.instanceJobSchema = new Schema({
+            user: {type: Schema.Types.ObjectId, ref: "user", immutable: true},
+            id: {type: Schema.Types.ObjectId, ref: "instance", immutable: true},
+            payload: {type: String},
+            type: {type: String, enum: ["create_instance", "delete_instance", "update_instance", "repair_instance", "start_instance", "stop_instance", "create_snapshot", "delete_snapshot", "create_schedule", "delete_schedule"]},
+            scheduled: {type: Date},
+            completedAt: {type: Date},
+            status: {type: String, enum: ["pending", "scheduled", "started", "failed", "completed"]}
+        }, { timestamps: true});
+
+        this.instanceJobSchema.index({"completedAt": 1}, {expireAfterSeconds: 86400});
+        this.instanceJobModel = mongoose.model("instance_jobs", this.instanceJobSchema);
+    }
 }
 
 export default new MongoModel();
