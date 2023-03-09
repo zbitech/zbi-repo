@@ -77,10 +77,13 @@ class Auth0ManagementService {
                 "name": user.name,
             };
 
+            // invite user
             const response = await axios.post(`${AUTH0_URL}/api/v2/users`, JSON.stringify(user_data), {headers});
             if(response.status == HttpStatusCode.Created) {
                 user.userId = response.data.user_id;
                 const role_data = {"roles":[user.role]}
+
+                // set user role
                 await axios.post(`${AUTH0_URL}/api/v2/users/${response.data.user_id}/roles`, JSON.stringify(role_data), {headers});
             }
         } catch(err) {
