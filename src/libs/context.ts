@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from "async_hooks";
-import { Constants } from "./constants";
+import { Constants } from "../constants";
 
 const context = new AsyncLocalStorage<Map<any, any>>();
 

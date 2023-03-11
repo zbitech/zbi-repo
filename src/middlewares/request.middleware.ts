@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from 'express';
-import context from '../context';
-import { mainLogger as logger } from "../logger";
+import context from '../libs/context';
+import { mainLogger as logger } from "../libs/logger";
 import {v4 as uuidv4} from 'uuid';
 import { Constants } from '../constants';
 import { request } from 'http';

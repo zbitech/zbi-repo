@@ -4,7 +4,7 @@ import { RoleType, VolumeType, VolumeSourceType, ResourceType, StatusType, Netwo
 
 export interface User {
     userId?: string;
-    userName: string;
+    userName?: string;
     email: string;
     name: string;
     role?: RoleType;

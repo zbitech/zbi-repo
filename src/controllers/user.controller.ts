@@ -1,9 +1,9 @@
 import {Request, Response} from 'express';
 import { User } from 'src/model/model';
-import beanFactory from '../bean.factory';
+import beanFactory from '../factory/bean.factory';
 import { IAMService } from '../interfaces';
 
-import { getLogger } from "../logger";
+import { getLogger } from "../libs/logger";
 
 export default class UserController {
 
@@ -25,12 +25,14 @@ export default class UserController {
     }
 
     async createUser(request: Request, response: Response): Promise<void> {
-        let iamService = beanFactory.getService("iam");
+        let iamService:IAMService = beanFactory.getService("iam");
 
         let logger = getLogger('uc');
         try {
 
             logger.info(`creating user ... ${JSON.stringify(request.body)}`);
+            const userRequest: User = request.body.user;
+            iamService.findByUserID            
 //            const user: User = iamService.
 
             response.end();

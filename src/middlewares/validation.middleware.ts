@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import Joi, { ObjectSchema } from "joi";
-import { getLogger } from "../logger";
+import { getLogger } from "../libs/logger";
 import { Logger } from "winston";
-import { FieldError, ValidationError } from "../errors";
+import { FieldError, ValidationError } from "../libs/errors";
 import { HttpStatusCode } from "axios";
 
 import { validateObject } from "../libs/validator";

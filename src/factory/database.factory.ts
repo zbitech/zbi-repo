@@ -2,7 +2,7 @@ import { Database } from "../interfaces";
 import { MongoDB } from "../services/mongodb/mongodb.service";
 import { MongoMemoryDB } from "../services/mongodb/mongodb-mem.service";
 
-import { mainLogger as logger } from "../logger";
+import { mainLogger as logger } from "../libs/logger";
 
 const DATABASE = process.env.DATABASE || "mongodb-mem";
 

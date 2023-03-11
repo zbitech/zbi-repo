@@ -1,10 +1,10 @@
-import { Database, IAMRepository } from "./interfaces";
-import IAMMongoRepository from "./repositories/mongodb/iam.mongo.repository";
-import databaseFactory from "./factory/database.factory";
-import repositoryFactory from "./factory/repository.factory";
-import serviceFactory from "./factory/service.factory";
-import UserController from "./controllers/user.controller";
-import ProjectController from "./controllers/project.controller";
+import { Database, IAMRepository } from "../interfaces";
+import IAMMongoRepository from "../repositories/mongodb/iam.mongo.repository";
+import databaseFactory from "./database.factory";
+import repositoryFactory from "./repository.factory";
+import serviceFactory from "./service.factory";
+import UserController from "../controllers/user.controller";
+import ProjectController from "../controllers/project.controller";
 
 class BeanFactory {
 

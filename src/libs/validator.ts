@@ -1,7 +1,7 @@
 import { ObjectSchema } from "joi";
-import { getLogger } from "../logger";
+import { getLogger } from "./logger";
 import { Logger } from "winston";
-import { FieldError, InternalServerError, ValidationError } from "../errors";
+import { FieldError, InternalServerError, ValidationError } from "./errors";
 
 
 export const validateObject = async (schema: ObjectSchema, data: any) => {

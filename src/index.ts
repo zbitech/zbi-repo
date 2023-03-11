@@ -6,9 +6,9 @@ import morgan from "morgan";
 
 dotenv.config();
 
-import {mainLogger as logger, morganStream} from "./logger";
-import beanFactory from "./bean.factory";
-import routes from "./routes";
+import {mainLogger as logger, morganStream} from "./libs/logger";
+import beanFactory from "./factory/bean.factory";
+import routes from "./routes/routes";
 import { initRequest } from "./middlewares/request.middleware";
 import { jwtVerifier } from "./middlewares/auth.middleware";
 

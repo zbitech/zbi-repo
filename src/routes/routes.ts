@@ -1,10 +1,10 @@
 import { Application } from "express";
-import beanFactory from "./bean.factory";
-import ProjectController from "./controllers/project.controller";
-import UserController from "./controllers/user.controller";
-import { mainLogger as logger } from "./logger";
-import { validator } from "./middlewares/validation.middleware";
-import { schemas } from "./model/schema";
+import beanFactory from "../factory/bean.factory";
+import ProjectController from "../controllers/project.controller";
+import UserController from "../controllers/user.controller";
+import { mainLogger as logger } from "../libs/logger";
+import { validator } from "../middlewares/validation.middleware";
+import { schemas } from "../model/schema";
 
 export default function (app: Application) {
  

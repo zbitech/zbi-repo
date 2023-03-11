@@ -1,7 +1,7 @@
 import { ProjectRepository, ProjectService, ControllerService } from "../interfaces";
 import { Project, QueryFilter, KubernetesResource, Instance, SnapshotScheduleRequest, KubernetesResources, ProjectRequest } from "../model/model";
 import { ProjectFilterType, ResourceType, StatusType } from "../model/zbi.enum";
-import { getLogger } from "../logger"
+import { getLogger } from "../libs/logger"
 
 export default class DefaultProjectService implements ProjectService {
 

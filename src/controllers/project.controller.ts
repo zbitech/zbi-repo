@@ -1,9 +1,9 @@
-import { getCurrentUser} from '../context';
+import { getCurrentUser} from '../libs/context';
 import {Request, Response} from 'express';
-import beanFactory from '../bean.factory';
+import beanFactory from '../factory/bean.factory';
 import { Project, ProjectRequest } from '../model/model';
 import { IAMService, ProjectService } from "../interfaces";
-import { getLogger } from '../logger';
+import { getLogger } from '../libs/logger';
 import { HttpStatusCode } from 'axios';
 
 export default class ProjectController {

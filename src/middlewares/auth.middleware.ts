@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { auth } from 'express-oauth2-jwt-bearer';
-import { mainLogger as logger } from '../logger';
+import { mainLogger as logger } from '../libs/logger';
 
 
 const TENANT_ID = process.env.AUTH0_TENANT_ID;

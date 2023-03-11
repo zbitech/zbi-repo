@@ -3,7 +3,7 @@ import { Project, Instance, KubernetesResource, KubernetesResources, ProjectRequ
 import { ResourceType, NetworkType, StatusType } from "../../model/zbi.enum";
 import model from "./mongo.model";
 import mongoose from 'mongoose';
-import { getLogger } from "../../logger"
+import { getLogger } from "../../libs/logger"
 import * as helper from "./helper";
 
 export default class ProjectMongoRepository implements ProjectRepository {
