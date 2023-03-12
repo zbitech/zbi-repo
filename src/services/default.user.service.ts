@@ -3,7 +3,7 @@ import { User } from "../model/model";
 import { RoleType, UserStatusType } from "../model/zbi.enum";
 import { IAMService } from "../interfaces";
 
-export default class DefaultIAMService implements IAMService {
+export default class DefaultUserService implements IAMService {
 
     private iamRepository: IAMRepository;
 

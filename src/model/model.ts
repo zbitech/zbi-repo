@@ -11,6 +11,18 @@ export interface User {
     status?: UserStatusType;
 }
 
+export interface UserInfo {
+    userid: string;
+    email: string;   
+    username: string;
+    created: string;
+    updated: string;
+    name: string;
+    last_ip: string;
+    last_login: string;
+    logins_count: string;
+}
+
 export interface TeamMember {
     user: User;
     age?: string;

@@ -1,5 +1,7 @@
-import { Instance, KubernetesResource, KubernetesResources, Project, ProjectRequest, QueryFilter, SnapshotScheduleRequest, Team, User } from "./model/model";
+import { Instance, KubernetesResource, KubernetesResources, Project, ProjectRequest, QueryFilter, SnapshotScheduleRequest, Team, TeamMembership, User, UserInfo } from "./model/model";
 import { ResourceType, SnapshotScheduleType, NetworkType, StatusType } from "./model/zbi.enum";
+import { Handler } from "express";
+
 export interface Database {
     init(): Promise<void>;
     connect(): Promise<void>;
@@ -47,6 +49,38 @@ export interface ProjectRepository {
     getInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<KubernetesResource>;
     updateInstanceResource(instanceId: string, resource: KubernetesResource, upddated: Date): Promise<KubernetesResource>;
     deleteInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<void>;
+}
+
+export interface IdentityService {
+    createUser(user: User): Promise<UserInfo>;
+    updateUser(user: User): Promise<UserInfo>;
+    getUserById(userid: string): Promise<UserInfo>;
+    getUserByEmail(email: string): Promise<UserInfo>;
+    resetPassword(userid: string): Promise<void>;
+    deactivateUser(userid: string): Promise<void>;
+    reactivateUser(userid: string): Promise<void>;
+    deleteUser(userid: string): Promise<void>;
+    getAccountActivity(userid: string): Promise<void>;
+    getLoginURL(): string;
+    getAccessVerifier(): Handler;
+}
+
+
+export interface UserService {
+    createUser(user: User): Promise<User>;
+    updateUser(user: User): Promise<User>;
+    findUsers(params: {}, size: number, page: number): Promise<User[]>;
+    findUser(params: {}): Promise<User>;
+    deactivateUser(userid: string): Promise<User>;
+    reactivateUser(userid: string): Promise<User>;
+    deleteUser(userid: string): Promise<User>;
+    createTeam(owner: string, name: string): Promise<Team>;
+    updateTeam(teamid: string, name: string): Promise<Team>;
+    findTeams(params: {}, size: number, page: number): Promise<Team[]>;
+    findTeam(params: {}): Promise<Team>;
+    findTeamMemberships(userid: string): Promise<TeamMembership[]>;
+    addTeamMember(teamid: string, userid: string): Promise<Team>;
+    removeTeamMember(teamid: string, userid: string): Promise<Team>;
 }
 
 export interface IAMService {
