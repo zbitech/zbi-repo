@@ -26,9 +26,9 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async updateUser(user: User): Promise<User> {
         try {
-            const uc = await this.userModel.findOne({userName: user.username});
+            const uc = await this.userModel.findOne({username: user.username});
             if(uc) {
-                uc.userName = uc.userName;
+                uc.username = uc.username;
                 uc.email = uc.email;
                 uc.name = user.name;
                 uc.role = user.role!;
@@ -70,13 +70,9 @@ export default class IAMMongoRepository implements IAMRepository {
         }
     }
 
-    async resetUserPassword(userName: string): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-
-    async activateUser(userName: string): Promise<void> {
+    async activateUser(username: string): Promise<void> {
         try {
-            const uc = await this.userModel.findOne({userName});
+            const uc = await this.userModel.findOne({username});
             if(uc) {
                 uc.status = UserStatusType.active;
                 await uc.save();
@@ -87,9 +83,9 @@ export default class IAMMongoRepository implements IAMRepository {
         }
     }
 
-    async deactivateUser(userName: string): Promise<void> {
+    async deactivateUser(username: string): Promise<void> {
         try {
-            const uc = await this.userModel.findOne({userName});
+            const uc = await this.userModel.findOne({username});
             if(uc) {
                 uc.status = UserStatusType.inactive;
                 await uc.save();
@@ -100,13 +96,17 @@ export default class IAMMongoRepository implements IAMRepository {
         }
     }
 
-    async validateAuth(type: string, value: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    async deleteUser(username: string): Promise<void> {
+        try {
+            await this.userModel.deleteOne({username});
+        } catch(err) {
+            throw err;
+        }
     }
 
-    async createTeam(ownerId: string, name: string): Promise<Team> {
+    async createTeam(owner: string, name: string): Promise<Team> {
         try {
-            const team = {name, owner: ownerId};
+            const team = {name, owner: owner};
             const tc = new this.teamModel(team);
             await tc.save();
 

@@ -15,17 +15,16 @@ export interface IAMRepository {
     updateUser(user: User): Promise<User>;
     findUsers(params: {}, limit: number, skip: number): Promise<Array<User>>;
     findUser(params: {}): Promise<User>;
-    resetUserPassword(userName: string): Promise<void>;
-    activateUser(userName: string): Promise<void>;
-    deactivateUser(userName: string): Promise<void>;
-    validateAuth(type: string, value: string): Promise<boolean>;
+    activateUser(username: string): Promise<void>;
+    deactivateUser(username: string): Promise<void>;
+    deleteUser(username: string): Promise<void>;
 
-    createTeam(ownerId: string, name: string): Promise<Team>;
+    createTeam(owner: string, name: string): Promise<Team>;
     findTeams(limit: number, skip: number): Promise<Array<Team>>;
     findTeam(teamId: string): Promise<Team>;
-    findTeamMemberships(userId: string): Promise<Array<Team>>
-    removeTeamMembership(teamId: string, userId: string): Promise<Team>;
-    addTeamMembership(teamId: string, userId: string): Promise<Team>;
+    findTeamMemberships(username: string): Promise<Array<Team>>
+    removeTeamMembership(teamId: string, username: string): Promise<Team>;
+    addTeamMembership(teamId: string, username: string): Promise<Team>;
     findPendingMemberships(): Promise<Array<Team>>;
 }
 
