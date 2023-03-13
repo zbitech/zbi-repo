@@ -1,10 +1,10 @@
-import { IAMRepository } from "../../interfaces";
+import { UserRepository } from "../../interfaces";
 import { Team, User, TeamMember } from "../../model/model";
 import { InviteStatusType, RoleType, UserStatusType } from "../../model/zbi.enum";
 import model from "./mongo.model";
 import * as helper from "./helper";
 
-export default class IAMMongoRepository implements IAMRepository {
+export default class UserMongoRepository implements UserRepository {
 
     userModel: any;
     teamModel: any;

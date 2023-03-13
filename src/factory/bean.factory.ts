@@ -1,5 +1,5 @@
-import { Database, IAMRepository } from "../interfaces";
-import IAMMongoRepository from "../repositories/mongodb/iam.mongo.repository";
+import { Database, UserRepository } from "../interfaces";
+import UserMongoRepository from "../repositories/mongodb/user.mongo.repository";
 import databaseFactory from "./database.factory";
 import repositoryFactory from "./repository.factory";
 import serviceFactory from "./service.factory";
@@ -20,11 +20,13 @@ class BeanFactory {
         this.services = new Map();
         this.controllers = new Map();
 
-        this.repositories.set("iam", repositoryFactory.createIAMRepository());
+        this.repositories.set("user", repositoryFactory.createUserRepository());
         this.repositories.set("project", repositoryFactory.createProjectRepository());
 
-        this.services.set("iam", serviceFactory.createUserService(this.getRepository("iam")));
-        this.services.set("project", serviceFactory.createProjectService(this.getRepository("project")));
+        this.services.set("identity", serviceFactory.createIdentityService());
+        this.services.set("controller", serviceFactory.createControllerService());
+        this.services.set("user", serviceFactory.createUserService(this.getRepository("user"), this.getService("identity")));
+        this.services.set("project", serviceFactory.createProjectService(this.getRepository("project"), this.getService("controller")));
 
         this.controllers.set("user", new UserController());
         this.controllers.set("project", new ProjectController());

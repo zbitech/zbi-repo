@@ -1,6 +1,6 @@
 import DefaultProjectService from "../services/default.project.service";
 import KubernetesControllerService from "../services/k8s.controller.service";
-import { IAMRepository, IAMService, IdentityService, ProjectRepository, UserService } from "../interfaces";
+import { UserRepository, IdentityService, ProjectRepository, UserService, ControllerService, ProjectService } from "../interfaces";
 import DefaultUserService from "../services/default.user.service";
 import Auth0IdentityService from "src/services/auth0/auth0.identity.service";
 
@@ -10,12 +10,16 @@ class ServiceFactory {
         return new Auth0IdentityService();
     }
 
-    createUserService(iam: IAMRepository): UserService {
-        return new DefaultUserService(iam, this.createIdentityService());
+    createControllerService(): ControllerService {
+        return new KubernetesControllerService();
     }
 
-    createProjectService(project: ProjectRepository) {
-        return new DefaultProjectService(project, new KubernetesControllerService());
+    createUserService(user: UserRepository, identity: IdentityService): UserService {
+        return new DefaultUserService(user, identity);
+    }
+
+    createProjectService(project: ProjectRepository, controller: ControllerService): ProjectService {
+        return new DefaultProjectService(project, controller);
     }
 
 }

@@ -10,7 +10,7 @@ export interface Database {
 }
 
 
-export interface IAMRepository {
+export interface UserRepository {
     createUser(user: User): Promise<User>;
     updateUser(user: User): Promise<User>;
     findUsers(params: {}, limit: number, skip: number): Promise<Array<User>>;
@@ -80,23 +80,6 @@ export interface UserService {
     findTeamMemberships(userid: string): Promise<TeamMembership[]>;
     addTeamMember(teamid: string, userid: string): Promise<Team>;
     removeTeamMember(teamid: string, userid: string): Promise<Team>;
-}
-
-export interface IAMService {
-    createUser(user: User): Promise<User>;
-//    inviteUser(user: User): Promise<User>;
-//  createTeamMember(user: User): Promise<User>
-//  updateUser(user: User): Promise<User>;
-    findUsers(limit: number, page: number): Promise<User[]>;
-    findByUserID(userId: string): Promise<User>;
-// findByEmail(email: string): Promise<User>;
-//    activateUser(userId: string): Promise<void>;
-//    deactivateUser(userId: string): Promise<void>;
-//  resetPassword(userId: string): Promise<void>;
-// findTeams(teamId: string): Promise<Team>;
-// findUserMemberships(userId: string): Promise<Team>;
-// addTeamMember(teamId: string, email: string): Promise<Team>;
-// removeTeamMember(teamId: string, memberId: string): Promise<Team>;
 }
 
 export interface ProjectService {

@@ -2,7 +2,7 @@ import { getCurrentUser} from '../libs/context';
 import {Request, Response} from 'express';
 import beanFactory from '../factory/bean.factory';
 import { Project, ProjectRequest } from '../model/model';
-import { IAMService, ProjectService } from "../interfaces";
+import { UserService, ProjectService } from "../interfaces";
 import { getLogger } from '../libs/logger';
 import { HttpStatusCode } from 'axios';
 

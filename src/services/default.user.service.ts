@@ -1,15 +1,14 @@
-import { IAMRepository, IdentityService, UserService } from "../interfaces";
+import { UserRepository, IdentityService, UserService } from "../interfaces";
 import { Team, TeamMembership, User } from "../model/model";
 import { RoleType, UserStatusType } from "../model/zbi.enum";
-import { IAMService } from "../interfaces";
 
 export default class DefaultUserService implements UserService {
 
-    private iamRepository: IAMRepository;
+    private userRepository: UserRepository;
     private identityService: IdentityService;
 
-    constructor(iamRepository: IAMRepository, identityService: IdentityService) {
-        this.iamRepository = iamRepository;
+    constructor(userRepository: UserRepository, identityService: IdentityService) {
+        this.userRepository = userRepository;
         this.identityService = identityService;
     }
 
@@ -18,7 +17,7 @@ export default class DefaultUserService implements UserService {
         try {
             
             const newUser = await this.identityService.createUser(user);
-            await this.iamRepository.createUser(user);
+            await this.userRepository.createUser(user);
 
             return user;
         } catch (err) {
@@ -30,7 +29,7 @@ export default class DefaultUserService implements UserService {
         try {
             
             const newUser = await this.identityService.updateUser(user);
-            await this.iamRepository.updateUser(user);
+            await this.userRepository.updateUser(user);
 
             return user;
         } catch (err) {
@@ -40,7 +39,7 @@ export default class DefaultUserService implements UserService {
 
     async findUsers(params: {}, size: number, page: number): Promise<User[]> {
         try {
-            return await this.iamRepository.findUsers(params, size, page);
+            return await this.userRepository.findUsers(params, size, page);
         } catch (err) {
             throw err;
         }
@@ -49,7 +48,7 @@ export default class DefaultUserService implements UserService {
 
     async findUser(param: {}): Promise<User> {
         try {   
-            return await this.iamRepository.findUser(param);
+            return await this.userRepository.findUser(param);
         } catch (err) {
             throw err;
         }
@@ -58,12 +57,12 @@ export default class DefaultUserService implements UserService {
     async deactivateUser(userid: string): Promise<User> {
         try {
             
-            const user: User = await this.iamRepository.findUser({userid});
+            const user: User = await this.userRepository.findUser({userid});
 
             await this.identityService.deactivateUser(userid);
 
             user.status = UserStatusType.inactive;
-            await this.iamRepository.updateUser(user);
+            await this.userRepository.updateUser(user);
             return user;
         } catch (err) {
             throw err;
@@ -72,11 +71,11 @@ export default class DefaultUserService implements UserService {
 
     async reactivateUser(userid: string): Promise<User> {
         try {
-            const user: User = await this.iamRepository.findUser({userid});
+            const user: User = await this.userRepository.findUser({userid});
             
             await this.identityService.reactivateUser(userid);
             user.status = UserStatusType.active;
-            await this.iamRepository.updateUser(user);
+            await this.userRepository.updateUser(user);
             
             return user;
         } catch (err) {
@@ -98,7 +97,7 @@ export default class DefaultUserService implements UserService {
 
     async createTeam(owner: string, name: string): Promise<Team> {
         try {            
-            return await this.iamRepository.createTeam(owner, name);
+            return await this.userRepository.createTeam(owner, name);
         } catch (err) {
             throw err;
         }
@@ -109,7 +108,7 @@ export default class DefaultUserService implements UserService {
             // const team: Team = this.iamRepository.findTeam(teamid);
             // team.name = name;
             // return await this.iamRepository.up
-            const team: Team = await this.iamRepository.findTeam(teamid);
+            const team: Team = await this.userRepository.findTeam(teamid);
             return team;
         } catch (err) {
             throw err;
@@ -119,7 +118,7 @@ export default class DefaultUserService implements UserService {
 
     async findTeams(params: {}, size: number, page: number): Promise<Team[]> {
         try {            
-            return await this.iamRepository.findTeams(size, page);
+            return await this.userRepository.findTeams(size, page);
         } catch (err) {
             throw err;
         }
@@ -128,7 +127,7 @@ export default class DefaultUserService implements UserService {
 
     async findTeam(teamid: string): Promise<Team> {
         try {
-            return await this.iamRepository.findTeam(teamid);            
+            return await this.userRepository.findTeam(teamid);            
         } catch (err) {
             throw err;
         }
@@ -136,7 +135,7 @@ export default class DefaultUserService implements UserService {
 
     async findTeamMemberships(userid: string): Promise<TeamMembership[]> {
         try {            
-            await this.iamRepository.findTeamMemberships(userid);
+            await this.userRepository.findTeamMemberships(userid);
             return []
         } catch (err) {
             throw err;
@@ -146,7 +145,7 @@ export default class DefaultUserService implements UserService {
 
     async addTeamMember(teamid: string, userid: string): Promise<Team> {
         try {            
-            return await this.iamRepository.addTeamMembership(teamid, userid);
+            return await this.userRepository.addTeamMembership(teamid, userid);
         } catch (err) {
             throw err;
         }
@@ -155,7 +154,7 @@ export default class DefaultUserService implements UserService {
 
     async removeTeamMember(teamid: string, userid: string): Promise<Team> {
         try {            
-            return await this.iamRepository.removeTeamMembership(teamid, userid);
+            return await this.userRepository.removeTeamMembership(teamid, userid);
         } catch (err) {
             throw err;
         }
