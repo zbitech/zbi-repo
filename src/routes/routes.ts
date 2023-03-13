@@ -1,17 +1,14 @@
 import { Application } from "express";
 import beanFactory from "../factory/bean.factory";
-import ProjectController from "../controllers/project.controller";
-import UserController from "../controllers/user.controller";
+import projectController from "../controllers/project.controller";
+import userController from "../controllers/user.controller";
 import { mainLogger as logger } from "../libs/logger";
 import { validator } from "../middlewares/validation.middleware";
 import { schemas } from "../model/schema";
 
 export default function (app: Application) {
  
-    logger.info("initializing routes");
-    const userController: UserController = beanFactory.getController("user");
-    const projController: ProjectController = beanFactory.getController("project");
-    
+    logger.info("initializing routes");    
 
     app.route(`/api/account`)
         .all()
@@ -48,16 +45,16 @@ export default function (app: Application) {
 
     app.route(`/api/projects`)
         .all()
-        .get(projController.findProjects)
-        .post(validator(schemas.projectRequest), projController.createProject);
+        .get(projectController.findProjects)
+        .post(validator(schemas.projectRequest), projectController.createProject);
 
     app.route(`/api/projects/:projectid`)
         .all()
-        .get(projController.findProject)
-        .put(projController.updateProject)
-        .patch(projController.repairProject)
-        .delete(projController.deleteProject)
-        .purge(projController.purgeProject);
+        .get(projectController.findProject)
+        .put(projectController.updateProject)
+        .patch(projectController.repairProject)
+        .delete(projectController.deleteProject)
+        .purge(projectController.purgeProject);
 
     app.route(`/api/projects/:projectid/resources`)
         .get()
@@ -66,31 +63,31 @@ export default function (app: Application) {
         
     app.route(`/api/instances`)
         .all()
-        .get(projController.findAllInstances)
+        .get(projectController.findAllInstances)
 
     app.route(`/api/projects/:projectid/instances`)
         .all()
-        .get(projController.findInstances)
-        .post(projController.createInstance)
+        .get(projectController.findInstances)
+        .post(projectController.createInstance)
     
     app.route(`/api/instances/:instanceid`)
         .all()
-        .get(projController.findInstance)
-        .post(projController.updateInstance)
-        .put(projController.operateInstance)
-        .patch(projController.repairInstance)
-        .delete(projController.deleteInstance)
-        .purge(projController.purgeInstance)
+        .get(projectController.findInstance)
+        .post(projectController.updateInstance)
+        .put(projectController.operateInstance)
+        .patch(projectController.repairInstance)
+        .delete(projectController.deleteInstance)
+        .purge(projectController.purgeInstance)
 
     app.route(`/api/instances/:instanceid/resources`)
         .all()
-        .get(projController.getInstanceResources)
+        .get(projectController.getInstanceResources)
 
     app.route(`/api/instances/:instanceid/resources/:resourceid`)
         .all()
-        .get(projController.getInstanceResource)
-        .put(projController.updateInstanceResource)
-        .delete(projController.deleteInstanceResource)
+        .get(projectController.getInstanceResource)
+        .put(projectController.updateInstanceResource)
+        .delete(projectController.deleteInstanceResource)
         
 
 }

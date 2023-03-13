@@ -5,7 +5,7 @@ import { UserService } from '../interfaces';
 
 import { getLogger } from "../libs/logger";
 
-export default class UserController {
+class UserController {
 
     async findUsers(request: Request, response: Response): Promise<void> {
 
@@ -61,3 +61,5 @@ export default class UserController {
     }
 
 }
+
+export default new UserController();

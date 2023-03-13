@@ -6,7 +6,7 @@ import { UserService, ProjectService } from "../interfaces";
 import { getLogger } from '../libs/logger';
 import { HttpStatusCode } from 'axios';
 
-export default class ProjectController {
+class ProjectController {
 
     constructor() {
     }
@@ -126,19 +126,4 @@ export default class ProjectController {
 
 }
 
-
-// const auth = {
-//     "payload":
-//         {
-//             "iss":"https://dev-18udhi373ksoxehw.us.auth0.com/",
-//             "sub":"auth0|63c1f98db4b6a8f1c1dacbf3",
-//             "aud":"https://zbi-control-plane",
-//             "iat":1675271293,
-//             "exp":1675357693,
-//             "azp":"IcSZP96JQeDDGrckbjN1S6bAf9YAg2ua",
-//             "scope":"read:project create:project update:project delete:project read:instance create:instance delete:instance update:instance",
-//             "gty":"password"
-//         },
-//         "header":{"alg":"RS256","typ":"JWT","kid":"3O0ERSgekUG0WqhqUp6Z6"},
-//         "token":"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNPMEVSU2dla1VHMFdxaHFVcDZaNiJ9.eyJpc3MiOiJodHRwczovL2Rldi0xOHVkaGkzNzNrc294ZWh3LnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2M2MxZjk4ZGI0YjZhOGYxYzFkYWNiZjMiLCJhdWQiOiJodHRwczovL3piaS1jb250cm9sLXBsYW5lIiwiaWF0IjoxNjc1MjcxMjkzLCJleHAiOjE2NzUzNTc2OTMsImF6cCI6IkljU1pQOTZKUWVEREdyY2tiak4xUzZiQWY5WUFnMnVhIiwic2NvcGUiOiJyZWFkOnByb2plY3QgY3JlYXRlOnByb2plY3QgdXBkYXRlOnByb2plY3QgZGVsZXRlOnByb2plY3QgcmVhZDppbnN0YW5jZSBjcmVhdGU6aW5zdGFuY2UgZGVsZXRlOmluc3RhbmNlIHVwZGF0ZTppbnN0YW5jZSIsImd0eSI6InBhc3N3b3JkIn0.PXFe2EVFGe3oMfZENaxxNRHVX0X0-JHNSxWH2IYeUHVWVKG63k5_M1NqBgtHyMoSp1WHtEG6RZiOcI5E53UVs_EjhbF5r8vyK7_My92ajIkRKCREx2-Fn17kNcIDQMYP1R0sKoyG0VBqpbeWGyjyWfqJapVgk4FsHCy_x1BcZifuIKX7lsNmmi9HUBuEz2sumDF4l0ffARnNaWdIhl8PgnFoimxxn3o6r1lCwBU8ilsqXM-KxIScMGqvdaXbDvaJmbd0z2nAEhNrBAcq0FxFiR-ZrKhHzExlfi37mjMhALZ7XJaOCIyUaaV4cGMT-6jp0ZmJXtENGI3cG6R6kXQ1dg"
-//     };
+export default new ProjectController();
