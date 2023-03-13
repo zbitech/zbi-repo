@@ -6,28 +6,25 @@ import { IdentityService } from "../../interfaces";
 import { Handler } from "express";
 import { auth } from 'express-oauth2-jwt-bearer';
 
-const AUTH0_TENANT_ID = process.env.AUTH0_TENANT_ID;
-const AUTH0_DOMAIN = process.env.AUTH0_DOMAIN;
-const AUTH0_CLIENT_ID = process.env.AUTH0_CLIENT_ID;
-const AUTH0_CLIENT_SECRET = process.env.AUTH0_CLIENT_SECRET;
-const AUTH0_GRANT_TYPE = process.env.AUTH0_GRANT_TYPE;
+//const AUTH0_TENANT_ID = process.env.AUTH0_TENANT_ID;
+//const AUTH0_DOMAIN = process.env.AUTH0_DOMAIN;
+//const AUTH0_CLIENT_ID = process.env.AUTH0_CLIENT_ID;
+//const AUTH0_CONNECTION_ID = process.env.AUTH0_CONNECTION_ID;
+//const AUTH0_CLIENT_SECRET = process.env.AUTH0_CLIENT_SECRET;
+//const AUTH0_GRANT_TYPE = process.env.AUTH0_GRANT_TYPE;
 
 const TENANT_ID = process.env.AUTH0_TENANT_ID;
 const DOMAIN = process.env.AUTH0_DOMAIN;
 const CLIENT_ID = process.env.AUTH0_CLIENT_ID
 const CLIENT_SECRET = process.env.AUTH0_CLIENT_SECRET
 const AUDIENCE = process.env.AUTH0_AUDIENCE
-
+const CONNECTION_ID =  process.env.AUTH0_CONNECTION_ID;
 
 const AUTH0_URL=`https://${TENANT_ID}.${DOMAIN}`
 
-var auth0 = new AuthenticationClient({domain: `${AUTH0_TENANT_ID}.${AUTH0_DOMAIN}`, clientId: AUTH0_CLIENT_ID})
+var auth0 = new AuthenticationClient({domain: `${TENANT_ID}.${DOMAIN}`, clientId: CLIENT_ID})
 
-var management = new ManagementClient({
-    token: '', domain: ''
-})
-
-class Auth0IdentityService implements IdentityService {
+export default class Auth0IdentityService implements IdentityService {
 
     token: string = "";
     expiration: number = 3600;
@@ -53,7 +50,7 @@ class Auth0IdentityService implements IdentityService {
             // invite user
             const user_response = await axios.post(`${AUTH0_URL}/api/v2/users`, JSON.stringify(user_data), {headers});
             if(user_response.status == HttpStatusCode.Created) {
-                user.userId = user_response.data.user_id;
+                user.userid = user_response.data.user_id;
                 const role_data = {"roles":[user.role]}
 
                 // set user role
@@ -75,9 +72,9 @@ class Auth0IdentityService implements IdentityService {
                 "name": user.name,
             };
 
-            const user_response = await axios.patch(`${AUTH0_URL}/api/v2/users/${user.userId}`, JSON.stringify(user_data), {headers});
+            const user_response = await axios.patch(`${AUTH0_URL}/api/v2/users/${user.userid}`, JSON.stringify(user_data), {headers});
             if(user_response.status == HttpStatusCode.Created) {
-                user.userId = user_response.data.user_id;
+                user.userid = user_response.data.user_id;
                 const role_data = {"roles":[user.role]}
 
                 // set user role
@@ -166,11 +163,37 @@ class Auth0IdentityService implements IdentityService {
     }
 
     async deactivateUser(userid: string): Promise<void> {
+        try {
+            const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
+            const user_data = {blocked: true};
 
+            const user_response = await axios.patch(`${AUTH0_URL}/api/v2/users/${userid}`, JSON.stringify(user_data), {headers});
+            if(user_response.status == HttpStatusCode.Created) {
+ 
+            }
+
+            throw new ServiceError(ServiceErrorType.UNAVAILABLE, "");
+
+        } catch(err) {
+            throw err;
+        }
     }
 
     async reactivateUser(userid: string): Promise<void> {
+        try {
+            const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
+            const user_data = {blocked: false};
 
+            const user_response = await axios.patch(`${AUTH0_URL}/api/v2/users/${userid}`, JSON.stringify(user_data), {headers});
+            if(user_response.status == HttpStatusCode.Created) {
+ 
+            }
+
+            throw new ServiceError(ServiceErrorType.UNAVAILABLE, "");
+
+        } catch(err) {
+            throw err;
+        }
     }
 
     async deleteUser(userid: string): Promise<void> {

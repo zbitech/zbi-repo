@@ -4,8 +4,8 @@ import { User, Team, TeamMember, Project, Instance, ResourceRequest, KubernetesR
 export function createUser(uc: any): User {
     if(uc) {
         return {
-            userId: uc._id,
-            userName: uc.userName, name: uc.name, email: uc.email, 
+            userid: uc._id,
+            username: uc.userName, name: uc.name, email: uc.email, 
             status: uc.status, role: uc.role
         }
     }

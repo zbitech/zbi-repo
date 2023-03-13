@@ -73,11 +73,11 @@ export interface UserService {
     findUser(params: {}): Promise<User>;
     deactivateUser(userid: string): Promise<User>;
     reactivateUser(userid: string): Promise<User>;
-    deleteUser(userid: string): Promise<User>;
+    deleteUser(userid: string): Promise<void>;
     createTeam(owner: string, name: string): Promise<Team>;
     updateTeam(teamid: string, name: string): Promise<Team>;
     findTeams(params: {}, size: number, page: number): Promise<Team[]>;
-    findTeam(params: {}): Promise<Team>;
+    findTeam(teamid: string): Promise<Team>;
     findTeamMemberships(userid: string): Promise<TeamMembership[]>;
     addTeamMember(teamid: string, userid: string): Promise<Team>;
     removeTeamMember(teamid: string, userid: string): Promise<Team>;

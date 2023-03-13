@@ -26,7 +26,7 @@ export default class IAMMongoRepository implements IAMRepository {
 
     async updateUser(user: User): Promise<User> {
         try {
-            const uc = await this.userModel.findOne({userName: user.userName});
+            const uc = await this.userModel.findOne({userName: user.username});
             if(uc) {
                 uc.userName = uc.userName;
                 uc.email = uc.email;

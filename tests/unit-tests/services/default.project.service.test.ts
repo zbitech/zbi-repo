@@ -1,7 +1,7 @@
 import DefaultProjectService from "../../../src/services/default.project.service";
 import KubernetesControllerService from "../../../src/services/k8s.controller.service";
 import ProjectMongoRepository from "../../../src/repositories/mongodb/project.mongo.repository";
-import { getLogger } from "../../../src/logger";
+import { getLogger } from "../../../src/libs/logger";
 import { Logger } from "winston";
 import { ProjectRepository, ControllerService } from "../../../src/interfaces";
 import { MongoMemoryDB } from "../../../src/services/mongodb/mongodb-mem.service";
