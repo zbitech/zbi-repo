@@ -9,6 +9,11 @@ export interface User {
     name: string;
     role?: RoleType;
     status?: UserStatusType;
+    created?: string;
+    updated?: string;
+    last_ip?: string;
+    last_login?: string;
+    logins_count?: string;
 }
 
 export interface UserInfo {

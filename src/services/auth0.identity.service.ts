@@ -1,8 +1,7 @@
 import axios, { HttpStatusCode } from "axios";
-import { User, UserInfo } from "../../model/model";
-import { AuthenticationClient, ManagementClient } from 'auth0';
-import { ServiceError, ServiceErrorType } from "../../libs/errors";
-import { IdentityService } from "../../interfaces";
+import { User, UserInfo } from "../model/model";
+import { ServiceError, ServiceErrorType } from "../libs/errors";
+import { IdentityService, UserRepository } from "../interfaces";
 import { Handler } from "express";
 import { auth } from 'express-oauth2-jwt-bearer';
 
@@ -22,14 +21,15 @@ const CONNECTION_ID =  process.env.AUTH0_CONNECTION_ID;
 
 const AUTH0_URL=`https://${TENANT_ID}.${DOMAIN}`
 
-var auth0 = new AuthenticationClient({domain: `${TENANT_ID}.${DOMAIN}`, clientId: CLIENT_ID})
-
 export default class Auth0IdentityService implements IdentityService {
 
     token: string = "";
     expiration: number = 3600;
 
-    constructor() {
+    private userRepository: UserRepository;
+
+    constructor(userRepository: UserRepository) {
+        this.userRepository = userRepository;
         this.getToken();
         this.expiration = 3600;
 
@@ -37,7 +37,7 @@ export default class Auth0IdentityService implements IdentityService {
     }
 
 
-    async createUser(user: User): Promise<UserInfo> {
+    async createUser(user: User): Promise<User> {
         try {
             const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
             const user_data = {
@@ -64,7 +64,7 @@ export default class Auth0IdentityService implements IdentityService {
         }
     }
 
-    async updateUser(user: User): Promise<UserInfo> {
+    async updateUser(user: User): Promise<User> {
         try {
             const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
             const user_data = {
@@ -88,7 +88,7 @@ export default class Auth0IdentityService implements IdentityService {
         }
     }
 
-    async getUserById(userid: string): Promise<UserInfo> {
+    async getUserById(userid: string): Promise<User> {
         try {
             const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
             const response = await axios.get(`${AUTH0_URL}/api/v2/users/${userid}`, {headers});
@@ -115,7 +115,7 @@ export default class Auth0IdentityService implements IdentityService {
         }
     }
 
-    async getUserByEmail(email: string): Promise<UserInfo> {
+    async getUserByEmail(email: string): Promise<User> {
         try {
             const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
             const response = await axios.get(`${AUTH0_URL}/api/v2/users-by-email`, {headers});

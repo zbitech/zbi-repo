@@ -12,26 +12,17 @@ export default class DefaultUserService implements UserService {
         this.identityService = identityService;
     }
 
-
     async createUser(user: User): Promise<User> {
-        try {
-            
-            const newUser = await this.identityService.createUser(user);
-            await this.userRepository.createUser(user);
-
-            return user;
+        try {            
+            return await this.identityService.createUser(user);
         } catch (err) {
             throw err;
         }
     }
 
     async updateUser(user: User): Promise<User> {
-        try {
-            
-            const newUser = await this.identityService.updateUser(user);
-            await this.userRepository.updateUser(user);
-
-            return user;
+        try {            
+            return this.identityService.updateUser(user);
         } catch (err) {
             throw err;
         }
@@ -43,7 +34,6 @@ export default class DefaultUserService implements UserService {
         } catch (err) {
             throw err;
         }
-
     }
 
     async findUser(param: {}): Promise<User> {

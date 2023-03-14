@@ -51,10 +51,10 @@ export interface ProjectRepository {
 }
 
 export interface IdentityService {
-    createUser(user: User): Promise<UserInfo>;
-    updateUser(user: User): Promise<UserInfo>;
-    getUserById(userid: string): Promise<UserInfo>;
-    getUserByEmail(email: string): Promise<UserInfo>;
+    createUser(user: User): Promise<User>;
+    updateUser(user: User): Promise<User>;
+    getUserById(userid: string): Promise<User>;
+    getUserByEmail(email: string): Promise<User>;
     resetPassword(userid: string): Promise<void>;
     deactivateUser(userid: string): Promise<void>;
     reactivateUser(userid: string): Promise<void>;

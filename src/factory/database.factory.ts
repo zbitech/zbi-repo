@@ -1,6 +1,6 @@
 import { Database } from "../interfaces";
-import { MongoDB } from "../services/mongodb/mongodb.service";
-import { MongoMemoryDB } from "../services/mongodb/mongodb-mem.service";
+import { MongoDB } from "../services/mongodb.service";
+import { MongoMemoryDB } from "../services/mongodb-mem.service";
 
 import { mainLogger as logger } from "../libs/logger";
 

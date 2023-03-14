@@ -1,7 +1,7 @@
-import { Database } from "../../interfaces";
+import { Database } from "../interfaces";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import { mainLogger as logger } from "../../libs/logger";
+import { mainLogger as logger } from "../libs/logger";
 
 const dbOpts = {
     instance: {dbName: 'zbiRepo'/*, dbPath: './_db'*/},

@@ -1,4 +1,4 @@
-import { MongoMemoryDB } from "../../../../src/services/mongodb/mongodb-mem.service";
+import { MongoMemoryDB } from "../../../../src/services/mongodb-mem.service";
 import UserMongoRepository from "../../../../src/repositories/mongodb/user.mongo.repository";
 import model from "../../../../src/repositories/mongodb/mongo.model";
 import { User } from "../../../../src/model/model";

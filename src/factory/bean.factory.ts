@@ -18,7 +18,7 @@ class BeanFactory {
         this.repositories.set("user", repositoryFactory.createUserRepository());
         this.repositories.set("project", repositoryFactory.createProjectRepository());
 
-        this.services.set("identity", serviceFactory.createIdentityService());
+        this.services.set("identity", serviceFactory.createIdentityService(this.getUserRepository()));
         this.services.set("controller", serviceFactory.createControllerService());
         this.services.set("user", serviceFactory.createUserService(this.getUserRepository(), this.getIdentityService()));
         this.services.set("project", serviceFactory.createProjectService(this.getProjectRepository(), this.getControllerService()));

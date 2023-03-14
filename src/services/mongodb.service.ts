@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Database } from "../../interfaces";
+import { Database } from "../interfaces";
 
 const ConnectionString = process.env.MONGO_DB_CONNECTION_STRING || "mongodb://localhost:27017/zbiRepo";
 const RetrySeconds = parseInt(process.env.MONGO_DB_RETRY_SECONDS || "5");
