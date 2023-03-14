@@ -36,15 +36,15 @@ export default class BasicIdentityService implements IdentityService {
     }
 
     deactivateUser(userid: string): Promise<void> {
-        throw new Error("Method not implemented.");
+        return this.repository.deactivateUser(userid);
     }
 
-    reactivateUser(userid: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    activateUser(userid: string): Promise<void> {
+        return this.repository.activateUser(userid);
     }
 
     deleteUser(userid: string): Promise<void> {
-        throw new Error("Method not implemented.");
+        return this.repository.deleteUser(userid);
     }
 
     getAccountActivity(userid: string): Promise<void> {

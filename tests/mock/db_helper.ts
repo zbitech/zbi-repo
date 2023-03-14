@@ -3,7 +3,7 @@ import { NetworkType, RoleType, StatusType, InviteStatusType, UserStatusType, Vo
 import { getRandom, generateString, generateId, generateName, generateEmail } from "./util";
 import model from "../../src/repositories/mongodb/mongo.model";
 import mongoose from 'mongoose';
-import { getLogger } from "../../src/logger";
+import { getLogger } from "../../src/libs/logger";
 
 
 const logger = getLogger('mock-schema');
@@ -12,8 +12,8 @@ const USER_ROLES: RoleType[] = [RoleType.owner, RoleType.user];
 
 function createUserSchema(user: any): any {
     return {
-        userId: user.userId ? user.userId : generateId(),
-        userName: user.userName ? user.userName : generateString(5),
+        userid: user.userid ? user.userid : generateId(),
+        username: user.username ? user.username : generateString(5),
         email: user.email ? user.email : generateEmail(),
         name: user.name ? user.name : generateName(),
         role: user.role ? user.role : getRandom(USER_ROLES),

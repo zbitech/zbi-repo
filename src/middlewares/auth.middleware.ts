@@ -10,18 +10,3 @@ const CLIENT_SECRET = process.env.AUTH0_CLIENT_SECRET
 const AUDIENCE = process.env.AUTH0_AUDIENCE
 
 export const jwtVerifier = beanFactory.getIdentityService().getAccessVerifier();
-
-// auth({
-//     audience: `${AUDIENCE}`,
-//     issuerBaseURL: `https://${TENANT_ID}.${DOMAIN}/`,
-//     tokenSigningAlg: 'RS256',
-//     jwksUri: `https://${TENANT_ID}.${DOMAIN}/.well-known/jwks.json`
-// });
-
-const basicJwtVerifier = function(request: Request, response: Response, next: NextFunction) {
-    logger.info(`checking for jwt ...`);
-    next();
-}
-
-//export const jwtVerifier = basicJwtVerifier;
-// export const jwtVerifier = auth0jwtVerifier;

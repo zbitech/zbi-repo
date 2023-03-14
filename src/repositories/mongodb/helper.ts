@@ -1,5 +1,26 @@
-import { User, Team, TeamMember, Project, Instance, ResourceRequest, KubernetesResource, KubernetesResources } from "src/model/model";
+import { User, Team, TeamMember, Project, Instance, ResourceRequest, KubernetesResource, KubernetesResources, QueryParam } from "../../model/model";
+import { FilterConditionType } from "../../model/zbi.enum";
 
+
+export function createParam(param: QueryParam) {
+    const obj: any = {};
+    if(param.name) {
+        const name = param.name as string;
+
+        if(param.condition === FilterConditionType.equal) {
+            obj[name] = param.value;
+        } else if(param.condition === FilterConditionType.notequal) {
+            obj[name] = {'$neq': param.value};
+        } else if(param.condition === FilterConditionType.in) {
+            obj[name] = {'$in': param.value};
+        } else if(param.condition === FilterConditionType.notin) {
+            obj[name] = {'$notin': param.value};
+        }
+
+        obj[name] = param.value;
+    }
+    return obj;
+}
 
 export function createUser(uc: any): User {
     if(uc) {

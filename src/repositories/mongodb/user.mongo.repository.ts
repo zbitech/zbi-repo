@@ -1,5 +1,5 @@
 import { UserRepository } from "../../interfaces";
-import { Team, User, TeamMember } from "../../model/model";
+import { Team, User, TeamMember, QueryParam } from "../../model/model";
 import { InviteStatusType, RoleType, UserStatusType } from "../../model/zbi.enum";
 import model from "./mongo.model";
 import * as helper from "./helper";
@@ -33,7 +33,7 @@ export default class UserMongoRepository implements UserRepository {
                 uc.name = user.name;
                 uc.role = user.role!;
                 uc.status = user.status!;
-                uc.updated = new Date();
+//                uc.updated = new Date();
                 await uc.save();
 
                 return helper.createUser(uc);
@@ -46,9 +46,11 @@ export default class UserMongoRepository implements UserRepository {
         }
     }
 
-    async findUsers(params: {}, limit: number, skip: number): Promise<User[]> {
+    async findUsers(params: QueryParam, size: number, page: number): Promise<User[]> {
         try {
-            const uc = await this.userModel.find(params).limit(limit).skip(skip);
+            const p = helper.createParam(params);
+            const skip = page>0 ? (page-1) * size : 0;
+            const uc = await this.userModel.find(p).skip(skip).limit(size);
             if(uc) {
                 return helper.createUsers(uc);
             }
@@ -58,9 +60,10 @@ export default class UserMongoRepository implements UserRepository {
         }
     }
 
-    async findUser(params: {}): Promise<User> {
+    async findUser(params: QueryParam): Promise<User> {
         try {
-            const uc = await this.userModel.findOne(params);
+            const p = helper.createParam(params);
+            const uc = await this.userModel.findOne(p);
             if(uc) {
                 return helper.createUser(uc);
             }
@@ -117,11 +120,14 @@ export default class UserMongoRepository implements UserRepository {
         }
     }
 
-    async findTeams(limit: number, skip: number): Promise<Team[]> {
+    async findTeams(size: number, page: number): Promise<Team[]> {
         try {
+
+            const skip = page>0 ? (page-1) * size : 0;
             const tc = await this.teamModel.find({}, {_id: 1, name: 1, owner: 1, created: 1, updated: 1}).populate({
                 path: "owner", select: {userName: 1, email: 1, name: 1}
-            }); //.limit(limit).skip(skip);
+            }).skip(skip).limit(size);
+
             if(tc) {
                 console.log(JSON.stringify(tc));
                 return helper.createTeams(tc);

@@ -26,10 +26,10 @@ export default class Auth0IdentityService implements IdentityService {
     token: string = "";
     expiration: number = 3600;
 
-    private userRepository: UserRepository;
+    private repository: UserRepository;
 
     constructor(userRepository: UserRepository) {
-        this.userRepository = userRepository;
+        this.repository = userRepository;
         this.getToken();
         this.expiration = 3600;
 
@@ -55,6 +55,11 @@ export default class Auth0IdentityService implements IdentityService {
 
                 // set user role
                 const role_response = await axios.post(`${AUTH0_URL}/api/v2/users/${user_response.data.user_id}/roles`, JSON.stringify(role_data), {headers});
+
+                const newUser = await this.repository.createUser(user);
+
+
+                return newUser;
             }
 
             throw new ServiceError(ServiceErrorType.UNAVAILABLE, "");
@@ -79,6 +84,10 @@ export default class Auth0IdentityService implements IdentityService {
 
                 // set user role
                 const role_response = await axios.post(`${AUTH0_URL}/api/v2/users/${user_response.data.user_id}/roles`, JSON.stringify(role_data), {headers});
+
+                const newUser = await this.repository.updateUser(user);
+
+                return newUser;
             }
 
             throw new ServiceError(ServiceErrorType.UNAVAILABLE, "");
@@ -92,7 +101,7 @@ export default class Auth0IdentityService implements IdentityService {
         try {
             const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
             const response = await axios.get(`${AUTH0_URL}/api/v2/users/${userid}`, {headers});
-            if(response.status === 200) {
+            if(response.status === HttpStatusCode.Ok) {
 
                 return {
                     userid: response.data.user_id,
@@ -119,7 +128,7 @@ export default class Auth0IdentityService implements IdentityService {
         try {
             const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
             const response = await axios.get(`${AUTH0_URL}/api/v2/users-by-email`, {headers});
-            if(response.status === 200) {
+            if(response.status === HttpStatusCode.Ok) {
 
                 return {
                     userid: response.data.user_id,
@@ -151,7 +160,7 @@ export default class Auth0IdentityService implements IdentityService {
                 mark_email_as_verified: false, includeEmailInRedirect: false
             };
             const response = await axios.delete(`${AUTH0_URL}/api/v2/ticket/password-change`, {headers});
-            if(response.status === 200) {
+            if(response.status === HttpStatusCode.Ok) {
                 return;
             }
 
@@ -168,8 +177,8 @@ export default class Auth0IdentityService implements IdentityService {
             const user_data = {blocked: true};
 
             const user_response = await axios.patch(`${AUTH0_URL}/api/v2/users/${userid}`, JSON.stringify(user_data), {headers});
-            if(user_response.status == HttpStatusCode.Created) {
- 
+            if(user_response.status == HttpStatusCode.Ok) {
+                return this.repository.deactivateUser(userid);
             }
 
             throw new ServiceError(ServiceErrorType.UNAVAILABLE, "");
@@ -179,14 +188,14 @@ export default class Auth0IdentityService implements IdentityService {
         }
     }
 
-    async reactivateUser(userid: string): Promise<void> {
+    async activateUser(userid: string): Promise<void> {
         try {
             const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
             const user_data = {blocked: false};
 
             const user_response = await axios.patch(`${AUTH0_URL}/api/v2/users/${userid}`, JSON.stringify(user_data), {headers});
-            if(user_response.status == HttpStatusCode.Created) {
- 
+            if(user_response.status == HttpStatusCode.Ok) {
+                return this.repository.activateUser(userid);
             }
 
             throw new ServiceError(ServiceErrorType.UNAVAILABLE, "");
@@ -200,8 +209,8 @@ export default class Auth0IdentityService implements IdentityService {
         try {
             const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
             const response = await axios.delete(`${AUTH0_URL}/api/v2/users/${userid}`, {headers});
-            if(response.status === 200) {
-                return;
+            if(response.status === HttpStatusCode.Ok) {
+                return this.repository.deleteUser(userid);
             }
 
             throw new ServiceError(ServiceErrorType.UNAVAILABLE, "");
@@ -215,7 +224,7 @@ export default class Auth0IdentityService implements IdentityService {
         try {
             const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
             const response = await axios.get(`${AUTH0_URL}/api/v2/users/${userid}/logs`, {headers});
-            if(response.status === 200) {
+            if(response.status === HttpStatusCode.Ok) {
                 return
             }
 

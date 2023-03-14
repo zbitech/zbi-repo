@@ -1,5 +1,5 @@
 import { ProjectRepository, ProjectService, ControllerService } from "../interfaces";
-import { Project, QueryFilter, KubernetesResource, Instance, SnapshotScheduleRequest, KubernetesResources, ProjectRequest } from "../model/model";
+import { Project, QueryFilter, KubernetesResource, Instance, SnapshotScheduleRequest, KubernetesResources, ProjectRequest, QueryParam } from "../model/model";
 import { ProjectFilterType, ResourceType, StatusType } from "../model/zbi.enum";
 import { getLogger } from "../libs/logger"
 
@@ -28,15 +28,10 @@ export default class DefaultProjectService implements ProjectService {
         }
     }
 
-    async findProjects(filter: QueryFilter): Promise<Project[]> {
+    async findProjects(params: QueryParam, size: number, page: number): Promise<Project[]> {
         let logger = getLogger('psvc.findProjects');
         try {
-
-            const param:ProjectFilterType = filter.name as ProjectFilterType;
-            const p:any = {};
-            p[param] = filter.value; 
-            
-            return await this.projectRepository.findProjects(p, filter.itemsPerPage, filter.page);
+            return await this.projectRepository.findProjects(params, size, page);
         } catch (err) {
             throw err;
         }
@@ -133,10 +128,10 @@ export default class DefaultProjectService implements ProjectService {
         }
     }
 
-    async findAllInstances(): Promise<Instance[]> {
+    async findAllInstances(params: QueryParam, size: number, page: number): Promise<Instance[]> {
         let logger = getLogger('psvc.findAllInstances');
         try {
-            return await this.projectRepository.findInstances({});
+            return await this.projectRepository.findInstances(params);
         } catch (err) {
             throw err;
         }
@@ -145,7 +140,7 @@ export default class DefaultProjectService implements ProjectService {
     async findInstances(params: QueryFilter): Promise<Instance[]> {
         let logger = getLogger('psvc.findInstances');
         try {
-            return await this.projectRepository.findInstances({});
+            return await this.projectRepository.findInstances(params);
         } catch (err) {
             throw err;
         }

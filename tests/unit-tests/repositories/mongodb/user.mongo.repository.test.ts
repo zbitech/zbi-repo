@@ -11,7 +11,7 @@ let db: MongoMemoryDB = new MongoMemoryDB();
 let logger: Logger;
 
 beforeAll(async () => {
-    logger = getLogger("test-iam-repo");
+    logger = getLogger("test-user-repo");
     await db.init();
     await db.connect();
 });
@@ -35,7 +35,7 @@ describe('UserMongoRepository', () => {
         const user: User = {username: "user1", email: "user1@zbitech.net", name: "User One", role: RoleType.owner};
 
         const newUser = await instance.createUser(user);
-        logger.info("created: ", JSON.stringify(newUser));
+        logger.info(`created user ${JSON.stringify(newUser)}`);
     });
     
     test('should create a team', async () => {
@@ -43,7 +43,7 @@ describe('UserMongoRepository', () => {
         const user = await model.userModel.create({username: "test", email: "test@ups.com", name: "Tester", status: UserStatusType.active, role: RoleType.owner});
 
         const team = await instance.createTeam(user._id.toString(), "My Team");
-        logger.info("team: ", JSON.stringify(team));
+        logger.info(`created team: ${JSON.stringify(team)}`);
     });
 
     test('should find a team', async () => {
@@ -56,7 +56,7 @@ describe('UserMongoRepository', () => {
         ]});
 
         const newTeam = await instance.findTeam(team._id.toString());
-        logger.info("team: ", JSON.stringify(newTeam));
+        logger.info(`found a team ${JSON.stringify(newTeam)}`);
     });
 
     test('should find teams', async () => {
@@ -70,8 +70,8 @@ describe('UserMongoRepository', () => {
         const user2 = await model.userModel.create({username: "user2", email: "user2@zbitech.net", name: "Resource User2", status: UserStatusType.active, role: RoleType.user});
         const team2 = await model.teamModel.create({name: "My Team 2", owner: owner2._id, members:[{user: user2._id, role: RoleType.user}]});
 
-        const teams = await instance.findTeams(10, 10);
-        logger.info("teams: ", JSON.stringify(teams));
+        const teams = await instance.findTeams(10, 1);
+        logger.info(`found teams ${JSON.stringify(teams)}`);
     });
 
     test('should find team memberships', async () => {
@@ -88,6 +88,6 @@ describe('UserMongoRepository', () => {
 //        console.log("Teams: ", JSON.stringify(teams));
 
         const memberships = await instance.findTeamMemberships(user1._id.toString());
-        logger.info("memberships: ", JSON.stringify(memberships));
+        logger.info(`found memberships ${JSON.stringify(memberships)}`);
     })
 });

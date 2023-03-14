@@ -1,5 +1,5 @@
 import { ProjectRepository } from "../../interfaces";
-import { Project, Instance, KubernetesResource, KubernetesResources, ProjectRequest } from "../../model/model";
+import { Project, Instance, KubernetesResource, KubernetesResources, ProjectRequest, QueryParam } from "../../model/model";
 import { ResourceType, NetworkType, StatusType } from "../../model/zbi.enum";
 import model from "./mongo.model";
 import mongoose from 'mongoose';
@@ -31,11 +31,13 @@ export default class ProjectMongoRepository implements ProjectRepository {
         }
     }
 
-    async findProjects(params: {}, size: number, page: number): Promise<Project[]> {
+    async findProjects(params: QueryParam, size: number, page: number): Promise<Project[]> {
         try {
-            const projs = await this.projectModel.find(params)
+            const p = helper.createParam(params);
+            const skip = page>0 ? (page-1) * size : 0;
+            const projs = await this.projectModel.find(p)
+                                    .skip(skip)
                                     .limit(size)
-                                    .skip(size * (page-1))
                                     .populate({path: "owner", select: {userName: 1, email: 1, name: 1}})
                                     .populate({path: "team", select:{name: 1}});
             return helper.createProjects(projs);
@@ -57,7 +59,7 @@ export default class ProjectMongoRepository implements ProjectRepository {
 
     async findProjectByName(name: string): Promise<Project> {
         try {
-            const project = await this.projectModel.findById({name})
+            const project = await this.projectModel.find({name})
                                         .populate({path: "owner", select: {userName: 1, email: 1, name: 1}})
                                         .populate({path: "team", select:{name: 1}});
             return helper.createProject(project);
@@ -106,9 +108,10 @@ export default class ProjectMongoRepository implements ProjectRepository {
         }
     }
 
-    async findInstances(params: {}): Promise<Instance[]> {
+    async findInstances(params: QueryParam): Promise<Instance[]> {
         try {
-            const inst = await this.instanceModel.find({params});
+            const p = helper.createParam(params);
+            const inst = await this.instanceModel.find(p);
             return helper.createInstances(inst);
         } catch (err) {
             throw err;

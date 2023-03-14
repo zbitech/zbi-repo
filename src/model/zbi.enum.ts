@@ -71,6 +71,11 @@ export enum SnapshotScheduleType {
     monthly = 'monthly'
 }
 
+export enum UserFilterType {
+    userid = "userid",
+    email = "email"
+}
+
 export enum ProjectFilterType {
     name = "name",
     network = "network",
@@ -99,8 +104,3 @@ export enum FilterConditionType {
     like = "like",
     notlike = "notlike"
 }
-
-// export type ProjectFilter = "name" | "network" | "owner" | "team" | "status";
-// export type InstanceFilter = "name" | "type" | "project";
-// export type TeamFilter = "name" | "owner" 
-// export type FilterCondition = "eq" | "neq" | "in" | "nin" | "like" | "nlike";

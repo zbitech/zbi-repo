@@ -1,5 +1,5 @@
-import { Instance, KubernetesResource, KubernetesResources, Project, ProjectRequest, QueryFilter, SnapshotScheduleRequest, Team, TeamMembership, User, UserInfo } from "./model/model";
-import { ResourceType, SnapshotScheduleType, NetworkType, StatusType } from "./model/zbi.enum";
+import { Instance, KubernetesResource, KubernetesResources, Project, ProjectRequest, QueryFilter, SnapshotScheduleRequest, Team, TeamMembership, User, QueryParam } from "./model/model";
+import { ResourceType, SnapshotScheduleType, NetworkType, StatusType, InviteStatusType } from "./model/zbi.enum";
 import { Handler } from "express";
 
 export interface Database {
@@ -13,14 +13,14 @@ export interface Database {
 export interface UserRepository {
     createUser(user: User): Promise<User>;
     updateUser(user: User): Promise<User>;
-    findUsers(params: {}, limit: number, skip: number): Promise<Array<User>>;
-    findUser(params: {}): Promise<User>;
+    findUsers(params: QueryParam, size: number, page: number): Promise<Array<User>>;
+    findUser(params: QueryParam): Promise<User>;
     activateUser(username: string): Promise<void>;
     deactivateUser(username: string): Promise<void>;
     deleteUser(username: string): Promise<void>;
 
     createTeam(owner: string, name: string): Promise<Team>;
-    findTeams(limit: number, skip: number): Promise<Array<Team>>;
+    findTeams(size: number, page: number): Promise<Array<Team>>;
     findTeam(teamId: string): Promise<Team>;
     findTeamMemberships(username: string): Promise<Array<Team>>
     removeTeamMembership(teamId: string, username: string): Promise<Team>;
@@ -30,14 +30,14 @@ export interface UserRepository {
 
 export interface ProjectRepository {
     createProject(project: ProjectRequest): Promise<Project>;
-    findProjects(params: {}, size: number, page: number): Promise<Project[]>;
+    findProjects(params: QueryParam, size: number, page: number): Promise<Project[]>;
     findProject(projectId: string): Promise<Project>;
     findProjectByName(name: string): Promise<Project>;
     updateProject(project: Project): Promise<Project>;
     deleteProject(projectId: string): Promise<void>;
 
     createInstance(projectId: string, instance: Instance): Promise<Instance>;
-    findInstances(params: {}): Promise<Instance[]>;
+    findInstances(params: QueryParam): Promise<Instance[]>;
     findInstance(instanceId: string): Promise<Instance>;
     findInstanceByName(project: string, name: string): Promise<Instance>;
     updateInstance(instance: Instance): Promise<Instance>;
@@ -57,7 +57,7 @@ export interface IdentityService {
     getUserByEmail(email: string): Promise<User>;
     resetPassword(userid: string): Promise<void>;
     deactivateUser(userid: string): Promise<void>;
-    reactivateUser(userid: string): Promise<void>;
+    activateUser(userid: string): Promise<void>;
     deleteUser(userid: string): Promise<void>;
     getAccountActivity(userid: string): Promise<void>;
     getLoginURL(): string;
@@ -68,23 +68,25 @@ export interface IdentityService {
 export interface UserService {
     createUser(user: User): Promise<User>;
     updateUser(user: User): Promise<User>;
-    findUsers(params: {}, size: number, page: number): Promise<User[]>;
-    findUser(params: {}): Promise<User>;
+    registerUser(userid: string): Promise<User>;
+    findUsers(params: QueryParam, size: number, page: number): Promise<User[]>;
+    findUser(params: QueryParam): Promise<User>;
     deactivateUser(userid: string): Promise<User>;
     reactivateUser(userid: string): Promise<User>;
     deleteUser(userid: string): Promise<void>;
     createTeam(owner: string, name: string): Promise<Team>;
     updateTeam(teamid: string, name: string): Promise<Team>;
-    findTeams(params: {}, size: number, page: number): Promise<Team[]>;
+    findTeams(params: QueryParam, size: number, page: number): Promise<Team[]>;
     findTeam(teamid: string): Promise<Team>;
     findTeamMemberships(userid: string): Promise<TeamMembership[]>;
     addTeamMember(teamid: string, userid: string): Promise<Team>;
     removeTeamMember(teamid: string, userid: string): Promise<Team>;
+    updateTeamMembership(userid: string, status: InviteStatusType): Promise<void>;
 }
 
 export interface ProjectService {
     createProject(project: ProjectRequest): Promise<Project>;
-    findProjects(params: QueryFilter): Promise<Project[]>;
+    findProjects(params: QueryParam, size: number, page: number): Promise<Project[]>;
     findProject(projectId: string): Promise<Project>;
     updateProject(project: Project): Promise<Project>;
     repairProject(projectId: string): Promise<Project>;
@@ -93,8 +95,8 @@ export interface ProjectService {
     updateProjectResource(projectId: string, resource: KubernetesResource): Promise<void>
 
     createInstance(project: Project, instance: Instance): Promise<Instance>;
-    findAllInstances(): Promise<Instance[]>;
-    findInstances(params: QueryFilter): Promise<Instance[]>;
+    findAllInstances(params: QueryParam, size: number, page: number): Promise<Instance[]>;
+    findInstances(params: QueryParam, size: number, page: number): Promise<Instance[]>;
     findInstance(instanceId: string): Promise<Instance>;
     updateInstance(instanceId: string, instance: Instance): Promise<Instance>;
     repairInstance(instanceId: string): Promise<Instance>;

@@ -1,12 +1,12 @@
-import { MongoMemoryDB } from "../../../../src/services/mongodb/mongodb-mem.service";
+import { MongoMemoryDB } from "../../../../src/services/mongodb-mem.service";
 import ProjectMongoRepository from "../../../../src/repositories/mongodb/project.mongo.repository";
 import * as mongoHelper from "../../../../src/repositories/mongodb/helper";
 
-import { getLogger } from "../../../../src/logger";
+import { getLogger } from "../../../../src/libs/logger";
 import { Logger } from "winston";
-import { createProject, createInstance, createKubernetesResources } from "../../../mock/mock_data";
-import { createUserObject, createTeamObject, createProjectObject, createProjectObjects, createCompleteProjectObject, createCompleteInstanceObject, createInstanceObject, createCompleteInstanceObjectWithResources } from "../../../mock/db_helper";
-import { Project, Instance, KubernetesResources, KubernetesResource } from "../../../../src/model/model";
+import * as mock_data from "../../../mock/mock_data";
+import * as db_helper from "../../../mock/db_helper";
+import { ProjectRequest, Project, Instance, KubernetesResources, KubernetesResource } from "../../../../src/model/model";
 import { NetworkType, NodeType, ResourceType, RoleType, StatusType } from "../../../../src/model/zbi.enum";
 import { generateId } from "../../../mock/util";
 
@@ -37,15 +37,12 @@ describe('ProjectMongoRepository', () => {
     test('should create a project', async () => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
 
-        const owner: any = await createUserObject({});
-        const team: any = await createTeamObject({owner: owner._id});
+        const owner = mongoHelper.createUser(await db_helper.createUserObject({}));
+        const team = mongoHelper.createTeam(await db_helper.createTeamObject({owner: owner.userid}));
         logger.info("created owner: " + JSON.stringify(owner));
         logger.info("created team: " + JSON.stringify(team));
 
-        const project: Project = createProject({})
-        project.owner = mongoHelper.createUser(owner);
-        project.team = mongoHelper.createTeam(team);
-
+        const project: ProjectRequest = mock_data.createProjectRequest({owner: owner.userid, team: team.id});
         const newProject = await instance.createProject(project);
         logger.info("created schema: " + JSON.stringify(newProject));
     });
@@ -53,7 +50,7 @@ describe('ProjectMongoRepository', () => {
     test('should find projects', async () => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
 
-        const projects: any[] = await createProjectObjects(10);
+        const projects: any[] = await db_helper.createProjectObjects(10);
 
         const _projects = await instance.findProjects({}, 5, 1);
         logger.info(`found projects: ${JSON.stringify(_projects)}`);
@@ -62,9 +59,9 @@ describe('ProjectMongoRepository', () => {
     test('should find project', async() => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
 
-        const owner: any = await createUserObject({role: RoleType.owner});
-        const team: any = await createTeamObject({owner: owner._id});
-        const project: any = await createProjectObject({owner: owner._id, team: team._id});
+        const owner: any = await db_helper.createUserObject({role: RoleType.owner});
+        const team: any = await db_helper.createTeamObject({owner: owner._id});
+        const project: any = await db_helper.createProjectObject({owner: owner._id, team: team._id});
 
         const proj = await instance.findProject(project._id);
         logger.info(`found project: ${JSON.stringify(proj)}`);
@@ -74,11 +71,11 @@ describe('ProjectMongoRepository', () => {
     test('should create instance', async() => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
 
-        const owner: any = await createUserObject({role: RoleType.owner});
-        const team: any = await createTeamObject({owner: owner._id});
-        const project: any = await createProjectObject({owner: owner._id, team: team._id});
+        const owner: any = await db_helper.createUserObject({role: RoleType.owner});
+        const team: any = await db_helper.createTeamObject({owner: owner._id});
+        const project: any = await db_helper.createProjectObject({owner: owner._id, team: team._id});
 
-        const node: Instance = createInstance({});
+        const node: Instance = mock_data.createInstance({});
         const inst = await instance.createInstance(project._id, node);
 
         logger.info(`create instance: ${JSON.stringify(inst)}`);
@@ -87,7 +84,7 @@ describe('ProjectMongoRepository', () => {
     test('should find instance', async() => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
 
-        const {owner, team, project, instance: node} = await createCompleteInstanceObject(NodeType.zcash, NetworkType.testnet);
+        const {owner, team, project, instance: node} = await db_helper.createCompleteInstanceObject(NodeType.zcash, NetworkType.testnet);
         const inst = await instance.findInstance(node._id);
 
         logger.info(`found instance: ${JSON.stringify(inst)}`);
@@ -102,8 +99,8 @@ describe('ProjectMongoRepository', () => {
     test('should update instance', async() => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
 
-        const {owner, team, project} = await createCompleteProjectObject(NetworkType.testnet);
-        const node:any = await createInstanceObject({project: project._id, type: NodeType.zcash, description: "test instance"});
+        const {owner, team, project} = await db_helper.createCompleteProjectObject(NetworkType.testnet);
+        const node:any = await db_helper.createInstanceObject({project: project._id, type: NodeType.zcash, description: "test instance"});
 
         const node1:Instance = mongoHelper.createInstance(node);
         node1.description = "updated description";
@@ -114,7 +111,7 @@ describe('ProjectMongoRepository', () => {
     test(`should delete instance`, async() => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
 
-        const {owner, team, project, instance: node} = await createCompleteInstanceObject(NodeType.zcash, NetworkType.testnet);
+        const {owner, team, project, instance: node} = await db_helper.createCompleteInstanceObject(NodeType.zcash, NetworkType.testnet);
         logger.info(`created instance: ${JSON.stringify(node)}`);
         await expect(instance.deleteInstance(node._id.toString())).resolves.toBeUndefined();
     });
@@ -122,7 +119,7 @@ describe('ProjectMongoRepository', () => {
     test(`should fail to delete non-existent instance`, async() => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
 
-        const {owner, team, project, instance: node} = await createCompleteInstanceObject(NodeType.zcash, NetworkType.testnet);
+        const {owner, team, project, instance: node} = await db_helper.createCompleteInstanceObject(NodeType.zcash, NetworkType.testnet);
         logger.info(`created instance: ${JSON.stringify(node)}`);
         await expect(instance.deleteInstance(generateId())).rejects.toThrow(Error);
     });
@@ -130,8 +127,8 @@ describe('ProjectMongoRepository', () => {
     test(`should create kubernetes resources`, async() => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
 
-        const {owner, team, project, instance: node} = await createCompleteInstanceObject(NodeType.zcash, NetworkType.testnet);
-        const resources: KubernetesResources = createKubernetesResources(3);        
+        const {owner, team, project, instance: node} = await db_helper.createCompleteInstanceObject(NodeType.zcash, NetworkType.testnet);
+        const resources: KubernetesResources = mock_data.createKubernetesResources(3);        
 
         const newResources: KubernetesResources = await instance.createInstanceResources(node._id.toString(), resources);
         logger.info(`resources => ${JSON.stringify(newResources)}`);
@@ -139,7 +136,7 @@ describe('ProjectMongoRepository', () => {
 
     test('should get kubernetes resources', async() => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
-        const {owner, team, project, instance: node} = await createCompleteInstanceObjectWithResources(NodeType.zcash, NetworkType.testnet, 3);
+        const {owner, team, project, instance: node} = await db_helper.createCompleteInstanceObjectWithResources(NodeType.zcash, NetworkType.testnet, 3);
 
         const resources: KubernetesResources = await instance.getInstanceResources(node._id.toString());
         logger.info(`received => ${JSON.stringify(resources)}`);
@@ -147,7 +144,7 @@ describe('ProjectMongoRepository', () => {
 
     test('should get kubernetes resource', async() => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
-        const {owner, team, project, instance: node} = await createCompleteInstanceObjectWithResources(NodeType.zcash, NetworkType.testnet, 1);
+        const {owner, team, project, instance: node} = await db_helper.createCompleteInstanceObjectWithResources(NodeType.zcash, NetworkType.testnet, 1);
 
         logger.info(`instance resources => ${JSON.stringify(node)}`);
 
@@ -170,7 +167,7 @@ describe('ProjectMongoRepository', () => {
 
     test('should update kubernetes resource', async() => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
-        const {owner, team, project, instance: node} = await createCompleteInstanceObjectWithResources(NodeType.zcash, NetworkType.testnet, 1);
+        const {owner, team, project, instance: node} = await db_helper.createCompleteInstanceObjectWithResources(NodeType.zcash, NetworkType.testnet, 1);
 
         const _deployment: any = node.resources.deployment;
 
@@ -183,7 +180,7 @@ describe('ProjectMongoRepository', () => {
 
     test('should delete kubernetes resource', async() => {
         expect(instance).toBeInstanceOf(ProjectMongoRepository);
-        const {owner, team, project, instance: node} = await createCompleteInstanceObjectWithResources(NodeType.zcash, NetworkType.testnet, 1);
+        const {owner, team, project, instance: node} = await db_helper.createCompleteInstanceObjectWithResources(NodeType.zcash, NetworkType.testnet, 1);
 
     });
 });

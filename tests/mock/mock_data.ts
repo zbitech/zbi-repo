@@ -1,9 +1,9 @@
-import { User, Project, Team, TeamMember, Instance, ResourceRequest } from "../../src/model/model";
+import { User, Project, Team, TeamMember, Instance, ResourceRequest, ProjectRequest } from "../../src/model/model";
 import { NetworkType, RoleType, StatusType, InviteStatusType, UserStatusType, NodeType, VolumeType, VolumeSourceType, ResourceType } from "../../src/model/zbi.enum";
 import { getRandom, generateString, generateId, generateName, generateEmail, generatePhrase } from "./util";
 import model from "../../src/repositories/mongodb/mongo.model";
 import mongoose from 'mongoose';
-import { getLogger } from "../../src/logger";
+import { getLogger } from "../../src/libs/logger";
 import { stringify } from "querystring";
 
 
@@ -15,8 +15,8 @@ const INST_STATUS: StatusType[] = [StatusType.runnning, StatusType.stopped, Stat
 
 export function createUser(user: any): User {
     return {
-        userId: user.userId ? user.userId : generateId(),
-        userName: user.userName ? user.userName : generateString(5),
+        userid: user.userid ? user.userid : generateId(),
+        username: user.username ? user.username : generateString(5),
         email: user.email ? user.email : generateEmail(),
         name: user.name ? user.name : generateName(),
         role: user.role ? user.role : getRandom(USER_ROLES),
@@ -74,6 +74,18 @@ export function createTeamMemberSchema(member: any): any {
         updated: member.updated
     }
 }
+
+export function createProjectRequest(project: any): ProjectRequest {
+
+    return {
+        name: project.name ? project.name : generateString(7),
+        owner: project.owner,
+        team: project.team,
+        network: project.network ? project.network : NetworkType.testnet,
+        description: project.description ? project.description : generateString(20)
+    }
+}
+
 
 export function createProject(project: any): Project {
 
