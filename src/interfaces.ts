@@ -25,6 +25,7 @@ export interface UserRepository {
     findTeamMemberships(username: string): Promise<Array<Team>>
     removeTeamMembership(teamId: string, username: string): Promise<Team>;
     addTeamMembership(teamId: string, username: string): Promise<Team>;
+    updateTeamMembership(teamId: string, userid: string, status: InviteStatusType): Promise<Team>;
     findPendingMemberships(): Promise<Array<Team>>;
 }
 

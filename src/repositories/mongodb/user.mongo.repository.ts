@@ -3,6 +3,8 @@ import { Team, User, TeamMember, QueryParam } from "../../model/model";
 import { InviteStatusType, RoleType, UserStatusType } from "../../model/zbi.enum";
 import model from "./mongo.model";
 import * as helper from "./helper";
+import { getLogger } from "../../libs/logger";
+import { Logger } from "winston";
 
 export default class UserMongoRepository implements UserRepository {
 
@@ -25,15 +27,16 @@ export default class UserMongoRepository implements UserRepository {
     }
 
     async updateUser(user: User): Promise<User> {
+        const logger = getLogger("user-repo");
         try {
+            logger.debug(`searching for user ${JSON.stringify(user)}`);
             const uc = await this.userModel.findOne({username: user.username});
+            logger.debug(`found user => ${JSON.stringify(uc)}`);
             if(uc) {
                 uc.username = uc.username;
-                uc.email = uc.email;
+                uc.email = user.email;
                 uc.name = user.name;
-                uc.role = user.role!;
                 uc.status = user.status!;
-//                uc.updated = new Date();
                 await uc.save();
 
                 return helper.createUser(uc);
@@ -202,6 +205,19 @@ export default class UserMongoRepository implements UserRepository {
         }
     }
 
+    async updateTeamMembership(teamid: string, userid: string, status: InviteStatusType): Promise<Team> {
+        const logger = getLogger("user-repo");
+        try {
+            const tc = await this.teamModel.findById(teamid);
+            if(tc) {
+                logger.debug(`Team detail: ${JSON.stringify(tc)}`);
+            }
+            throw new Error("team not found");
+        } catch(err) {
+            throw err;
+        }
+    }
+
     async findPendingMemberships(): Promise<Array<Team>> {
         try {
             const tc = await this.teamModel.find({"members.status": InviteStatusType.pending}, {
@@ -209,7 +225,7 @@ export default class UserMongoRepository implements UserRepository {
                 members: {
                     $elemMatch: {status: InviteStatusType.pending}
                 }
-            }).populate({path: "members.user", select: {userName: 1, email: 1, name: 1}});
+            }).populate({path: "members.user", select: {username: 1, email: 1, name: 1}});
 
             if(tc) return helper.createTeams(tc);
 

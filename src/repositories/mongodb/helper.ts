@@ -26,7 +26,7 @@ export function createUser(uc: any): User {
     if(uc) {
         return {
             userid: uc._id,
-            username: uc.userName, name: uc.name, email: uc.email, 
+            username: uc.username, name: uc.name, email: uc.email, 
             status: uc.status, role: uc.role
         }
     }

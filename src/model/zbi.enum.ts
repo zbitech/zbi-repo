@@ -73,6 +73,7 @@ export enum SnapshotScheduleType {
 
 export enum UserFilterType {
     userid = "userid",
+    username = "username",
     email = "email"
 }
 

@@ -1,8 +1,9 @@
 import { MongoMemoryDB } from "../../../../src/services/mongodb-mem.service";
 import UserMongoRepository from "../../../../src/repositories/mongodb/user.mongo.repository";
+import * as helper from "../../../../src/repositories/mongodb/helper";
 import model from "../../../../src/repositories/mongodb/mongo.model";
-import { User } from "../../../../src/model/model";
-import { RoleType, UserStatusType } from "../../../../src/model/zbi.enum";
+import { User, QueryParam } from "../../../../src/model/model";
+import { RoleType, UserStatusType, UserFilterType, FilterConditionType } from "../../../../src/model/zbi.enum";
 import { getLogger } from "../../../../src/libs/logger";
 import { Logger } from "winston";
 
@@ -37,10 +38,56 @@ describe('UserMongoRepository', () => {
         const newUser = await instance.createUser(user);
         logger.info(`created user ${JSON.stringify(newUser)}`);
     });
+
+    test('should update a user', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+        const user = await model.userModel.create({username: "test", email: "test@zbitech.net", name: "Tester", status: UserStatusType.active, role: RoleType.owner});
+        logger.info(`created user ${JSON.stringify(user)}`);
+
+        const user2: User = helper.createUser(user);
+        logger.info(`converted user ${JSON.stringify(user2)}`);
+        user2.email = "test2@zbitech.net";
+        user2.name = "test2";
+        logger.info(`updated user to ${JSON.stringify(user2)}`);
+
+        const updated = await instance.updateUser(user2);
+        expect(updated.email).toBe(user2.email);
+        expect(updated.name).toBe(user2.name);
+    });
+
+    test('should find users', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+
+        const users = await Promise.all( ['user1', 'user2', 'user3', 'user4', 'user5'].map(async (user) => {
+            await model.userModel.create({username: user, email: `${user}@zbitech.net`, name: user, status: UserStatusType.active, role: RoleType.owner});
+        }));
+
+        const all_users = await instance.findUsers({}, users.length, 1);
+        logger.info(`found users ${JSON.stringify(all_users)}`);
+
+        const users2 = await instance.findUsers({}, 2, 1);
+        logger.info(`found 2 users ${JSON.stringify(users2)}`);
+
+    });
+
+    test('should find a user', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+        const user = await model.userModel.create({username: "test", email: "test@zbitech.net", name: "Tester", status: UserStatusType.active, role: RoleType.owner});
+        const user2 = await model.userModel.create({username: "test2", email: "test2@zbitech.net", name: "Tester 2", status: UserStatusType.active, role: RoleType.owner});
+
+        const byUser: QueryParam = {name: UserFilterType.username, condition: FilterConditionType.equal, value: user.username};
+        let _user = await instance.findUser(byUser);
+        expect(_user.username).toBe(user.username);
+
+        const byEmail: QueryParam = {name: UserFilterType.email, condition: FilterConditionType.equal, value: user2.email};
+        _user = await instance.findUser(byEmail);
+        expect(_user.username).toBe(user2.username);
+    });
+
     
     test('should create a team', async () => {
         expect(instance).toBeInstanceOf(UserMongoRepository);
-        const user = await model.userModel.create({username: "test", email: "test@ups.com", name: "Tester", status: UserStatusType.active, role: RoleType.owner});
+        const user = await model.userModel.create({username: "test", email: "test@zbitech.net", name: "Tester", status: UserStatusType.active, role: RoleType.owner});
 
         const team = await instance.createTeam(user._id.toString(), "My Team");
         logger.info(`created team: ${JSON.stringify(team)}`);
@@ -89,5 +136,30 @@ describe('UserMongoRepository', () => {
 
         const memberships = await instance.findTeamMemberships(user1._id.toString());
         logger.info(`found memberships ${JSON.stringify(memberships)}`);
-    })
+    });
+
+    test('should add team membership', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+        const user1 = await model.userModel.create({username: "user1", email: "user1@zbitech.net", name: "Resource User1", status: UserStatusType.active, role: RoleType.user});
+        const owner1 = await model.userModel.create({username: "owner1", email: "owner1@zbitech.net", name: "Resource Owner1", status: UserStatusType.active, role: RoleType.owner});
+        const team1 = await model.teamModel.create({name: "My Team 1", owner: owner1._id});
+
+        const team = await instance.addTeamMembership(team1._id as string, user1.username);
+        logger.info(`added member ${JSON.stringify(team)}`);
+    });
+
+    test('should remove add team membership', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+
+    });
+
+    test('should update team membership', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+
+    });
+
+    test('should find team membership', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+
+    });
 });
