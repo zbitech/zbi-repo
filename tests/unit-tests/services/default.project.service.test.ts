@@ -4,7 +4,7 @@ import ProjectMongoRepository from "../../../src/repositories/mongodb/project.mo
 import { getLogger } from "../../../src/libs/logger";
 import { Logger } from "winston";
 import { ProjectRepository, ControllerService } from "../../../src/interfaces";
-import { MongoMemoryDB } from "../../../src/services/mongodb/mongodb-mem.service";
+import { MongoMemoryDB } from "../../../src/services/mongodb-mem.service";
 
 let instance: DefaultProjectService;
 let logger: Logger;

@@ -256,6 +256,7 @@ export default class Auth0IdentityService implements IdentityService {
                 audience: `${AUTH0_URL}/api/v2`, grant_type: 'client_credentials'
             };
             const response = await axios.post(`${AUTH0_URL}/oauth/token`, JSON.stringify(data), {headers: {"content-type": "application/json"}});
+            console.log(`Response: ${response}`);
             this.token = response.data.access_token;
         } catch(err) {
             throw err;
