@@ -4,6 +4,7 @@ import projectController from "../controllers/project.controller";
 import userController from "../controllers/user.controller";
 import { mainLogger as logger } from "../libs/logger";
 import { validator } from "../middlewares/validation.middleware";
+import { jwtVerifier, validateUser} from "../middlewares/auth.middleware";
 import { schemas } from "../model/schema";
 
 export default function (app: Application) {
@@ -12,7 +13,7 @@ export default function (app: Application) {
 
     app.route(`/api/account`)
         .all()
-        .get(userController.findUser) // get user information
+        .get(jwtVerifier, userController.findUser) // get user information
         .post() // confirm account - accept invitation
         .put()    // update account - change password, update profile, reject team, accept team
         .delete() // cancel account - delete account
@@ -21,7 +22,7 @@ export default function (app: Application) {
 
     app.route(`/api/users`)
         .all()
-        .get(userController.findUsers) // get all users
+        .get(jwtVerifier, userController.findUsers) // get all users
         .post(userController.createUser) // createnew user
 
     app.route(`/api/users/:userid`)

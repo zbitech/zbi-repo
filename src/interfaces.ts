@@ -20,6 +20,7 @@ export interface UserRepository {
     deleteUser(username: string): Promise<void>;
 
     createTeam(owner: string, name: string): Promise<Team>;
+    updateTeam(teamid: string, name: string): Promise<Team>;
     findTeams(size: number, page: number): Promise<Array<Team>>;
     findTeam(teamId: string): Promise<Team>;
     findTeamMemberships(username: string): Promise<Array<Team>>

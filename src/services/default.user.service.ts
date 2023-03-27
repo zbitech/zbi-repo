@@ -40,7 +40,7 @@ export default class DefaultUserService implements UserService {
 
             }
 
-            return await this.identityService.updateUser(user);
+            return await this.userRepository.updateUser(user);
         } catch (err) {
             throw err;
         }
@@ -113,6 +113,7 @@ export default class DefaultUserService implements UserService {
             // team.name = name;
             // return await this.iamRepository.up
             const team: Team = await this.userRepository.findTeam(teamid);
+
             return team;
         } catch (err) {
             throw err;

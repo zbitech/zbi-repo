@@ -123,6 +123,30 @@ export default class UserMongoRepository implements UserRepository {
         }
     }
 
+    async updateTeam(teamid: string, name: string): Promise<Team> {
+        try {
+            const tc = await this.teamModel.findById(teamid);
+
+            if(tc) {
+                tc.name = name;
+                await tc.save();
+
+                tc.populate({
+                    path: "owner", select: {userName: 1, email: 1, name: 1}
+                }).populate({
+                    path: "members.user", select: {userName: 1, email: 1, name: 1}
+                });
+
+                return helper.createTeam(tc);
+            }
+
+            throw new Error("team not found");
+            
+        } catch(err) {
+            throw err; //TODO - service error
+        }
+    }
+
     async findTeams(size: number, page: number): Promise<Team[]> {
         try {
 

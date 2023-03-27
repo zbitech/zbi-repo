@@ -1,4 +1,4 @@
-import { ControllerService, Database, IdentityService, ProjectRepository, UserRepository } from "../interfaces";
+import { ControllerService, Database, IdentityService, ProjectRepository, ProjectService, UserRepository, UserService } from "../interfaces";
 import databaseFactory from "./database.factory";
 import repositoryFactory from "./repository.factory";
 import serviceFactory from "./service.factory";
@@ -46,6 +46,14 @@ class BeanFactory {
 
     getControllerService(): ControllerService {
         return this.getService("controller");
+    }
+
+    getUserService(): UserService {
+        return this.getService("user");
+    }
+
+    getProjectService(): ProjectService {
+        return this.getService("project");
     }
 
     getRepository(name: string) {

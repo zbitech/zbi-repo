@@ -18,6 +18,7 @@ const CLIENT_ID = process.env.AUTH0_CLIENT_ID
 const CLIENT_SECRET = process.env.AUTH0_CLIENT_SECRET
 const AUDIENCE = process.env.AUTH0_AUDIENCE
 const CONNECTION_ID =  process.env.AUTH0_CONNECTION_ID;
+const CONNECTION = process.env.AUTH0_CONNECTION || "Username-Password-Authentication";
 
 const AUTH0_URL=`https://${TENANT_ID}.${DOMAIN}`
 
@@ -38,13 +39,16 @@ export default class Auth0IdentityService implements IdentityService {
 
 
     async createUser(user: User): Promise<User> {
+
         try {
             const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
             const user_data = {
+                "blocked": false,
                 "email": user.email,
                 "email_verified": false,
                 "verify_email": false,
                 "name": user.name,
+                "connection": CONNECTION
             };
 
             // invite user
@@ -58,10 +62,14 @@ export default class Auth0IdentityService implements IdentityService {
 
                 const newUser = await this.repository.createUser(user);
 
+                // trigger password reset
+                await this.resetPassword(newUser.userid!);
 
+                // create user in charm
+                await this.repository.createUser(newUser);
                 return newUser;
             }
-
+                
             throw new ServiceError(ServiceErrorType.UNAVAILABLE, "");
 
         } catch(err) {
@@ -80,10 +88,10 @@ export default class Auth0IdentityService implements IdentityService {
             const user_response = await axios.patch(`${AUTH0_URL}/api/v2/users/${user.userid}`, JSON.stringify(user_data), {headers});
             if(user_response.status == HttpStatusCode.Created) {
                 user.userid = user_response.data.user_id;
-                const role_data = {"roles":[user.role]}
 
+                //const role_data = {"roles":[user.role]}
                 // set user role
-                const role_response = await axios.post(`${AUTH0_URL}/api/v2/users/${user_response.data.user_id}/roles`, JSON.stringify(role_data), {headers});
+                //const role_response = await axios.post(`${AUTH0_URL}/api/v2/users/${user_response.data.user_id}/roles`, JSON.stringify(role_data), {headers});
 
                 const newUser = await this.repository.updateUser(user);
 
@@ -209,6 +217,7 @@ export default class Auth0IdentityService implements IdentityService {
         try {
             const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
             const response = await axios.delete(`${AUTH0_URL}/api/v2/users/${userid}`, {headers});
+
             if(response.status === HttpStatusCode.Ok) {
                 return this.repository.deleteUser(userid);
             }
@@ -224,7 +233,10 @@ export default class Auth0IdentityService implements IdentityService {
         try {
             const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
             const response = await axios.get(`${AUTH0_URL}/api/v2/users/${userid}/logs`, {headers});
+
             if(response.status === HttpStatusCode.Ok) {
+                // retrieve activity logs - TODO
+
                 return
             }
 
