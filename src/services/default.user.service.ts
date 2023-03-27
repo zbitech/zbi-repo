@@ -55,7 +55,7 @@ export default class DefaultUserService implements UserService {
     }
 
     async findUser(param: QueryParam): Promise<User> {
-        try {   
+        try {
             return await this.userRepository.findUser(param);
         } catch (err) {
             throw err;

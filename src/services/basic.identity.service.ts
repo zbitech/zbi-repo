@@ -1,11 +1,12 @@
 import axios, { HttpStatusCode } from "axios";
-import { User, UserInfo } from "../model/model";
+import { QueryParam, User, UserInfo } from "../model/model";
 import { AuthenticationClient, ManagementClient } from 'auth0';
 import { ServiceError, ServiceErrorType } from "../libs/errors";
 import { IdentityService, UserRepository } from "../interfaces";
 import { Handler } from "express";
 import { auth } from 'express-oauth2-jwt-bearer';
 import { NextFunction, Request, Response } from 'express';
+import { FilterConditionType, UserFilterType } from "src/model/zbi.enum";
 
 export default class BasicIdentityService implements IdentityService {
 
@@ -13,41 +14,50 @@ export default class BasicIdentityService implements IdentityService {
 
     constructor(userRepository: UserRepository) {
         this.repository = userRepository;
+
+        //TODO - create admin user if not exists
     }
 
-    createUser(user: User): Promise<User> {
+    async createUser(user: User): Promise<User> {
         return this.repository.createUser(user);
     }
 
-    updateUser(user: User): Promise<User> {
+    async updateUser(user: User): Promise<User> {
         return this.repository.updateUser(user);
     }
 
-    getUserById(userid: string): Promise<User> {
+    async getUserById(userid: string): Promise<User> {
+
+        const param: QueryParam = {name: UserFilterType.userid, condition: FilterConditionType.equal, value: userid};
+        const user: User = await this.repository.findUser(param);
+
+        return user;
+    }
+
+    async getUserByEmail(email: string): Promise<User> {
+        const param: QueryParam = {name: UserFilterType.email, condition: FilterConditionType.equal, value: email};
+        const user: User = await this.repository.findUser(param);
+
+        return user;
+    }
+
+    async resetPassword(userid: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
 
-    getUserByEmail(email: string): Promise<User> {
-        throw new Error("Method not implemented.");
-    }
-
-    resetPassword(userid: string): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-
-    deactivateUser(userid: string): Promise<void> {
+    async deactivateUser(userid: string): Promise<void> {
         return this.repository.deactivateUser(userid);
     }
 
-    activateUser(userid: string): Promise<void> {
+    async activateUser(userid: string): Promise<void> {
         return this.repository.activateUser(userid);
     }
 
-    deleteUser(userid: string): Promise<void> {
+    async deleteUser(userid: string): Promise<void> {
         return this.repository.deleteUser(userid);
     }
 
-    getAccountActivity(userid: string): Promise<void> {
+    async getAccountActivity(userid: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
 

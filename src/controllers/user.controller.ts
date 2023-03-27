@@ -49,6 +49,34 @@ class UserController {
         }
     }
 
+    async getAccount(request: Request, response: Response): Promise<void> {
+        let userService:UserService = beanFactory.getUserService();
+        let logger = getLogger('get-account');
+
+        try {
+            logger.info(`finding user ... ${JSON.stringify(request.body)}`);
+
+        } catch(err:any) {
+
+        } finally {
+
+        }
+    }
+
+    async updateAccount(request: Request, response: Response): Promise<void> {
+        let userService:UserService = beanFactory.getUserService();
+        let logger = getLogger('update-account');
+
+        try {
+            logger.info(`updating account ... ${JSON.stringify(request.body)}`);
+
+        } catch(err:any) {
+
+        } finally {
+
+        }
+    }
+
     async findUser(request: Request, response: Response): Promise<void> {
         let userService:UserService = beanFactory.getUserService();
 
@@ -70,7 +98,7 @@ class UserController {
     }
 
     async registerUser(request: Request, response: Response): Promise<void> {
-        let userService:UserService = beanFactory.getUserService();
+        let userService: UserService = beanFactory.getUserService();
         let logger = getLogger('register-user');
 
         try {
@@ -94,6 +122,34 @@ class UserController {
     async deleteUser(request: Request, response: Response): Promise<void> {
 
     }
+
+    async findTeams(request: Request, response: Response): Promise<void> {
+
+    }
+
+    async findTeam(request: Request, response: Response): Promise<void> {
+
+    }
+
+    async getMemberships(request: Request, response: Response): Promise<void> {
+
+    }
+
+    async updateMembership(request: Request, response: Response): Promise<void> {
+        let userService: UserService = beanFactory.getUserService();
+        let logger = getLogger('update-membership');
+
+        try {
+            logger.info(`updating account ... ${JSON.stringify(request.body)}`);
+
+        } catch(err:any) {
+
+        } finally {
+
+        }
+    }
+
+
 
 }
 
