@@ -77,6 +77,19 @@ class UserController {
         }
     }
 
+    async deleteAccount(request: Request, response: Response): Promise<void> {
+        let userService: UserService = beanFactory.getUserService();
+        let logger = getLogger('delete-account');
+
+        try {
+            logger.info('deleting account ..');
+        } catch(err: any) {
+
+        } finally {
+
+        }
+    }
+
     async findUser(request: Request, response: Response): Promise<void> {
         let userService:UserService = beanFactory.getUserService();
 
@@ -124,23 +137,11 @@ class UserController {
     }
 
     async findTeams(request: Request, response: Response): Promise<void> {
-
-    }
-
-    async findTeam(request: Request, response: Response): Promise<void> {
-
-    }
-
-    async getMemberships(request: Request, response: Response): Promise<void> {
-
-    }
-
-    async updateMembership(request: Request, response: Response): Promise<void> {
         let userService: UserService = beanFactory.getUserService();
-        let logger = getLogger('update-membership');
+        let logger = getLogger('find-teams');
 
         try {
-            logger.info(`updating account ... ${JSON.stringify(request.body)}`);
+            logger.info(`find teams ... ${JSON.stringify(request.body)}`);
 
         } catch(err:any) {
 
@@ -149,6 +150,61 @@ class UserController {
         }
     }
 
+    async findTeam(request: Request, response: Response): Promise<void> {
+        let userService: UserService = beanFactory.getUserService();
+        let logger = getLogger('find-team');
+
+        try {
+            logger.info(`find team ... ${JSON.stringify(request.body)}`);
+
+        } catch(err:any) {
+
+        } finally {
+
+        }
+    }
+
+    async getMemberships(request: Request, response: Response): Promise<void> {
+        let userService: UserService = beanFactory.getUserService();
+        let logger = getLogger('get-memberships');
+
+        try {
+            logger.info(`updating membership ... ${JSON.stringify(request.body)}`);
+
+        } catch(err:any) {
+
+        } finally {
+
+        }
+    }
+
+    async updateMembership(request: Request, response: Response): Promise<void> {
+        let userService: UserService = beanFactory.getUserService();
+        let logger = getLogger('update-membership');
+
+        try {
+            logger.info(`updating membership ... ${JSON.stringify(request.body)}`);
+
+        } catch(err:any) {
+
+        } finally {
+
+        }
+    }
+
+    async deleteMembership(request: Request, response: Response): Promise<void> {
+        let userService: UserService = beanFactory.getUserService();
+        let logger = getLogger('update-membership');
+
+        try {
+            logger.info(`deleting membership ... ${JSON.stringify(request.body)}`);
+
+        } catch(err:any) {
+
+        } finally {
+
+        }
+    }
 
 
 }
