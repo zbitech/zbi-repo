@@ -68,6 +68,22 @@ class ProjectController {
 
     }
 
+    async findProjectJobs(request: Request, response: Response): Promise<void> {
+
+    }
+
+    async findProjectJob(request: Request, response: Response): Promise<void> {
+        
+    }
+
+    async updateProjectJob(request: Request, response: Response): Promise<void> {
+        
+    }
+
+    async deleteProjectJob(request: Request, response: Response): Promise<void> {
+        
+    }
+
     async createInstance(request: Request, response: Response): Promise<void> {
 
     }
@@ -122,6 +138,21 @@ class ProjectController {
 
     }
 
+    async findInstanceJobs(request: Request, response: Response): Promise<void> {
+
+    }
+
+    async findInstanceJob(request: Request, response: Response): Promise<void> {
+        
+    }
+
+    async updateInstanceJob(request: Request, response: Response): Promise<void> {
+        
+    }
+
+    async deleteInstanceJob(request: Request, response: Response): Promise<void> {
+        
+    }
 
 
 }

@@ -136,6 +136,10 @@ class UserController {
 
     }
 
+    async updateUser(request: Request, response: Response): Promise<void> {
+
+    }
+
     async findTeams(request: Request, response: Response): Promise<void> {
         let userService: UserService = beanFactory.getUserService();
         let logger = getLogger('find-teams');
@@ -164,6 +168,48 @@ class UserController {
         }
     }
 
+    async deleteTeam(request: Request, response: Response): Promise<void> {
+        let userService: UserService = beanFactory.getUserService();
+        let logger = getLogger('delete-team');
+
+        try {
+            logger.info(`delete team ... ${JSON.stringify(request.body)}`);
+
+        } catch(err:any) {
+
+        } finally {
+
+        }
+    }
+
+    async updateTeamMember(request: Request, response: Response): Promise<void> {
+        let userService: UserService = beanFactory.getUserService();
+        let logger = getLogger('add-team-member');
+
+        try {
+            logger.info(`find team ... ${JSON.stringify(request.body)}`);
+
+        } catch(err:any) {
+
+        } finally {
+
+        }
+    }
+
+    async removeTeamMember(request: Request, response: Response): Promise<void> {
+        let userService: UserService = beanFactory.getUserService();
+        let logger = getLogger('remove-team-member');
+
+        try {
+            logger.info(`find team ... ${JSON.stringify(request.body)}`);
+
+        } catch(err:any) {
+
+        } finally {
+
+        }
+    }
+
     async getMemberships(request: Request, response: Response): Promise<void> {
         let userService: UserService = beanFactory.getUserService();
         let logger = getLogger('get-memberships');
@@ -178,7 +224,7 @@ class UserController {
         }
     }
 
-    async updateMembership(request: Request, response: Response): Promise<void> {
+    async acceptMembership(request: Request, response: Response): Promise<void> {
         let userService: UserService = beanFactory.getUserService();
         let logger = getLogger('update-membership');
 

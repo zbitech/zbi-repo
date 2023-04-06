@@ -23,14 +23,19 @@ export default function (app: Application) {
         .get(userController.getAccount) // get user information
         .post(userController.registerUser) // accept or reject team invitation
         .put(userController.updateAccount)    // update account
-        .delete() // cancel account - delete account
+        .delete(userController.deleteAccount) // cancel account - delete account
 
     app.route(`/api/account/teams`)
         .all(jwtVerifier, validateUser)
-        .get()
-        .post()
+        .get(userController.getMemberships)
         .put()
         .delete()
+
+    app.route(`/api/account/memberships`)
+        .all(jwtVerifier, validateUser)
+        .get(userController.getMemberships)
+        .post(userController.acceptMembership)
+        .delete(userController.deleteMembership)
 
     app.route(`/api/users`)
         .all(jwtVerifier, validateUser)
@@ -40,21 +45,18 @@ export default function (app: Application) {
     app.route(`/api/users/:userid`)
         .all(jwtVerifier, validateUser)
         .get(userController.findUser) // get user
-        .put() // update user - reset password, update user, invite to team, expire invitation
-        .delete() // delete user
+        .put(userController.updateUser) // update user - reset password, update user, invite to team, expire invitation
+        .delete(userController.deleteUser) // delete user
     
     app.route(`/api/teams`)
         .all(jwtVerifier, validateUser)
-        .get() // find teams
-        .post() // create team
+        .get(userController.findTeams) // find teams
 
     app.route(`/api/teams/:teamid`)
         .all(jwtVerifier, validateUser)
-        .get()
-        .post() // add new member
-        .put() // update membership - add member, remove member
-        .patch()
-        .delete();
+        .get(userController.findTeam)
+        .patch(userController.updateTeamMember)
+        .delete(userController.deleteTeam);
 
     app.route(`/api/projects`)
         .all(jwtVerifier, validateUser)
@@ -103,5 +105,11 @@ export default function (app: Application) {
         .put(projectController.updateInstanceResource)
         .delete(projectController.deleteInstanceResource)
         
+    app.route(`/api/projects/jobs`)
 
+    app.route(`/api/projects/:projectid/jobs`)
+
+    app.route(`/api/instances/jobs`)
+
+    app.route(`/api/instances/:instanceid/jobs`)
 }
