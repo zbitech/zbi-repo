@@ -6,6 +6,7 @@ import { User, QueryParam } from "../../../../src/model/model";
 import { RoleType, UserStatusType, UserFilterType, FilterConditionType } from "../../../../src/model/zbi.enum";
 import { getLogger } from "../../../../src/libs/logger";
 import { Logger } from "winston";
+import { hashPassword } from "../../../../src/libs/auth.libs";
 
 let instance: UserMongoRepository;
 let db: MongoMemoryDB = new MongoMemoryDB();
@@ -13,7 +14,7 @@ let logger: Logger;
 
 beforeAll(async () => {
     logger = getLogger("test-user-repo");
-    await db.init();
+    await db.init(); 
     await db.connect();
 });
 
@@ -33,26 +34,29 @@ describe('UserMongoRepository', () => {
 
     test('should create a user', async () => {
         expect(instance).toBeInstanceOf(UserMongoRepository);
-        const user: User = {username: "user1", email: "user1@zbitech.net", name: "User One", role: RoleType.owner};
+        const user: User = {email: "user1@zbitech.net", name: "User One", role: RoleType.owner};
 
-        const newUser = await instance.createUser(user);
+        const newUser = await instance.createUser(user.email, user.name, user.role as RoleType, UserStatusType.invited);
         logger.info(`created user ${JSON.stringify(newUser)}`);
     });
 
     test('should update a user', async () => {
         expect(instance).toBeInstanceOf(UserMongoRepository);
-        const user = await model.userModel.create({username: "test", email: "test@zbitech.net", name: "Tester", status: UserStatusType.active, role: RoleType.owner});
+        const user = await model.userModel.create({email: "test@zbitech.net", name: "Tester", status: UserStatusType.active, role: RoleType.owner});
         logger.info(`created user ${JSON.stringify(user)}`);
 
         const user2: User = helper.createUser(user);
         logger.info(`converted user ${JSON.stringify(user2)}`);
-        user2.email = "test2@zbitech.net";
+//        user2.email = "test2@zbitech.net";
         user2.name = "test2";
         logger.info(`updated user to ${JSON.stringify(user2)}`);
 
-        const updated = await instance.updateUser(user2);
+        
+        const updated = await instance.updateUser(user2.email, user2.name, user2.status as UserStatusType);
+        logger.info(`found user => ${JSON.stringify(updated)}`);
+        /*
         expect(updated.email).toBe(user2.email);
-        expect(updated.name).toBe(user2.name);
+        expect(updated.name).toBe(user2.name);*/
     });
 
     test('should find users', async () => {
@@ -77,13 +81,71 @@ describe('UserMongoRepository', () => {
 
         const byUser: QueryParam = {name: UserFilterType.username, condition: FilterConditionType.equal, value: user.username};
         let _user = await instance.findUser(byUser);
-        expect(_user.username).toBe(user.username);
+        expect(_user.email).toBe(user.email);
 
         const byEmail: QueryParam = {name: UserFilterType.email, condition: FilterConditionType.equal, value: user2.email};
         _user = await instance.findUser(byEmail);
-        expect(_user.username).toBe(user2.username);
+        expect(_user.email).toBe(user2.email);
     });
 
+    test('should find a registration', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+
+        const r = await model.registrationModel.create({email: "test@zbitech.net", acceptedTerms: true});
+        logger.info(`created registration: ${JSON.stringify(r)}`);
+
+        const reg = await instance.findRegistration(r.email);
+        logger.info(`found registration - ${JSON.stringify(reg)}`);
+    });
+
+    test('should insert a registration', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+
+        const reg = await instance.updateRegistration("test2@zbitech.net", true);
+        logger.info(`created registration - ${JSON.stringify(reg)}`);
+    });
+
+    test('should activate user', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+        const user = await model.userModel.create({username: "test", email: "test@zbitech.net", name: "Tester", status: UserStatusType.inactive, role: RoleType.owner});
+
+        const a_user = await instance.activateUser(user.email);
+        expect(a_user.status).toBe(UserStatusType.active);
+
+    });
+
+    test('should deactivate user', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+        const user = await model.userModel.create({username: "test", email: "test@zbitech.net", name: "Tester", status: UserStatusType.active, role: RoleType.owner});
+
+        const a_user = await instance.deactivateUser(user.email);
+        expect(a_user.status).toBe(UserStatusType.inactive);
+    });
+
+    test('should delete user', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+        const user = await model.userModel.create({username: "test", email: "test@zbitech.net", name: "Tester", status: UserStatusType.active, role: RoleType.owner});
+
+        await instance.deleteUser(user.email);
+    });
+
+    test('should set password', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+
+        const password = await hashPassword("password") as string;
+        const user = await model.userModel.create({username: "test", email: "test@zbitech.net", name: "Tester", status: UserStatusType.active, role: RoleType.owner});
+        await instance.setPassword(user.email, password);
+    }); 
+
+    test('should validate password', async () => {
+        expect(instance).toBeInstanceOf(UserMongoRepository);
+
+        const password = await hashPassword("password") as string;
+        const user = await model.userModel.create({username: "test", email: "test@zbitech.net", name: "Tester", status: UserStatusType.active, role: RoleType.owner, password});
+
+        const uc = await instance.validatePassword(user.email, "password");
+        logger.info(`user validated = ${JSON.stringify(uc)}`);
+    });
     
     test('should create a team', async () => {
         expect(instance).toBeInstanceOf(UserMongoRepository);

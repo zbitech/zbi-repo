@@ -1,24 +1,27 @@
 import { UserRepository } from "../../interfaces";
-import { Team, User, TeamMember, QueryParam } from "../../model/model";
-import { InviteStatusType, RoleType, UserStatusType } from "../../model/zbi.enum";
+import { Team, User, TeamMember, QueryParam, Registration } from "../../model/model";
+import { FilterConditionType, InviteStatusType, RoleType, UserFilterType, UserStatusType } from "../../model/zbi.enum";
 import model from "./mongo.model";
 import * as helper from "./helper";
 import { getLogger } from "../../libs/logger";
 import { Logger } from "winston";
+import { hashPassword, comparePassword } from "../../libs/auth.libs";
 
 export default class UserMongoRepository implements UserRepository {
 
     userModel: any;
     teamModel: any;
+    registrationModel: any;
     
     constructor() {
         this.userModel = model.userModel;
         this.teamModel = model.teamModel;
+        this.registrationModel = model.registrationModel;
     }
 
-    async createUser(user: User): Promise<User> {
+    async createUser(email: string, name: string, role: RoleType, status: UserStatusType): Promise<User> {
         try {
-            const uc = new this.userModel({...user});
+            const uc = new this.userModel({email, name, role, status});
             await uc.save();
             return helper.createUser(uc);
         } catch(err) {
@@ -26,25 +29,44 @@ export default class UserMongoRepository implements UserRepository {
         }
     }
 
-    async updateUser(user: User): Promise<User> {
-        const logger = getLogger("user-repo");
+    async updateUser(email: string, name: string, status: UserStatusType): Promise<User> {
+        const logger = getLogger("update-user");
         try {
-            logger.debug(`searching for user ${JSON.stringify(user)}`);
-            const uc = await this.userModel.findOne({username: user.username});
-            logger.debug(`found user => ${JSON.stringify(uc)}`);
-            if(uc) {
-                uc.username = uc.username;
-                uc.email = user.email;
-                uc.name = user.name;
-                uc.status = user.status!;
-                await uc.save();
 
+            const uc = await this.userModel.findOneAndUpdate({email}, {email, name, status});
+            if(uc) {
                 return helper.createUser(uc);
-            
-            } else {
-                throw Error("user not found!");
             }
+
+            throw Error("user not found");
         } catch (err) {
+            throw err;
+        }
+    }
+
+    async findRegistration(email: string): Promise<Registration> {
+        try {
+            const logger = getLogger("find-reg");
+            const reg = await this.registrationModel.findOne({email});
+            if(reg) {
+                return helper.createRegistration(reg);
+            }
+            throw Error("registration not found");
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async updateRegistration(email: string, acceptedTerms: boolean): Promise<Registration> {
+        try {
+            const logger = getLogger("update-registration");
+            const reg = await this.userModel.findOneAndUpdate({email}, {email, acceptedTerms}, {upsert: true, new: true});            
+            if(reg) {
+                return helper.createRegistration(reg);
+            }
+            throw Error("could not create registration");
+
+        } catch(err: any) {
             throw err;
         }
     }
@@ -76,12 +98,26 @@ export default class UserMongoRepository implements UserRepository {
         }
     }
 
-    async activateUser(username: string): Promise<void> {
+    async getUserByEmail(email: string): Promise<User> {
         try {
-            const uc = await this.userModel.findOne({username});
+            const param: QueryParam = {name: UserFilterType.userid, condition: FilterConditionType.equal, value: email};
+            const uc = await this.userModel.findUser(param);                
+            if(uc) {
+                return helper.createUser(uc);                
+            }
+            throw Error("user not found");
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async activateUser(email: string): Promise<User> {
+        try {
+            const uc = await this.userModel.findOne({email});
             if(uc) {
                 uc.status = UserStatusType.active;
                 await uc.save();
+                return helper.createUser(uc);
             }
             throw Error("user not found");
         } catch(err) {
@@ -89,12 +125,13 @@ export default class UserMongoRepository implements UserRepository {
         }
     }
 
-    async deactivateUser(username: string): Promise<void> {
+    async deactivateUser(email: string): Promise<User> {
         try {
-            const uc = await this.userModel.findOne({username});
+            const uc = await this.userModel.findOne({email});
             if(uc) {
                 uc.status = UserStatusType.inactive;
                 await uc.save();
+                return helper.createUser(uc);
             }
             throw Error("user not found");
         } catch(err) {
@@ -102,9 +139,34 @@ export default class UserMongoRepository implements UserRepository {
         }
     }
 
-    async deleteUser(username: string): Promise<void> {
+    async deleteUser(email: string): Promise<void> {
         try {
-            await this.userModel.deleteOne({username});
+            await this.userModel.deleteOne({email});
+        } catch(err) {
+            throw err;
+        }
+    }
+
+    async setPassword(email: string, password: string): Promise<void> {
+        try {
+            const user = await this.userModel.findOne({email});
+            user.password = await hashPassword(password);
+            await user.save();
+        } catch(err) {
+            throw err;
+        }
+    }
+
+    async validatePassword(email: string, password: string): Promise<User|undefined> {
+        const logger = getLogger("validate-password");
+        try {
+            const user = await this.userModel.findOne({email});
+            logger.debug(`found user: ${JSON.stringify(user)}`);
+            if(await comparePassword(password, user.password)) {
+                return helper.createUser(user);
+            }
+
+            return undefined;
         } catch(err) {
             throw err;
         }

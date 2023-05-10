@@ -1,6 +1,10 @@
-import { User, Team, TeamMember, Project, Instance, ResourceRequest, KubernetesResource, KubernetesResources, QueryParam } from "../../model/model";
+import { User, Team, TeamMember, Project, Instance, ResourceRequest, KubernetesResource, KubernetesResources, QueryParam, Registration } from "../../model/model";
 import { FilterConditionType } from "../../model/zbi.enum";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
 
+TimeAgo.addDefaultLocale(en);
+const timeAgo = new TimeAgo('en-US');
 
 export function createParam(param: QueryParam) {
     const obj: any = {};
@@ -26,7 +30,7 @@ export function createUser(uc: any): User {
     if(uc) {
         return {
             userid: uc._id,
-            username: uc.username, name: uc.name, email: uc.email, 
+            name: uc.name, email: uc.email, 
             status: uc.status, role: uc.role
         }
     }
@@ -36,6 +40,14 @@ export function createUser(uc: any): User {
 
 export function createUsers(uc: Array<any>): User[] {
     return uc.map( user => createUser(user));
+}
+
+export function createRegistration(reg: any): Registration {
+    return {
+        acceptedTerms: reg.acceptedTerms, 
+        created: timeAgo.format(reg.createdAt),
+        updated: timeAgo.format(reg.updatedAt)
+    }
 }
 
 export function createTeam(tc: any): Team {

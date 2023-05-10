@@ -4,9 +4,38 @@ import { RoleType, VolumeType, VolumeSourceType, ResourceType, StatusType, Netwo
         ProjectFilterType, InstanceFilterType, TeamFilterType, UserFilterType } from "./zbi.enum";
 
 
+export interface AuthRequest {
+    email?: string;
+    password?: string;
+    code?: string;
+}
+
+export interface AuthResult {
+    email?: string;
+    valid: boolean;
+    registered: boolean;
+    accessToken?: string;
+    refreshToken?: string;
+    user?: User;
+}
+
+export interface RegisterRequest {
+    email: string;
+    acceptedTerms: boolean;
+}
+
+export interface RegisterResult {
+
+}
+
+export interface Registration {
+    acceptedTerms: boolean;
+    created: string;
+    updated: string;
+}
+
 export interface User {
     userid?: string;
-    username?: string;
     email: string;
     name: string;
     role?: RoleType;
@@ -16,6 +45,7 @@ export interface User {
     last_ip?: string;
     last_login?: string;
     logins_count?: string;
+    password?: string;
 }
 
 export interface UserInfo {

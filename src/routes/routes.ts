@@ -2,6 +2,7 @@ import { Application } from "express";
 import beanFactory from "../factory/bean.factory";
 import projectController from "../controllers/project.controller";
 import userController from "../controllers/user.controller";
+import jobController from "../controllers/job.controller";
 import { mainLogger as logger } from "../libs/logger";
 import { validator } from "../middlewares/validation.middleware";
 import { jwtVerifier, validateUser} from "../middlewares/auth.middleware";
@@ -12,7 +13,7 @@ export default function (app: Application) {
     logger.info("initializing routes");    
 
     app.route(`/oauth/token`)
-        .post();
+        .post(userController.authenticateUser);
 
     app.route(`/api/register`)
         .all(jwtVerifier, validateUser)
@@ -55,7 +56,7 @@ export default function (app: Application) {
     app.route(`/api/teams/:teamid`)
         .all(jwtVerifier, validateUser)
         .get(userController.findTeam)
-        .patch(userController.updateTeamMember)
+        .post(userController.addTeamMember)
         .delete(userController.deleteTeam);
 
     app.route(`/api/projects`)
@@ -79,12 +80,12 @@ export default function (app: Application) {
         
     app.route(`/api/instances`)
         .all(jwtVerifier, validateUser)
-        .get(projectController.findAllInstances)
+        .get(projectController.findAllInstances);
 
     app.route(`/api/projects/:projectid/instances`)
         .all(jwtVerifier, validateUser)
         .get(projectController.findInstances)
-        .post(projectController.createInstance)
+        .post(projectController.createInstance);
     
     app.route(`/api/instances/:instanceid`)
         .all(jwtVerifier, validateUser)
@@ -93,23 +94,35 @@ export default function (app: Application) {
         .put(projectController.operateInstance)
         .patch(projectController.repairInstance)
         .delete(projectController.deleteInstance)
-        .purge(projectController.purgeInstance)
+        .purge(projectController.purgeInstance);
 
     app.route(`/api/instances/:instanceid/resources`)
         .all(jwtVerifier, validateUser)
-        .get(projectController.getInstanceResources)
+        .get(projectController.getInstanceResources);
 
     app.route(`/api/instances/:instanceid/resources/:resourceid`)
         .all(jwtVerifier, validateUser)
         .get(projectController.getInstanceResource)
         .put(projectController.updateInstanceResource)
-        .delete(projectController.deleteInstanceResource)
+        .delete(projectController.deleteInstanceResource);
         
     app.route(`/api/projects/jobs`)
+        .all(jwtVerifier, validateUser)
+        .get(jobController.findProjectJobs);
 
     app.route(`/api/projects/:projectid/jobs`)
+        .all(jwtVerifier, validateUser)
+        .get(jobController.findProjectJob)
+        .patch(jobController.updateProjectJob)
+        .delete(jobController.deleteProjectJob);
 
     app.route(`/api/instances/jobs`)
+        .all(jwtVerifier, validateUser)
+        .get(jobController.findInstanceJobs);
 
     app.route(`/api/instances/:instanceid/jobs`)
+        .all(jwtVerifier, validateUser)
+        .get(jobController.findInstanceJob)
+        .patch(jobController.updateInstanceJob)
+        .delete(jobController.deleteInstanceJob);
 }

@@ -1,5 +1,5 @@
-import { Instance, KubernetesResource, KubernetesResources, Project, ProjectRequest, QueryFilter, SnapshotScheduleRequest, Team, TeamMembership, User, QueryParam } from "./model/model";
-import { ResourceType, SnapshotScheduleType, NetworkType, StatusType, InviteStatusType } from "./model/zbi.enum";
+import { Instance, KubernetesResource, KubernetesResources, Project, ProjectRequest, QueryFilter, SnapshotScheduleRequest, Team, TeamMembership, User, QueryParam, AuthRequest, AuthResult, RegisterRequest, RegisterResult, Registration } from "./model/model";
+import { ResourceType, SnapshotScheduleType, NetworkType, StatusType, InviteStatusType, UserStatusType, RoleType } from "./model/zbi.enum";
 import { Handler } from "express";
 
 export interface Database {
@@ -11,13 +11,18 @@ export interface Database {
 
 
 export interface UserRepository {
-    createUser(user: User): Promise<User>;
-    updateUser(user: User): Promise<User>;
+    createUser(email: string, name: string, role: RoleType, status: UserStatusType): Promise<User>;
+    updateUser(email: string, name: string, status: UserStatusType): Promise<User>;
+    findRegistration(email: string): Promise<Registration>;
+    updateRegistration(email: string, acceptedTerms: boolean): Promise<Registration>;
+    getUserByEmail(email: string): Promise<User>;
     findUsers(params: QueryParam, size: number, page: number): Promise<Array<User>>;
     findUser(params: QueryParam): Promise<User>;
-    activateUser(username: string): Promise<void>;
-    deactivateUser(username: string): Promise<void>;
+    activateUser(username: string): Promise<User>;
+    deactivateUser(username: string): Promise<User>;
     deleteUser(username: string): Promise<void>;
+    setPassword(email: string, password: string): Promise<void>;
+    validatePassword(email: string, password: string): Promise<User|undefined>;
 
     createTeam(owner: string, name: string): Promise<Team>;
     updateTeam(teamid: string, name: string): Promise<Team>;
@@ -53,37 +58,42 @@ export interface ProjectRepository {
 }
 
 export interface IdentityService {
-    createUser(user: User): Promise<User>;
-    updateUser(user: User): Promise<User>;
-    getUserById(userid: string): Promise<User>;
-    getUserByEmail(email: string): Promise<User>;
-    resetPassword(userid: string): Promise<void>;
-    deactivateUser(userid: string): Promise<void>;
-    activateUser(userid: string): Promise<void>;
-    deleteUser(userid: string): Promise<void>;
-    getAccountActivity(userid: string): Promise<void>;
-    getLoginURL(): string;
-    getAccessVerifier(): Handler;
+//    createUser(email: string, name: string, role: RoleType, status: UserStatusType): Promise<User>;
+//    updateUser(email: string, name: string, status: UserStatusType): Promise<User>;
+//    getUserById(userid: string): Promise<User>;
+//    getUserByEmail(email: string): Promise<User>;
+//    setPassword(email: string, password: string): Promise<void>;
+//    resetPassword(userid: string): Promise<void>;
+//    deactivateUser(userid: string): Promise<void>;
+//    activateUser(userid: string): Promise<void>;
+//    deleteUser(userid: string): Promise<void>;
+//    getAccountActivity(userid: string): Promise<void>;
+//    getLoginURL(): string;
+//    getAccessVerifier(): Handler;
+    authenticateUser(user: AuthRequest): Promise<AuthResult>;
+//    registerUser(user: RegisterRequest): Promise<RegisterResult>;
 }
 
 
 export interface UserService {
-    createUser(user: User): Promise<User>;
-    updateUser(user: User): Promise<User>;
-    registerUser(userid: string): Promise<User>;
+    createUser(email: string, name: string, role: RoleType, status: UserStatusType): Promise<User>;
+    updateUser(email: string, name: string, status: UserStatusType): Promise<User>;
+    authenticateUser(user: AuthRequest): Promise<AuthResult>;
+    changePassword(email: string, old_password: string, new_password: string): Promise<User>;
+    registerUser(email: string, acceptTerms: boolean): Promise<User>;
     findUsers(params: QueryParam, size: number, page: number): Promise<User[]>;
     findUser(params: QueryParam): Promise<User>;
-    deactivateUser(userid: string): Promise<User>;
-    reactivateUser(userid: string): Promise<User>;
-    deleteUser(userid: string): Promise<void>;
-    createTeam(owner: string, name: string): Promise<Team>;
+    deactivateUser(email: string): Promise<User>;
+    reactivateUser(email: string): Promise<User>;
+    deleteUser(email: string): Promise<void>;
+    createTeam(ownerEmail: string, name: string): Promise<Team>;
     updateTeam(teamid: string, name: string): Promise<Team>;
     findTeams(params: QueryParam, size: number, page: number): Promise<Team[]>;
     findTeam(teamid: string): Promise<Team>;
     findTeamMemberships(userid: string): Promise<TeamMembership[]>;
-    addTeamMember(teamid: string, userid: string): Promise<Team>;
-    removeTeamMember(teamid: string, userid: string): Promise<Team>;
-    updateTeamMembership(userid: string, status: InviteStatusType): Promise<void>;
+    addTeamMember(teamid: string, email: string): Promise<Team>;
+    removeTeamMember(teamid: string, email: string): Promise<Team>;
+    updateTeamMembership(email: string, teamid: string, status: InviteStatusType): Promise<void>;
 }
 
 export interface ProjectService {

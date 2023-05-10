@@ -1,7 +1,10 @@
 import {Request, Response} from 'express';
-import { QueryParam, User } from 'src/model/model';
+import { AuthRequest, QueryParam, Team, User } from 'src/model/model';
+import { RoleType, UserStatusType } from 'src/model/zbi.enum';
 import beanFactory from '../factory/bean.factory';
 import { UserService } from '../interfaces';
+import { signJwt } from "../libs/auth.libs";
+import config from "config";
 
 import { getLogger } from "../libs/logger";
 
@@ -38,7 +41,7 @@ class UserController {
             logger.info(`creating user ... ${JSON.stringify(request.body)}`);
             const userRequest: User = request.body.user;
 
-            const user = userService.createUser(userRequest);
+            const user = userService.createUser(request.body.email, request.body.name, RoleType.owner, UserStatusType.invited);
             response.json(user);
 
         } catch(err:any) {
@@ -105,6 +108,58 @@ class UserController {
         } catch(err:any) {
             logger.error(`failed to find users: ${err}`)
             response.status(500).json({message: err.message});
+        } finally {
+
+        }
+    }
+
+
+    async authenticateUser(request: Request, response: Response): Promise<void> {
+        let userService: UserService = beanFactory.getUserService();
+        let logger = getLogger('register-user');
+
+        try {
+            logger.info(`finding user ... ${JSON.stringify(request.body)}`);
+            const result = await userService.authenticateUser(request.body);
+            
+            if(result.valid) {
+                if(result.registered) {
+                    // add tokens to cookie
+                    response.send({accessToken: result.accessToken, refreshToken: result.refreshToken});
+
+                    // need to handle redirect if necessary
+
+                } else {
+                    // needs registration
+                }
+
+            } else {
+                // send unauthorized
+            }
+
+        } catch(err:any) {
+
+        } finally {
+
+        }
+    }
+
+    async changePassword(request: Request, response: Response): Promise<void> {
+        let userService: UserService = beanFactory.getUserService();
+        let logger = getLogger('change-password');
+
+        try {
+            logger.info(`finding user ... ${JSON.stringify(request.body)}`);
+            const user = await userService.changePassword(request.body.email, request.body.old_password, request.body.new_password);
+            
+            if(user) {
+
+            } else {
+
+            }
+
+        } catch(err:any) {
+
         } finally {
 
         }
@@ -182,15 +237,19 @@ class UserController {
         }
     }
 
-    async updateTeamMember(request: Request, response: Response): Promise<void> {
+    async addTeamMember(request: Request, response: Response): Promise<void> {
         let userService: UserService = beanFactory.getUserService();
         let logger = getLogger('add-team-member');
 
         try {
-            logger.info(`find team ... ${JSON.stringify(request.body)}`);
+            logger.info(`add team member ... ${JSON.stringify(request.body)}`);
+            const team: Team = await userService.findTeam(request.body.teamid);
 
+            // check if user exists or create
+
+            userService.addTeamMember(team.id, "");
         } catch(err:any) {
-
+            throw err;
         } finally {
 
         }

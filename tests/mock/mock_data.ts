@@ -16,7 +16,6 @@ const INST_STATUS: StatusType[] = [StatusType.runnning, StatusType.stopped, Stat
 export function createUser(user: any): User {
     return {
         userid: user.userid ? user.userid : generateId(),
-        username: user.username ? user.username : generateString(5),
         email: user.email ? user.email : generateEmail(),
         name: user.name ? user.name : generateName(),
         role: user.role ? user.role : getRandom(USER_ROLES),
