@@ -12,7 +12,7 @@ export default function (app: Application) {
  
     logger.info("initializing routes");    
 
-    app.route(`/oauth/token`)
+    app.route(`/api/oauth/token`)
         .post(userController.authenticateUser);
 
     app.route(`/api/register`)

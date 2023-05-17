@@ -7,6 +7,13 @@ export enum ServiceErrorType {
     BAD_PARAMETER = "badparameter",
 }
 
+export enum AppErrorType {
+    UNREGISTERED_USER = 100,
+    USER_NOT_PERMITTED = 200,
+    USER_NOT_ACTIVE = 300,
+    USER_NOT_INACTIVE = 400
+}
+
 export class FieldError {
     public readonly name: string;
     public readonly error: string;

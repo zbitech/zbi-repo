@@ -1,12 +1,13 @@
 import {Request, Response} from 'express';
-import { AuthRequest, QueryParam, Team, User } from 'src/model/model';
-import { RoleType, UserStatusType } from 'src/model/zbi.enum';
+import { AuthRequest, QueryParam, Team, User } from '../model/model';
+import { RoleType, UserStatusType } from '../model/zbi.enum';
 import beanFactory from '../factory/bean.factory';
 import { UserService } from '../interfaces';
 import { signJwt } from "../libs/auth.libs";
 import config from "config";
 
 import { getLogger } from "../libs/logger";
+import { HttpStatusCode } from 'axios';
 
 class UserController {
 
@@ -41,9 +42,9 @@ class UserController {
             logger.info(`creating user ... ${JSON.stringify(request.body)}`);
             const userRequest: User = request.body.user;
 
-            const user = userService.createUser(request.body.email, request.body.name, RoleType.owner, UserStatusType.invited);
-            response.json(user);
-
+            const user = userService.createUser(request.body.email, RoleType.owner, UserStatusType.invited);
+//            response.status(HttpStatusCode.Ok).json(user);
+            response.sendStatus(200);
         } catch(err:any) {
             logger.error(`failed to find users: ${err}`)
             response.status(500).json({message: err.message});

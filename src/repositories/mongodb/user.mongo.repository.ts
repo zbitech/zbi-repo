@@ -1,6 +1,6 @@
 import { UserRepository } from "../../interfaces";
 import { Team, User, TeamMember, QueryParam, Registration } from "../../model/model";
-import { FilterConditionType, InviteStatusType, RoleType, UserFilterType, UserStatusType } from "../../model/zbi.enum";
+import { FilterConditionType, InviteStatusType, LoginProvider, RoleType, UserFilterType, UserStatusType } from "../../model/zbi.enum";
 import model from "./mongo.model";
 import * as helper from "./helper";
 import { getLogger } from "../../libs/logger";
@@ -11,17 +11,15 @@ export default class UserMongoRepository implements UserRepository {
 
     userModel: any;
     teamModel: any;
-    registrationModel: any;
     
     constructor() {
         this.userModel = model.userModel;
         this.teamModel = model.teamModel;
-        this.registrationModel = model.registrationModel;
     }
 
-    async createUser(email: string, name: string, role: RoleType, status: UserStatusType): Promise<User> {
+    async createUser(email: string, role: RoleType, status: UserStatusType): Promise<User> {
         try {
-            const uc = new this.userModel({email, name, role, status});
+            const uc = new this.userModel({email, role, status, registration: {acceptedTerms: false}});
             await uc.save();
             return helper.createUser(uc);
         } catch(err) {
@@ -38,7 +36,7 @@ export default class UserMongoRepository implements UserRepository {
                 return helper.createUser(uc);
             }
 
-            throw Error("user not found");
+            throw new Error("user not found");
         } catch (err) {
             throw err;
         }
@@ -47,24 +45,24 @@ export default class UserMongoRepository implements UserRepository {
     async findRegistration(email: string): Promise<Registration> {
         try {
             const logger = getLogger("find-reg");
-            const reg = await this.registrationModel.findOne({email});
-            if(reg) {
-                return helper.createRegistration(reg);
+            const uc = await this.userModel.findOne({email});
+            if(uc) {
+                return helper.createRegistration(uc.registration);
             }
-            throw Error("registration not found");
+            throw new Error("registration not found");
         } catch (err: any) {
             throw err;
         }
     }
 
-    async updateRegistration(email: string, acceptedTerms: boolean): Promise<Registration> {
+    async createRegistration(email: string, name: string, provider: LoginProvider): Promise<Registration> {
         try {
-            const logger = getLogger("update-registration");
-            const reg = await this.userModel.findOneAndUpdate({email}, {email, acceptedTerms}, {upsert: true, new: true});            
+            const logger = getLogger("create-registration");
+            const reg = await this.userModel.findOneAndUpdate({email}, {name, status: UserStatusType.active, registration:{acceptedTerms: true, provider}});
             if(reg) {
                 return helper.createRegistration(reg);
             }
-            throw Error("could not create registration");
+            throw new Error("could not create registration");
 
         } catch(err: any) {
             throw err;
@@ -92,7 +90,7 @@ export default class UserMongoRepository implements UserRepository {
             if(uc) {
                 return helper.createUser(uc);
             }
-            throw Error("user not found");
+            throw new Error("user not found");
         } catch(err) {
             throw err;
         }
@@ -105,7 +103,7 @@ export default class UserMongoRepository implements UserRepository {
             if(uc) {
                 return helper.createUser(uc);                
             }
-            throw Error("user not found");
+            throw new Error("user not found");
         } catch (err: any) {
             throw err;
         }
@@ -119,7 +117,7 @@ export default class UserMongoRepository implements UserRepository {
                 await uc.save();
                 return helper.createUser(uc);
             }
-            throw Error("user not found");
+            throw new Error("user not found");
         } catch(err) {
             throw err;
         }
@@ -133,7 +131,7 @@ export default class UserMongoRepository implements UserRepository {
                 await uc.save();
                 return helper.createUser(uc);
             }
-            throw Error("user not found");
+            throw new Error("user not found");
         } catch(err) {
             throw err;
         }
@@ -176,10 +174,13 @@ export default class UserMongoRepository implements UserRepository {
         try {
             const team = {name, owner: owner};
             const tc = new this.teamModel(team);
-            await tc.save();
+            if(tc) {
+                await tc.save();
 
-            await tc.populate({path: "owner", select: {userName: 1, email: 1, name: 1}});
-            return helper.createTeam(tc);
+                await tc.populate({path: "owner", select: {userName: 1, email: 1, name: 1}});
+                return helper.createTeam(tc);
+            }
+            throw new Error("team not found");
         } catch(err) {
             throw err;
         }
@@ -218,7 +219,6 @@ export default class UserMongoRepository implements UserRepository {
             }).skip(skip).limit(size);
 
             if(tc) {
-                console.log(JSON.stringify(tc));
                 return helper.createTeams(tc);
             }
             return [];
@@ -267,7 +267,7 @@ export default class UserMongoRepository implements UserRepository {
                 "members": {"user": userId}
             }}).populate({path: "members.user", select: {username: 1, email: 1, name: 1}});
             if(tc) return helper.createTeam(tc);
-            throw new Error("team not found");
+            throw new Error("team memberships not found");
         } catch(err) {
             throw err;
         }

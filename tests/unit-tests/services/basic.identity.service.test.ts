@@ -4,7 +4,7 @@ import { Logger } from "winston";
 import { ProjectRepository, ControllerService, UserRepository } from "../../../src/interfaces";
 import { MongoMemoryDB } from "../../../src/services/mongodb-mem.service";
 import UserMongoRepository from "../../../src/repositories/mongodb/user.mongo.repository";
-import { RoleType, UserStatusType } from "../../../src/model/zbi.enum";
+import { LoginProvider, RoleType, UserStatusType } from "../../../src/model/zbi.enum";
 import model from "../../../src/repositories/mongodb/mongo.model";
 import { hashPassword } from "../../../src/libs/auth.libs";
 
@@ -77,8 +77,10 @@ describe('BasicIdentityService', () => {
         expect(instance).toBeInstanceOf(BasicIdentityService);
 
         const password = await hashPassword("password") as string;
-        const user = await model.userModel.create({email: "test@zbitech.net", name: "Tester", status: UserStatusType.active, role: RoleType.owner, password});        
-        const reg = await model.registrationModel.create({email: "test@zbitech.net", acceptedTerms: true});
+//        const user = await model.userModel.create({email: "test@zbitech.net", name: "Tester", status: UserStatusType.active, role: RoleType.owner, password});        
+//        const reg = await model.registrationModel.create({email: "test@zbitech.net", acceptedTerms: true});
+
+        const user = await model.userModel.create({email: "test@zbitech.net", name: "Owner", role: RoleType.owner, status: UserStatusType.active, password, registration: {acceptedTerms: true, provider: LoginProvider.local}});
 
         const result = await instance.authenticateUser({email: user.email, password: "password"});
 

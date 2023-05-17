@@ -3,18 +3,38 @@ import config from "config";
 import bcrypt from "bcrypt";
 import { User } from "src/model/model";
 
+export function signJwtAccessToken(user: User) {
+    return signJwt(user, "accessTokenPrivateKey", { expiresIn: config.get("accesstokenTtl")});
+}
+
+export function signJwtRefreshToken(user: User) {
+    return signJwt(user, "refreshTokenPrivateKey", { expiresIn: config.get("refreshtokenTtl")});
+}
+
+export function verifyJwtAccessToken(token: string) {
+    return verifyJwt(token, "accessTokenPublicKey");
+}
+
+export function verifyJwtRefreshToken(token: string) {
+    return verifyJwt(token, "refreshTokenPublicKey");
+}
+
 export function signJwt(object: Object, keyName: "accessTokenPrivateKey" | "refreshTokenPrivateKey", options?: jwt.SignOptions | undefined) {
-    console.log(`sign JWT with ${keyName}`);
-    console.log(config.get<string>(keyName));
-    const signingKey = Buffer.from(config.get<string>(keyName), "base64").toString("ascii");
-    console.log(`signing key => ${signingKey}`);
-    return jwt.sign(object, signingKey, {...(options && options), algorithm: "RS256"});
+    try {
+        const signingKey = config.get<string>(keyName);
+        //console.log(`signing key => ${signingKey}`);
+        return jwt.sign(object, signingKey, {...(options && options), algorithm: "RS256"});
+    } catch(err: any) {
+        console.error(`error occurred while signing = ${JSON.stringify(err)}`);
+        throw err;
+    }
 }
 
 export function verifyJwt(token: string, keyName: "accessTokenPublicKey" | "refreshTokenPublicKey") {
-    const publicKey = Buffer.from(config.get<string>(keyName), "base64").toString("ascii");
+    //const publicKey = Buffer.from(config.get<string>(keyName), "base64").toString("ascii");
+    const publicKey = config.get<string>(keyName);
     try {
-        console.log(`public key => ${publicKey}`);
+//        console.log(`public key => ${publicKey}`);
         const decoded = jwt.verify(token, publicKey);
         return {valid: true, expired: false, decoded};
     } catch (e: any) {
@@ -27,7 +47,7 @@ export async function hashPassword(password: string) {
         const salt = await bcrypt.genSalt(config.get<number>("saltWorkFactor"));
         return await bcrypt.hashSync(password, salt);            
     } catch (err: any) {
-        console.error(err);
+//        console.error(err);
         return false;
     }
 }

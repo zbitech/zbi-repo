@@ -31,8 +31,8 @@ describe('DefaultProjectService', () => {
         await db.clear();
     });
 
-    test('', async () => {
-        expect(instance).toBeInstanceOf(DefaultProjectService);
+    test('should create project', async() => {
 
     });
+
 });

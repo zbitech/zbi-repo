@@ -44,9 +44,9 @@ export function createUsers(uc: Array<any>): User[] {
 
 export function createRegistration(reg: any): Registration {
     return {
-        acceptedTerms: reg.acceptedTerms, 
-        created: timeAgo.format(reg.createdAt),
-        updated: timeAgo.format(reg.updatedAt)
+        acceptedTerms: reg.acceptedTerms,
+        provider: reg.provider, 
+        created: timeAgo.format(reg.updatedAt)
     }
 }
 

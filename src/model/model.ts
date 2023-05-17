@@ -1,7 +1,7 @@
 import { interfaces } from "inversify";
 import { RoleType, VolumeType, VolumeSourceType, ResourceType, StatusType, NetworkType, 
         NodeType, UserStatusType, InviteStatusType, SnapshotScheduleType, FilterConditionType, 
-        ProjectFilterType, InstanceFilterType, TeamFilterType, UserFilterType } from "./zbi.enum";
+        ProjectFilterType, InstanceFilterType, TeamFilterType, UserFilterType, LoginProvider } from "./zbi.enum";
 
 
 export interface AuthRequest {
@@ -21,7 +21,11 @@ export interface AuthResult {
 
 export interface RegisterRequest {
     email: string;
+    name?: string;
+    password?: string;
+    confirmPassword?: string;
     acceptedTerms: boolean;
+    provider: LoginProvider
 }
 
 export interface RegisterResult {
@@ -30,8 +34,8 @@ export interface RegisterResult {
 
 export interface Registration {
     acceptedTerms: boolean;
+    provider: LoginProvider;
     created: string;
-    updated: string;
 }
 
 export interface User {

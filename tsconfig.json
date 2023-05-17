@@ -12,6 +12,12 @@
     "baseUrl": ".",
     "typeRoots": ["node_modules/@types"],
     "experimentalDecorators": true,
+    "plugins": [
+      {
+        "transform": "ts-auto-mock/transformer",
+        "cacheBetweenTests": false
+      }
+    ]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "./tests/*"]

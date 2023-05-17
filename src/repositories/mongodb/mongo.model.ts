@@ -1,10 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
-import { NetworkType, NodeType, RoleType, UserStatusType, InviteStatusType, ResourceType } from "../../model/zbi.enum";
+import { NetworkType, NodeType, RoleType, UserStatusType, InviteStatusType, ResourceType, LoginProvider } from "../../model/zbi.enum";
 
 class MongoModel {
 
-    private registrationSchema: Schema;
+//    private registrationSchema: Schema;
     private userSchema: Schema;
     private teamSchema: Schema;
     private instanceSchema: Schema;
@@ -12,7 +12,7 @@ class MongoModel {
     private projectJobSchema: Schema;
     private instanceJobSchema: Schema;
 
-    registrationModel: any;
+//    registrationModel: any;
     userModel: any;
     teamModel: any;
     projectModel: any;
@@ -22,15 +22,18 @@ class MongoModel {
 
     constructor() {
 
-        this.registrationSchema = new Schema({email: {type: String}, acceptedTerms: {type: Boolean}}, {timestamps: true});
-        this.registrationModel = mongoose.model("registration", this.registrationSchema);
+ //       this.registrationSchema = new Schema({email: {type: String}, acceptedTerms: {type: Boolean}}, {timestamps: true});
+ //       this.registrationModel = mongoose.model("registration", this.registrationSchema);
+
+        const registrationSchema = new Schema({acceptedTerms: {type: Boolean}, provider: {type: String, enum:[LoginProvider.local, LoginProvider.google]}}, {timestamps: true});
 
         this.userSchema = new Schema({
             email: {type: String, unique: true, required: true, trim: true, match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address.'], lowercase: true},
-            name: {type: String, required: true},
+            name: {type: String, required: false},
             role: {type: String, required: true, enum:[RoleType.admin, RoleType.owner, RoleType.user]},
             status: {type: String, enum:[UserStatusType.invited, UserStatusType.active, UserStatusType.inactive], default: UserStatusType.invited},
-            password: { type: String, required: false }
+            password: { type: String, required: false },
+            registration: {type: registrationSchema}
         }, { timestamps: true});
         
         this.userModel = mongoose.model("user", this.userSchema);

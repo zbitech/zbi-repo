@@ -3,7 +3,7 @@ import UserMongoRepository from "../../../../src/repositories/mongodb/user.mongo
 import * as helper from "../../../../src/repositories/mongodb/helper";
 import model from "../../../../src/repositories/mongodb/mongo.model";
 import { User, QueryParam } from "../../../../src/model/model";
-import { RoleType, UserStatusType, UserFilterType, FilterConditionType } from "../../../../src/model/zbi.enum";
+import { RoleType, UserStatusType, UserFilterType, FilterConditionType, LoginProvider } from "../../../../src/model/zbi.enum";
 import { getLogger } from "../../../../src/libs/logger";
 import { Logger } from "winston";
 import { hashPassword } from "../../../../src/libs/auth.libs";
@@ -36,7 +36,7 @@ describe('UserMongoRepository', () => {
         expect(instance).toBeInstanceOf(UserMongoRepository);
         const user: User = {email: "user1@zbitech.net", name: "User One", role: RoleType.owner};
 
-        const newUser = await instance.createUser(user.email, user.name, user.role as RoleType, UserStatusType.invited);
+        const newUser = await instance.createUser(user.email, user.role as RoleType, UserStatusType.invited);
         logger.info(`created user ${JSON.stringify(newUser)}`);
     });
 
@@ -91,17 +91,20 @@ describe('UserMongoRepository', () => {
     test('should find a registration', async () => {
         expect(instance).toBeInstanceOf(UserMongoRepository);
 
-        const r = await model.registrationModel.create({email: "test@zbitech.net", acceptedTerms: true});
+        const r = await model.userModel.create({email: "test@zbitech.net", name: "Owner", role: RoleType.owner, status: UserStatusType.active, registration: {acceptedTerms: true, provider: LoginProvider.local}});
         logger.info(`created registration: ${JSON.stringify(r)}`);
 
         const reg = await instance.findRegistration(r.email);
         logger.info(`found registration - ${JSON.stringify(reg)}`);
     });
 
-    test('should insert a registration', async () => {
+    test('should create a registration', async () => {
+
+        const r = await model.userModel.create({email: "test@zbitech.net", name: "Owner", role: RoleType.owner, status: UserStatusType.invited, registration: {acceptedTerms: false}});
+
         expect(instance).toBeInstanceOf(UserMongoRepository);
 
-        const reg = await instance.updateRegistration("test2@zbitech.net", true);
+        const reg = await instance.createRegistration("test@zbitech.net", "Tester", LoginProvider.local);
         logger.info(`created registration - ${JSON.stringify(reg)}`);
     });
 

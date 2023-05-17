@@ -1,10 +1,11 @@
-import { User, Project, Team, TeamMember, Instance, ResourceRequest, ProjectRequest } from "../../src/model/model";
+import { User, Project, Team, TeamMember, Instance, ResourceRequest, ProjectRequest, AuthResult } from "../../src/model/model";
 import { NetworkType, RoleType, StatusType, InviteStatusType, UserStatusType, NodeType, VolumeType, VolumeSourceType, ResourceType } from "../../src/model/zbi.enum";
 import { getRandom, generateString, generateId, generateName, generateEmail, generatePhrase } from "./util";
 import model from "../../src/repositories/mongodb/mongo.model";
 import mongoose from 'mongoose';
 import { getLogger } from "../../src/libs/logger";
 import { stringify } from "querystring";
+import { signJwt, signJwtAccessToken, signJwtRefreshToken } from "../../src/libs/auth.libs";
 
 
 const logger = getLogger('mock-data');
@@ -43,7 +44,6 @@ export function createTeamMember(member: any): TeamMember {
 export function createUserSchema(user: any): any {
     return {
         userId: user.userId ? user.userId : generateId(),
-        userName: user.userName ? user.userName : generateString(5),
         email: user.email ? user.email : generateEmail(),
         name: user.name ? user.name : generateName(),
         role: user.role ? user.role : getRandom(USER_ROLES),
@@ -147,4 +147,21 @@ export function createKubernetesResources(snapshots: number): any {
         volumesnapshot: createKubernetesSnapshotResources(snapshots),
         snapshotschedule: {name: "schedule", type: ResourceType.snapshotschedule, status: StatusType.new, properties: {}}
     };
+}
+
+export function createValidAuthResult(user: User): AuthResult {
+    return {
+        email: user.email,
+        valid: true,
+        registered: false,
+        accessToken: signJwtAccessToken(user),
+        refreshToken: signJwtRefreshToken(user),
+        user
+    }
+}
+
+export function createInvalidAuthResult(user: User): AuthResult {
+    return {
+        email: user.email, valid: false, registered: false
+    }
 }

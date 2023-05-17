@@ -1,5 +1,5 @@
 import { Instance, KubernetesResource, KubernetesResources, Project, ProjectRequest, QueryFilter, SnapshotScheduleRequest, Team, TeamMembership, User, QueryParam, AuthRequest, AuthResult, RegisterRequest, RegisterResult, Registration } from "./model/model";
-import { ResourceType, SnapshotScheduleType, NetworkType, StatusType, InviteStatusType, UserStatusType, RoleType } from "./model/zbi.enum";
+import { ResourceType, SnapshotScheduleType, NetworkType, StatusType, InviteStatusType, UserStatusType, RoleType, LoginProvider } from "./model/zbi.enum";
 import { Handler } from "express";
 
 export interface Database {
@@ -11,10 +11,10 @@ export interface Database {
 
 
 export interface UserRepository {
-    createUser(email: string, name: string, role: RoleType, status: UserStatusType): Promise<User>;
+    createUser(email: string, role: RoleType, status: UserStatusType): Promise<User>;
     updateUser(email: string, name: string, status: UserStatusType): Promise<User>;
     findRegistration(email: string): Promise<Registration>;
-    updateRegistration(email: string, acceptedTerms: boolean): Promise<Registration>;
+    createRegistration(email: string, name: string, provider: LoginProvider): Promise<Registration>;
     getUserByEmail(email: string): Promise<User>;
     findUsers(params: QueryParam, size: number, page: number): Promise<Array<User>>;
     findUser(params: QueryParam): Promise<User>;
@@ -76,11 +76,11 @@ export interface IdentityService {
 
 
 export interface UserService {
-    createUser(email: string, name: string, role: RoleType, status: UserStatusType): Promise<User>;
+    createUser(email: string, role: RoleType, status: UserStatusType): Promise<User>;
     updateUser(email: string, name: string, status: UserStatusType): Promise<User>;
     authenticateUser(user: AuthRequest): Promise<AuthResult>;
     changePassword(email: string, old_password: string, new_password: string): Promise<User>;
-    registerUser(email: string, acceptTerms: boolean): Promise<User>;
+    registerUser(request: RegisterRequest): Promise<User>;
     findUsers(params: QueryParam, size: number, page: number): Promise<User[]>;
     findUser(params: QueryParam): Promise<User>;
     deactivateUser(email: string): Promise<User>;

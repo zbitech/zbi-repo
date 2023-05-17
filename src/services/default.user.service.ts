@@ -1,8 +1,10 @@
 import { signJwt } from "../libs/auth.libs";
 import { UserRepository, IdentityService, UserService } from "../interfaces";
-import { Team, TeamMembership, User, QueryParam, AuthRequest, AuthResult } from "../model/model";
-import { FilterConditionType, RoleType, UserFilterType, UserStatusType, InviteStatusType } from "../model/zbi.enum";
+import { Team, TeamMembership, User, QueryParam, AuthRequest, AuthResult, RegisterRequest } from "../model/model";
+import { FilterConditionType, RoleType, UserFilterType, UserStatusType, InviteStatusType, LoginProvider } from "../model/zbi.enum";
 import config from "config";
+import { getLogger } from "../libs/logger";
+import { AppErrorType, ApplicationError } from "../libs/errors";
 
 export default class DefaultUserService implements UserService {
 
@@ -14,9 +16,9 @@ export default class DefaultUserService implements UserService {
         this.identityService = identityService;
     }
 
-    async createUser(email: string, name: string, role: RoleType, status: UserStatusType): Promise<User> {
+    async createUser(email: string, role: RoleType, status: UserStatusType): Promise<User> {
         try {            
-            return await this.userRepository.createUser(email, name, role, status);
+            return await this.userRepository.createUser(email, role, status);
         } catch (err) {
             throw err;
         }
@@ -31,16 +33,19 @@ export default class DefaultUserService implements UserService {
     }
 
     async authenticateUser(user: AuthRequest): Promise<AuthResult> {
+        const logger = getLogger("authenticate-user");
         try {
             const result = await this.identityService.authenticateUser(user);
+            logger.debug(`auth result => ${JSON.stringify(result)}`);
 
             if(result.valid) {
 
                 // find user's registration
                 const registration = await this.userRepository.findRegistration(result.email as string);
-                if( registration ) {
-                    const accessToken = signJwt( {...result.user}, "accessTokenPrivateKey", { expiresIn: config.get("accessTokenTtl")});
-                    const refreshToken = signJwt( {...result.user}, "refreshTokenPrivateKey", { expiresIn: config.get("refreshTokenTtl")});
+                logger.debug(`registration: ${JSON.stringify(registration)}`);
+                if( registration && registration.acceptedTerms ) {
+                    const accessToken = signJwt( {...result.user}, "accessTokenPrivateKey", { expiresIn: config.get("accesstokenTtl")});
+                    const refreshToken = signJwt( {...result.user}, "refreshTokenPrivateKey", { expiresIn: config.get("refreshtokenTtl")});
                     return {valid: true, registered: true, accessToken, refreshToken};
                 } else {
                     return {valid: true, registered: false};
@@ -63,25 +68,33 @@ export default class DefaultUserService implements UserService {
                 return user as User;
             }
 
-            throw Error("invalid user");
+            throw new ApplicationError(AppErrorType.USER_NOT_PERMITTED, "user not permitted");
         } catch (err: any) {
             throw err;            
         }
 
     }
 
-    async registerUser(email: string, acceptedTerms: boolean): Promise<User> {
+    async registerUser(request: RegisterRequest): Promise<User> {
         try {
             
-            const param: QueryParam = {name: UserFilterType.email, condition: FilterConditionType.equal, value: email};
-            const user: User = await this.userRepository.findUser(param);
+            const user: User = await this.userRepository.getUserByEmail(request.email);
     
             if(user) {
-                await this.userRepository.updateRegistration(email, acceptedTerms);
-                return await this.userRepository.updateUser(email, user.name, UserStatusType.active);
+
+                const name = request.name as string;
+
+                if(request.provider === LoginProvider.local) {
+                    // validate and save password
+                    const password = request.password as string;
+                    await this.userRepository.setPassword(request.email, password);
+                }
+
+                await this.userRepository.createRegistration(request.email, name, request.provider);
+                return await this.userRepository.getUserByEmail(request.email);
             }
 
-            throw Error("user not permitted");
+            throw new ApplicationError(AppErrorType.USER_NOT_PERMITTED, "user not permitted");
         } catch (err) {
             throw err;
         }
@@ -105,12 +118,13 @@ export default class DefaultUserService implements UserService {
 
     async deactivateUser(email: string): Promise<User> {
         try {
-            const param: QueryParam = {name: UserFilterType.email, condition: FilterConditionType.equal, value: email};
-            const user: User = await this.userRepository.findUser(param);
+            const user: User = await this.userRepository.getUserByEmail(email);
+            if(user.status != UserStatusType.active) {
+                throw new ApplicationError(AppErrorType.USER_NOT_ACTIVE, "user must be active to be deactivated");
+            }
 
-            await this.userRepository.deactivateUser(email);
+            return await this.userRepository.deactivateUser(email);
 
-            return user;
         } catch (err) {
             throw err;
         }
@@ -118,8 +132,11 @@ export default class DefaultUserService implements UserService {
 
     async reactivateUser(email: string): Promise<User> {
         try {
-            const param: QueryParam = {name: UserFilterType.userid, condition: FilterConditionType.equal, value: email};
-            const user: User = await this.userRepository.findUser(param);
+            const user: User = await this.userRepository.getUserByEmail(email);
+            if(user.status != UserStatusType.inactive) {
+                throw new ApplicationError(AppErrorType.USER_NOT_INACTIVE, "user must be inactive to be re-activated");
+            }
+
             await this.userRepository.activateUser(email);            
             return user;
         } catch (err) {
@@ -130,6 +147,10 @@ export default class DefaultUserService implements UserService {
 
     async deleteUser(email: string): Promise<void> {
         try {
+            const user: User = await this.userRepository.getUserByEmail(email);
+            if(user.status != UserStatusType.inactive) {
+                throw new ApplicationError(AppErrorType.USER_NOT_INACTIVE, "user must be inactive to be deleted");
+            }
             
             const newUser = await this.userRepository.deleteUser(email);
 
@@ -141,7 +162,7 @@ export default class DefaultUserService implements UserService {
 
     async createTeam(owner: string, name: string): Promise<Team> {
         try {            
-            const user = await this.userRepository.getUserByEmail(owner);
+            const user = await this.userRepository.getUserByEmail(owner);            
             return await this.userRepository.createTeam(user.userid as string, name);
         } catch (err) {
             throw err;
@@ -188,7 +209,7 @@ export default class DefaultUserService implements UserService {
         try {            
             let user = await this.userRepository.getUserByEmail(email);
             if(!user) {
-                user = await this.createUser(email, "", RoleType.owner, UserStatusType.invited);
+                user = await this.createUser(email, RoleType.owner, UserStatusType.invited);
             }
 
             return await this.userRepository.addTeamMembership(teamid, user.userid as string);

@@ -105,3 +105,8 @@ export enum FilterConditionType {
     like = "like",
     notlike = "notlike"
 }
+
+export enum LoginProvider {
+    local = "local",
+    google = "google",
+}

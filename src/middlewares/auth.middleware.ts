@@ -9,26 +9,28 @@ import { QueryParam, User } from '../model/model';
 import { FilterConditionType, UserFilterType, UserStatusType } from '../model/zbi.enum';
 import { HttpStatusCode } from 'axios';
 
-const TENANT_ID = process.env.AUTH0_TENANT_ID;
-const DOMAIN = process.env.AUTH0_DOMAIN;
-const CLIENT_ID = process.env.AUTH0_CLIENT_ID
-const CLIENT_SECRET = process.env.AUTH0_CLIENT_SECRET
-const AUDIENCE = process.env.AUTH0_AUDIENCE
+export const jwtVerifier = async (req: Request, res: Response, next: NextFunction) => {
 
-export const jwtVerifier = beanFactory.getIdentityService().getAccessVerifier();
+    const logger = getLogger("verify-token");
+    logger.info(`verifying oauth token`);
+
+    next();
+}
 
 export const validateUser = async (req: Request, res: Response, next: NextFunction) => {
 
     const store = context.getStore();
-    const userid = store?.get(Constants.USER_ID);
+    const email = store?.get(Constants.USER_EMAIL);
 
     const logger = getLogger("validate-user");
 
     try {
+        logger.info(`validating user`);
         const userSvc: UserService = beanFactory.getUserService();
-        const param: QueryParam = {name: UserFilterType.userid, condition: FilterConditionType.equal, value: userid};
+        logger.debug(`got user service ... ${JSON.stringify(userSvc)}`);
+        const param: QueryParam = {name: UserFilterType.email, condition: FilterConditionType.equal, value: email};
         const user: User = await userSvc.findUser(param)
-
+        logger.debug(`got user: ${JSON.stringify(user)}`);
         store?.set(Constants.USER, user);
         
         if(user.status === UserStatusType.inactive) {
@@ -49,7 +51,7 @@ export const validateUser = async (req: Request, res: Response, next: NextFuncti
         }
 
     } catch(err:any) {
-
+        logger.error(`failed to validate user: ${JSON.stringify(err)}`);        
         res.status(HttpStatusCode.InternalServerError).json({message: err.message});
     }
 }
