@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import { Database } from "../interfaces";
+import { mainLogger as logger } from "../libs/logger";
+
 
 const ConnectionString = process.env.MONGO_DB_CONNECTION_STRING || "mongodb://localhost:27017/zbiRepo";
 const RetrySeconds = parseInt(process.env.MONGO_DB_RETRY_SECONDS || "5");
@@ -11,18 +13,23 @@ export class MongoDB implements Database {
 
     private mongooseOptions = {
         useNewUrlParser: UseNewUrlParser,
-        useUnitedTopology: UseUnitedTopology,
         serverSelectionTimeoutMS: ServerSelectionTimeout
     };
 
     async init(): Promise<void> {
+        logger.info(`initializing mongo db`);
     }
 
     async connect(): Promise<void> {
 
+        logger.info(`connecting to mongodb @ ${ConnectionString} with options - ${JSON.stringify(this.mongooseOptions)}`);
         mongoose.connect(ConnectionString, this.mongooseOptions)
-            .then(() => {})
-            .catch((err) => {})
+            .then(() => {
+                logger.info(`connected to mongodb @ ${ConnectionString}`);
+            })
+            .catch((err: any) => {
+                logger.error(`failed to connect to mongodb - ${err}`);
+            })
     }
     
     async close(): Promise<void> {

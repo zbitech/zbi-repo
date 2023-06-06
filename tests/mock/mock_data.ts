@@ -5,7 +5,7 @@ import model from "../../src/repositories/mongodb/mongo.model";
 import mongoose from 'mongoose';
 import { getLogger } from "../../src/libs/logger";
 import { stringify } from "querystring";
-import { signJwt, signJwtAccessToken, signJwtRefreshToken } from "../../src/libs/auth.libs";
+import { signJwt, signJwtAccessToken, signJwtRefreshToken, verifyJwtAccessToken } from "../../src/libs/auth.libs";
 
 
 const logger = getLogger('mock-data');
@@ -150,13 +150,16 @@ export function createKubernetesResources(snapshots: number): any {
 }
 
 export function createValidAuthResult(user: User): AuthResult {
+    const accessToken = signJwtAccessToken(user);
+    const {subject} = verifyJwtAccessToken(accessToken);
+
     return {
         email: user.email,
         valid: true,
-        registered: false,
+        registered: true,
         accessToken: signJwtAccessToken(user),
         refreshToken: signJwtRefreshToken(user),
-        user
+        user: subject
     }
 }
 

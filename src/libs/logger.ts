@@ -23,7 +23,6 @@ const logFormat = printf(({level, message, label: logLabel, timestamp: logTimeSt
     return `${level} | ${logTimeStamp} | ${requestid} | ${userid} | ${service} | ${message}`;
 });
 
-
 export const defaultLogger = createLogger({
     level: process.env.LOG_LEVEL || 'debug',
     format: combine(label({label: process.env.NODE_ENV}), timestamp(), logFormat, colorize({all: true})),

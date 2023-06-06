@@ -1,3 +1,4 @@
+import { ApplicationError } from "src/libs/errors";
 import { User, Team, TeamMember, Project, Instance, ResourceRequest, KubernetesResource, KubernetesResources, QueryParam, Registration } from "../../model/model";
 import { FilterConditionType } from "../../model/zbi.enum";
 import TimeAgo from "javascript-time-ago";
@@ -5,6 +6,12 @@ import en from "javascript-time-ago/locale/en";
 
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('en-US');
+
+export enum MongoErrorType {
+    SERVICE_ERROR = 100,
+    DUPLICATE_KEY = 101,
+}
+
 
 export function createParam(param: QueryParam) {
     const obj: any = {};
@@ -51,17 +58,21 @@ export function createRegistration(reg: any): Registration {
 }
 
 export function createTeam(tc: any): Team {
-    return {
-        id: tc._id,
-        name: tc.name,
-        owner: createUser(tc.owner),
-        members: tc.members ? tc.members.map((mbr:any) => createTeamMember(mbr)) : undefined
+    if(tc) {
+        return {
+            id: tc._id,
+            name: tc.name,
+            owner: createUser(tc.owner),
+            members: tc.members ? tc.members.map((mbr:any) => createTeamMember(mbr)) : undefined
+        }
     }
+
+    return tc;
 }
 
 export function createTeamMember(tmc: any): TeamMember {
     return {
-        user: tmc.user, role: tmc.role, status: tmc.status
+        user: createUser(tmc.user), role: tmc.role, status: tmc.status
     }
 }
 
@@ -136,4 +147,13 @@ export function createProject(project: any): Project {
 
 export function createProjects(projects: any[]): Project[] {
     return projects.map( project => createProject(project));
+}
+
+export function getErrorType(err: any): MongoErrorType {
+
+    if(err.code === 11000) {
+        return MongoErrorType.DUPLICATE_KEY
+    }
+
+    return MongoErrorType.SERVICE_ERROR;
 }

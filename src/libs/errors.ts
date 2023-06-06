@@ -8,10 +8,14 @@ export enum ServiceErrorType {
 }
 
 export enum AppErrorType {
+    DB_SERVICE_ERROR = 1,
     UNREGISTERED_USER = 100,
     USER_NOT_PERMITTED = 200,
     USER_NOT_ACTIVE = 300,
-    USER_NOT_INACTIVE = 400
+    USER_NOT_INACTIVE = 400,
+    EMAIL_ALREADY_EXISTS = 500,
+    INVALID_LOGIN_PROVIDER = 600
+
 }
 
 export class FieldError {

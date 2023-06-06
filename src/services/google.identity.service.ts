@@ -8,8 +8,9 @@ import { getLogger } from "../libs/logger";
 import { Request, Response } from "express";
 import  config from "config";
 import qs from "qs";
-import { FilterConditionType, RoleType, UserFilterType, UserStatusType } from "src/model/zbi.enum";
-import { signJwt } from "src/libs/auth.libs";
+import { FilterConditionType, RoleType, UserFilterType, UserStatusType } from "../model/zbi.enum";
+import { signJwt } from "../libs/auth.libs";
+import beanFactory from "../factory/bean.factory";
 
 const TENANT_ID = process.env.AUTH0_TENANT_ID;
 const DOMAIN = process.env.AUTH0_DOMAIN;
@@ -39,115 +40,15 @@ interface GoogleUserResult {
     picture: string;
     locale: string;
 }
-
-export default class GoogleIdentityService implements IdentityService {
+class GoogleIdentityService implements IdentityService {
 
     token: string = "";
     expiration: number = 3600;
 
-    private repository: UserRepository;
-
-    constructor(userRepository: UserRepository) {
-        this.repository = userRepository;
-    }
-
-    // async createUser(email: string, name: string, role: RoleType, status: UserStatusType): Promise<User> {
-
-    //     try {
-    //         return await this.repository.createUser(email, name, role, status);
-    //     } catch(err) {
-    //         throw err;
-    //     }
-    // }
-
-    // async updateUser(email: string, name: string, status: UserStatusType): Promise<User> {
-    //     try {
-    //         return await this.repository.updateUser(email, name, status);
-    //     } catch(err) {
-    //         throw err;
-    //     }
-    // }
-
-    // async getUserById(userid: string): Promise<User> {
-    //     const param: QueryParam = {name: UserFilterType.userid, condition: FilterConditionType.equal, value: userid};
-    //     const user: User = await this.repository.findUser(param);
-
-    //     return user;
-    // }
-
-    // async getUserByEmail(email: string): Promise<User> {
-    //     const param: QueryParam = {name: UserFilterType.email, condition: FilterConditionType.equal, value: email};
-    //     const user: User = await this.repository.findUser(param);
-
-    //     return user;
-    // }
-
-    // async setPassword(email: string, password: string): Promise<void> {
-    //     throw new Error("method not implemented");
-    // }
-
-    // async resetPassword(userid: string): Promise<void> {
-    //     throw new Error("method not implemented");
-    // }
-
-    // async deactivateUser(userid: string): Promise<void> {
-    //     try {
-    //         await this.repository.deactivateUser(userid);
-    //     } catch(err) {
-    //         throw err;
-    //     }
-    // }
-
-    // async activateUser(userid: string): Promise<void> {
-    //     try {
-    //         await this.repository.activateUser(userid);
-    //     } catch(err) {
-    //         throw err;
-    //     }
-    // }
-
-    // async deleteUser(userid: string): Promise<void> {
-    //     try {
-    //         await this.repository.deleteUser(userid);
-    //     } catch(err) {
-    //         throw err;
-    //     }
-    // }
-
-    // async getAccountActivity(userid: string): Promise<void> {
-    //     try {
-    //         const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}
-    //         const response = await axios.get(`${AUTH0_URL}/api/v2/users/${userid}/logs`, {headers});
-
-    //         if(response.status === HttpStatusCode.Ok) {
-    //             // retrieve activity logs - TODO
-
-    //             return
-    //         }
-
-    //         throw new ServiceError(ServiceErrorType.UNAVAILABLE, "");
-
-    //     } catch(err) {
-    //         throw err;
-    //     }
-
-    // }
-
-    // getLoginURL(): string {
-    //     return "";
-    // }
-
-    // getAccessVerifier(): Handler {
-    //     return auth({
-    //         audience: `${AUDIENCE}`,
-    //         issuerBaseURL: `https://${TENANT_ID}.${DOMAIN}/`,
-    //         tokenSigningAlg: 'RS256',
-    //         jwksUri: `https://${TENANT_ID}.${DOMAIN}/.well-known/jwks.json`
-    //     });
-    // }
-
     async authenticateUser(request: AuthRequest): Promise<AuthResult> {
         try {
+
+            const repository = beanFactory.getUserRepository();
 
             // generate token
             const code: string = request.code as string;
@@ -155,9 +56,9 @@ export default class GoogleIdentityService implements IdentityService {
             const guser = await getGoogleUser(id_token, access_token);
 
             // find user
-            let user = await this.repository.getUserByEmail(guser.email);
+            let user = await repository.getUserByEmail(guser.email);
             if(user) {
-                user = await this.repository.updateUser(guser.email, guser.name, UserStatusType.active);
+                user = await repository.updateUser(guser.email, guser.name, UserStatusType.active);
                 return {email: guser.email, valid: true, registered: false, user};
             } else {
                 return {valid: false, registered: false};
@@ -167,19 +68,6 @@ export default class GoogleIdentityService implements IdentityService {
         }
 
     }
-
-    // async registerUser(user: RegisterRequest): Promise<RegisterResult> {
-    //     try {
-
-
-    //         // generate token
-    //         return {};
-    //     } catch (e: any) {
-    //         throw e;            
-    //     }
-
-    // }
-
 }
 
 async function getGoogleOAuthTokens(code: string): Promise<GoogleTokenResult> {
@@ -210,3 +98,5 @@ async function getGoogleUser(id_token: string, access_token: string): Promise<Go
         throw err;
     }
 }
+
+export default new GoogleIdentityService();

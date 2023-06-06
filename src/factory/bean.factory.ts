@@ -1,35 +1,62 @@
-import { ControllerService, Database, IdentityService, ProjectRepository, ProjectService, UserRepository, UserService } from "../interfaces";
+import { AppErrorType, ApplicationError } from "../libs/errors";
+import { LoginProvider, RoleType, UserStatusType } from "../model/zbi.enum";
+import basicIdentityService from "../services/basic.identity.service";
+import googleIdentityService from "../services/google.identity.service";
+import { ControllerService, Database, IAccessService, IdentityService, ProjectRepository, ProjectService, UserRepository, UserService } from "../interfaces";
 import databaseFactory from "./database.factory";
 import repositoryFactory from "./repository.factory";
-import serviceFactory from "./service.factory";
+import controllerService from '../services/k8s.controller.service';
+import projectService from '../services/default.project.service';
+import userService from '../services/default.user.service';
+import accessService from "../services/access.service";
+import { mainLogger as logger } from "../libs/logger";
+import config from "config";
+import { hashPassword } from "../libs/auth.libs";
+import model from "../repositories/mongodb/mongo.model";
+
+const CREATE_ADMIN = config.get<boolean>("createAdmin");
+const ADMIN_EMAIL = config.get<string>("adminEmail");
+const ADMIN_PASSWORD = config.get<string>("adminPassword");
 
 class BeanFactory {
 
     private database: Map<string, any>;
     private repositories: Map<string, any>;
-    private services: Map<string, any>;
 
     constructor() {
 
         this.database = new Map();
         this.repositories = new Map();
-        this.services = new Map();
 
-        this.repositories.set("user", repositoryFactory.createUserRepository());
-        this.repositories.set("project", repositoryFactory.createProjectRepository());
+        try {
+            this.database.set("database", databaseFactory.createDatabase());
+            this.repositories.set("user", repositoryFactory.createUserRepository());
+            this.repositories.set("project", repositoryFactory.createProjectRepository());
 
-        this.services.set("identity", serviceFactory.createIdentityService(this.getUserRepository()));
-        this.services.set("controller", serviceFactory.createControllerService());
-        this.services.set("user", serviceFactory.createUserService(this.getUserRepository(), this.getIdentityService()));
-        this.services.set("project", serviceFactory.createProjectService(this.getProjectRepository(), this.getControllerService()));
-
-        this.database.set("database", databaseFactory.createDatabase());
+            //console.log(`bean factory initialized ...`);
+        } catch (err: any) {
+            console.error(`Failed to initialize beanFactory - ${(err)}`);            
+        }
     }
 
     async init() {
         let db: Database = this.database.get("database");
         await db.init();
         await db.connect();
+
+        if(CREATE_ADMIN) {
+
+            const user = await model.userModel.findOne({email: ADMIN_EMAIL})
+            logger.debug(`found user - ${JSON.stringify(user)}`);
+            if(!user) {
+                const password = await hashPassword(ADMIN_PASSWORD);
+                //logger.debug(`creating - email -> ${ADMIN_EMAIL} password -> ${pass} [${password}]`);        
+                const uc = model.userModel({name: "Admin", email: ADMIN_EMAIL, password: password, role: RoleType.admin, status: UserStatusType.active, registration: {acceptedTerms: true, provider: LoginProvider.local}});
+                await uc.save();
+                logger.info(`created admin user - ${ADMIN_EMAIL}`);
+            }
+        }
+        
     }
 
     getUserRepository(): UserRepository {
@@ -40,35 +67,36 @@ class BeanFactory {
         return this.getRepository("project");
     }
 
-    getIdentityService(): IdentityService {
-        return this.getService("identity");
+    getIdentityService(provider: LoginProvider): IdentityService {
+        if(provider === LoginProvider.local) {
+            return basicIdentityService;
+        } else if(provider === LoginProvider.google ) {
+            return googleIdentityService;
+        }
+
+        throw new ApplicationError(AppErrorType.INVALID_LOGIN_PROVIDER, `unknown login provider - ${provider}`);
     }
 
     getControllerService(): ControllerService {
-        return this.getService("controller");
+        return controllerService;
     }
 
     getUserService(): UserService {
-        return this.getService("user");
+        return userService;
     }
 
     getProjectService(): ProjectService {
-        return this.getService("project");
+        return projectService;
+    }
+
+    getAccessService(): IAccessService {
+        return accessService;
     }
 
     getRepository(name: string) {
         const repo = this.repositories.get(name);
         if(repo) {
             return repo;
-        }
-
-        throw new Error("repository does not exist!");
-    }
-
-    getService(name: string) {
-        const service = this.services.get(name);
-        if(service) {
-            return service;
         }
 
         throw new Error("repository does not exist!");

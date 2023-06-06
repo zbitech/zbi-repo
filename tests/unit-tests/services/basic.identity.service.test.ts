@@ -1,4 +1,4 @@
-import BasicIdentityService from "../../../src/services/basic.identity.service";
+import basicIdentityService from "../../../src/services/basic.identity.service";
 import { getLogger } from "../../../src/libs/logger";
 import { Logger } from "winston";
 import { ProjectRepository, ControllerService, UserRepository } from "../../../src/interfaces";
@@ -8,7 +8,7 @@ import { LoginProvider, RoleType, UserStatusType } from "../../../src/model/zbi.
 import model from "../../../src/repositories/mongodb/mongo.model";
 import { hashPassword } from "../../../src/libs/auth.libs";
 
-let instance: BasicIdentityService;
+let instance: any;
 let logger: Logger;
 let db: MongoMemoryDB = new MongoMemoryDB();
 let repo: UserRepository = new UserMongoRepository();
@@ -26,55 +26,14 @@ afterAll(async () => {
 describe('BasicIdentityService', () => {
     
     beforeEach(async () => {
-        instance = new BasicIdentityService(repo);
+        instance = basicIdentityService;
     });
 
     afterEach(async () => {
         await db.clear();
     });
 
-    // test('should create an owner', async () => {
-    //     expect(instance).toBeInstanceOf(BasicIdentityService);
-    //     const owner = await instance.createUser("owner@zbitech.net", "Owner One", RoleType.owner, UserStatusType.invited);
-    // });
-
-    // test('should update existing user', async () => {
-    //     expect(instance).toBeInstanceOf(BasicIdentityService);
-        
-    // });
-
-    // test('should fail to update a non-existing user', async () => {
-    //     expect(instance).toBeInstanceOf(BasicIdentityService);
-        
-    // });
-
-    // test('should get user by email', async () => {
-    //     expect(instance).toBeInstanceOf(BasicIdentityService);
-        
-    // });
-
-    // test('should set password', async () => {
-    //     expect(instance).toBeInstanceOf(BasicIdentityService);
-        
-    // });
-
-    // test('should deactivate user', async () => {
-    //     expect(instance).toBeInstanceOf(BasicIdentityService);
-        
-    // });
-
-    // test('should activate user', async () => {
-    //     expect(instance).toBeInstanceOf(BasicIdentityService);
-        
-    // });
-
-    // test('should delete user', async () => {
-    //     expect(instance).toBeInstanceOf(BasicIdentityService);
-        
-    // });
-
     test('should authenticate user', async () => {
-        expect(instance).toBeInstanceOf(BasicIdentityService);
 
         const password = await hashPassword("password") as string;
 //        const user = await model.userModel.create({email: "test@zbitech.net", name: "Tester", status: UserStatusType.active, role: RoleType.owner, password});        
@@ -88,13 +47,7 @@ describe('BasicIdentityService', () => {
     });
 
     test('should fail authentication', async () => {
-        expect(instance).toBeInstanceOf(BasicIdentityService);
         
     });
-
-    // test('should register user', async () => {
-    //     expect(instance).toBeInstanceOf(BasicIdentityService);
-        
-    // });
 
 });

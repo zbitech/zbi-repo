@@ -2,25 +2,21 @@ import { ProjectRepository, ProjectService, ControllerService } from "../interfa
 import { Project, QueryFilter, KubernetesResource, Instance, SnapshotScheduleRequest, KubernetesResources, ProjectRequest, QueryParam } from "../model/model";
 import { ProjectFilterType, ResourceType, StatusType } from "../model/zbi.enum";
 import { getLogger } from "../libs/logger"
+import beanFactory from "../factory/bean.factory";
 
-export default class DefaultProjectService implements ProjectService {
+class DefaultProjectService implements ProjectService {
 
-    private projectRepository: ProjectRepository;
-    private controllerService: ControllerService;
-
-    constructor(projectRepository: ProjectRepository, controllerService: ControllerService) {
-        this.projectRepository = projectRepository;
-        this.controllerService = controllerService;
-    }
-    
     async createProject(project: ProjectRequest): Promise<Project> {
-        let logger = getLogger('psvc.createProject');
+        let logger = getLogger('create-project-svc');
         try {
+            logger.debug(`creating project => ${JSON.stringify(project)}`);
+            const controllerService = beanFactory.getControllerService();
+            const projectRepository = beanFactory.getProjectRepository();
             // TODO - validate project
 
-            const newProject = await this.projectRepository.createProject(project);
+            const newProject = await projectRepository.createProject(project);
 
-            await this.controllerService.createProject(newProject);
+            //await controllerService.createProject(newProject);
 
             return newProject;
         } catch (err) {
@@ -31,7 +27,8 @@ export default class DefaultProjectService implements ProjectService {
     async findProjects(params: QueryParam, size: number, page: number): Promise<Project[]> {
         let logger = getLogger('psvc.findProjects');
         try {
-            return await this.projectRepository.findProjects(params, size, page);
+            const projectRepository = beanFactory.getProjectRepository();
+            return await projectRepository.findProjects(params, size, page);
         } catch (err) {
             throw err;
         }
@@ -40,7 +37,8 @@ export default class DefaultProjectService implements ProjectService {
     async findProject(projectId: string): Promise<Project> {
         let logger = getLogger('psvc.findProject');
         try {
-            return await this.projectRepository.findProject(projectId);
+            const projectRepository = beanFactory.getProjectRepository();
+            return await projectRepository.findProject(projectId);
         } catch (err) {
             throw err;
         }
@@ -49,9 +47,10 @@ export default class DefaultProjectService implements ProjectService {
     async updateProject(project: Project): Promise<Project> {
         let logger = getLogger('psvc.updateProject');
         try {
+            const projectRepository = beanFactory.getProjectRepository();
             // TODO - validate update
  
-            return this.projectRepository.updateProject(project);
+            return projectRepository.updateProject(project);
         } catch (err) {
             throw err;
         }
@@ -60,10 +59,13 @@ export default class DefaultProjectService implements ProjectService {
     async repairProject(projectId: string): Promise<Project> {
         let logger = getLogger('psvc.repairProject');
         try {
-            const project = await this.projectRepository.findProject(projectId);
+            const projectRepository = beanFactory.getProjectRepository();
+            const controllerService = beanFactory.getControllerService();
+
+            const project = await projectRepository.findProject(projectId);
 
             // TODO - invoke kubernetes to repair project
-            await this.controllerService.repairProject(project);
+            await controllerService.repairProject(project);
 
             return project;
         } catch (err) {
@@ -74,13 +76,16 @@ export default class DefaultProjectService implements ProjectService {
     async deleteProject(projectId: string): Promise<Project> {
         let logger = getLogger('psvc.deleteProject');
         try {
-            const project = await this.projectRepository.findProject(projectId);
+            const projectRepository = beanFactory.getProjectRepository();
+            const controllerService = beanFactory.getControllerService();
+
+            const project = await projectRepository.findProject(projectId);
 
             // TODO - invoke kubernetes to delete project.
-            await this.controllerService.deleteProject(project);
+            await controllerService.deleteProject(project);
 
             project.status = StatusType.deleted;
-            await this.projectRepository.updateProject(project);
+            await projectRepository.updateProject(project);
 
             return project;
         } catch (err) {
@@ -91,10 +96,12 @@ export default class DefaultProjectService implements ProjectService {
     async purgeProject(projectId: string): Promise<void> {
         let logger = getLogger('psvc.purgeProject');
         try {
-            // TODO - validate project status is deleted
-            const project = await this.projectRepository.findProject(projectId);
+            const projectRepository = beanFactory.getProjectRepository();
 
-            await this.projectRepository.deleteProject(projectId);
+            // TODO - validate project status is deleted
+            const project = await projectRepository.findProject(projectId);
+
+            await projectRepository.deleteProject(projectId);
         } catch (err) {
             throw err;
         }
@@ -103,10 +110,12 @@ export default class DefaultProjectService implements ProjectService {
     async updateProjectResource(projectId: string, resource: KubernetesResource): Promise<void> {
         let logger = getLogger('psvc.updateProjectResource');
         try {
+            const projectRepository = beanFactory.getProjectRepository();
+
             if(resource.type === ResourceType.namespace) {
-                const project = await this.projectRepository.findProject(projectId);
+                const project = await projectRepository.findProject(projectId);
                 project.status = resource.status;
-                await this.projectRepository.updateProject(project);
+                await projectRepository.updateProject(project);
             }
         } catch (err) {
             throw err;
@@ -116,11 +125,14 @@ export default class DefaultProjectService implements ProjectService {
     async createInstance(project: Project, instance: Instance): Promise<Instance> {
         let logger = getLogger('psvc.purgeProject');
         try {
+            const projectRepository = beanFactory.getProjectRepository();
+            const controllerService = beanFactory.getControllerService();
+
             const projectId: string = project.id as string;
-            const newInstance = this.projectRepository.createInstance(projectId, instance)
+            const newInstance = projectRepository.createInstance(projectId, instance)
 
             // TODO - invoke k8s service to create instance
-            await this.controllerService.createInstance(project, instance);
+            await controllerService.createInstance(project, instance);
 
             return newInstance;
         } catch (err) {
@@ -131,7 +143,9 @@ export default class DefaultProjectService implements ProjectService {
     async findAllInstances(params: QueryParam, size: number, page: number): Promise<Instance[]> {
         let logger = getLogger('psvc.findAllInstances');
         try {
-            return await this.projectRepository.findInstances(params);
+            const projectRepository = beanFactory.getProjectRepository();
+
+            return await projectRepository.findInstances(params);
         } catch (err) {
             throw err;
         }
@@ -140,7 +154,9 @@ export default class DefaultProjectService implements ProjectService {
     async findInstances(params: QueryFilter): Promise<Instance[]> {
         let logger = getLogger('psvc.findInstances');
         try {
-            return await this.projectRepository.findInstances(params);
+            const projectRepository = beanFactory.getProjectRepository();
+
+            return await projectRepository.findInstances(params);
         } catch (err) {
             throw err;
         }
@@ -149,7 +165,9 @@ export default class DefaultProjectService implements ProjectService {
     async findInstance(instanceId: string): Promise<Instance> {
         let logger = getLogger('psvc.findInstance');
         try {
-            return await this.projectRepository.findInstance(instanceId);
+            const projectRepository = beanFactory.getProjectRepository();
+
+            return await projectRepository.findInstance(instanceId);
         } catch (err) {
             throw err;
         }
@@ -159,7 +177,9 @@ export default class DefaultProjectService implements ProjectService {
     async updateInstance(instanceId: string, instance: Instance): Promise<Instance> {
         let logger = getLogger('psvc.updateInstance');
         try {
-            return await this.projectRepository.updateInstance(instance);
+            const projectRepository = beanFactory.getProjectRepository();
+
+            return await projectRepository.updateInstance(instance);
         } catch (err) {
             throw err;
         }
@@ -168,7 +188,9 @@ export default class DefaultProjectService implements ProjectService {
     async repairInstance(instanceId: string): Promise<Instance> {
         let logger = getLogger('psvc.repairInstance');
         try {
-            const instance = await this.projectRepository.findInstance(instanceId);
+            const projectRepository = beanFactory.getProjectRepository();
+
+            const instance = await projectRepository.findInstance(instanceId);
 
             //this.controllerService.repairInstance()
             return instance;
@@ -180,10 +202,13 @@ export default class DefaultProjectService implements ProjectService {
     async startInstance(instanceId: string): Promise<void> {
         let logger = getLogger('psvc.startInstance');
         try {
-            const instance = await this.projectRepository.findInstance(instanceId);
-            const project = await this.projectRepository.findProjectByName(instance.name);
+            const projectRepository = beanFactory.getProjectRepository();
+            const controllerService = beanFactory.getControllerService();
 
-            await this.controllerService.startInstance(project, instance);
+            const instance = await projectRepository.findInstance(instanceId);
+            const project = await projectRepository.findProjectByName(instance.name);
+
+            await controllerService.startInstance(project, instance);
         } catch (err) {
             throw err;
         }
@@ -192,10 +217,13 @@ export default class DefaultProjectService implements ProjectService {
     async stopInstance(instanceId: string): Promise<void> {
         let logger = getLogger('psvc.stopInstance');
         try {
-            const instance = await this.projectRepository.findInstance(instanceId);
-            const project = await this.projectRepository.findProjectByName(instance.name);
+            const projectRepository = beanFactory.getProjectRepository();
+            const controllerService = beanFactory.getControllerService();
 
-            await this.controllerService.stopInstance(project, instance);
+            const instance = await projectRepository.findInstance(instanceId);
+            const project = await projectRepository.findProjectByName(instance.name);
+
+            await controllerService.stopInstance(project, instance);
         } catch (err) {
             throw err;
         }
@@ -204,10 +232,13 @@ export default class DefaultProjectService implements ProjectService {
     async createInstanceBackup(instanceId: string): Promise<void> {
         let logger = getLogger('psvc.createInstanceBackup');
         try {
-            const instance = await this.projectRepository.findInstance(instanceId);
-            const project = await this.projectRepository.findProjectByName(instance.name);
+            const projectRepository = beanFactory.getProjectRepository();
+            const controllerService = beanFactory.getControllerService();
 
-            await this.controllerService.createInstanceBackup(project, instance);
+            const instance = await projectRepository.findInstance(instanceId);
+            const project = await projectRepository.findProjectByName(instance.name);
+
+            await controllerService.createInstanceBackup(project, instance);
         } catch (err) {
             throw err;
         }
@@ -216,10 +247,13 @@ export default class DefaultProjectService implements ProjectService {
     async createInstanceBackupSchedule(instanceId: string, request: SnapshotScheduleRequest): Promise<void> {
         let logger = getLogger('psvc.createInstanceBackupSchedule');
         try {
-            const instance = await this.projectRepository.findInstance(instanceId);
-            const project = await this.projectRepository.findProjectByName(instance.name);
+            const projectRepository = beanFactory.getProjectRepository();
+            const controllerService = beanFactory.getControllerService();
 
-            await this.controllerService.createInstanceBackupSchedule(project, instance, request);
+            const instance = await projectRepository.findInstance(instanceId);
+            const project = await projectRepository.findProjectByName(instance.name);
+
+            await controllerService.createInstanceBackupSchedule(project, instance, request);
         } catch (err) {
             throw err;
         }
@@ -228,11 +262,13 @@ export default class DefaultProjectService implements ProjectService {
     async deleteInstance(instanceId: string): Promise<void> {
         let logger = getLogger('psvc.deleteInstance');
         try {
+            const projectRepository = beanFactory.getProjectRepository();
+            const controllerService = beanFactory.getControllerService();
 
-            const instance = await this.projectRepository.findInstance(instanceId);
-            const project = await this.projectRepository.findProjectByName(instance.name);
+            const instance = await projectRepository.findInstance(instanceId);
+            const project = await projectRepository.findProjectByName(instance.name);
 
-            await this.controllerService.deleteInstanceResource
+            await controllerService.deleteInstanceResource
         } catch (err) {
             throw err;
         }
@@ -242,10 +278,12 @@ export default class DefaultProjectService implements ProjectService {
     async purgeInstance(instanceId: string): Promise<void> {
         let logger = getLogger('psvc.purgeInstance');
         try {
-            const instance = await this.projectRepository.findInstance(instanceId)
+            const projectRepository = beanFactory.getProjectRepository();
+
+            const instance = await projectRepository.findInstance(instanceId)
             // verify instance is deleted
 
-            await this.projectRepository.deleteInstance(instanceId);
+            await projectRepository.deleteInstance(instanceId);
          } catch (err) {
             throw err;
         }
@@ -254,7 +292,9 @@ export default class DefaultProjectService implements ProjectService {
     async getInstanceResources(instanceId: string): Promise<KubernetesResources> {
         let logger = getLogger('psvc.getInstanceResources');
         try {
-            return await this.projectRepository.getInstanceResources(instanceId)
+            const projectRepository = beanFactory.getProjectRepository();
+
+            return await projectRepository.getInstanceResources(instanceId)
          } catch (err) {
             throw err;
         }
@@ -263,7 +303,9 @@ export default class DefaultProjectService implements ProjectService {
     async getInstanceResource(instanceId: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource> {
         let logger = getLogger('psvc.getInstanceResource');
         try {
-            return await this.projectRepository.getInstanceResource(instanceId, resourceType, resourceName);
+            const projectRepository = beanFactory.getProjectRepository();
+
+            return await projectRepository.getInstanceResource(instanceId, resourceType, resourceName);
          } catch (err) {
             throw err;
         }
@@ -272,7 +314,9 @@ export default class DefaultProjectService implements ProjectService {
     async updateInstanceResource(instanceId: string, resource: KubernetesResource, update: Date): Promise<KubernetesResource> {
         let logger = getLogger('psvc.updateInstanceResource');
         try {
-            return await this.projectRepository.updateInstanceResource(instanceId, resource, update);
+            const projectRepository = beanFactory.getProjectRepository();
+
+            return await projectRepository.updateInstanceResource(instanceId, resource, update);
          } catch (err) {
             throw err;
         }
@@ -281,13 +325,17 @@ export default class DefaultProjectService implements ProjectService {
     async deleteInstanceResource(instanceId: string, resourceType: ResourceType, resourceName: string): Promise<void> {
         let logger = getLogger('psvc.deleteInstanceResource');
         try {
+            const projectRepository = beanFactory.getProjectRepository();
+            const controllerService = beanFactory.getControllerService();
 
-            const instance = await this.projectRepository.findInstance(instanceId)
-            const resource = await this.projectRepository.getInstanceResource(instanceId, resourceType, resourceName);
+            const instance = await projectRepository.findInstance(instanceId)
+            const resource = await projectRepository.getInstanceResource(instanceId, resourceType, resourceName);
           
-            await this.controllerService.deleteInstanceResource(instance.project, instance.name, resource.type, resource.name);
+            await controllerService.deleteInstanceResource(instance.project, instance.name, resource.type, resource.name);
         } catch (err) {
             throw err;
         }
     }
 }
+
+export default new DefaultProjectService();

@@ -5,8 +5,9 @@ import { getLogger } from "../../../src/libs/logger";
 import { Logger } from "winston";
 import { ProjectRepository, ControllerService } from "../../../src/interfaces";
 import { MongoMemoryDB } from "../../../src/services/mongodb-mem.service";
+import projectService from "../../../src/services/default.project.service";
 
-let instance: DefaultProjectService;
+let instance: any;
 let logger: Logger;
 let db: MongoMemoryDB = new MongoMemoryDB();
 
@@ -24,7 +25,7 @@ afterAll(async () => {
 describe('DefaultProjectService', () => {
     
     beforeEach(async () => {
-        instance = new DefaultProjectService(new ProjectMongoRepository(), new KubernetesControllerService());
+        instance = projectService;
     });
 
     afterEach(async () => {

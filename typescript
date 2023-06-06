@@ -1,0 +1,606 @@
+Script started on Thu May 18 23:03:29 2023
+npm test -- --testLocationInResults --json --useStderr --outputFile /var/folders/84/qr2cc7qn20g3_vchwl9gqbrw0000gn/T/jest_runner_zbi_repo_501.json --watch --no-coverage --reporters default --reporters "/Users/johnakinyele/.vscode/extensions/orta.vscode-jest-5.2.3/out/reporter.js" --colors 
+exit $?
+tput: No value for $TERM and no -T specified
+env: node: No such file or directory
+%                                                                               [39m[49m[40m [33mjohnakinyele@MacBook-Pro-3 [44m[30m [30m~/go/src/github.com/zbi/zbi-repo [43m[34m [30m main ● ? [49m[33m[39m [?2004h[39m[49m[40m[33m[44m[30m[30mgithub.com/zbi/zbi-repo [43m[34m [30m main ● ? [49m[33m[39m n                                      pm test -- --testLocationInResults --j<pm test -- --testLocationInResults --js                                      on --useStderr --outputFile /var/folde<on --useStderr --outputFile /var/folder                                      s/84/qr2cc7qn20g3_vchwl9gqbrw0000gn/T/<s/84/qr2cc7qn20g3_vchwl9gqbrw0000gn/T/j                                      est_runner_zbi_repo_501.json --watch -<est_runner_zbi_repo_501.json --watch --                                      no-coverage --reporters default --repo<no-coverage --reporters default --repor                                      ters "/Users/johnakinyele/.vscode/exte<ters "/Users/johnakinyele/.vscode/exten                                      sions/orta.vscode-jest-5.2.3/out/repor<sions/orta.vscode-jest-5.2.3/out/report                                      er.js" --colors [?2004l
+exit $?
+
+> zbi-repo@1.0.0 test
+> NODE_ENV=test jest --testLocationInResults --json --useStderr --outputFile /var/folders/84/qr2cc7qn20g3_vchwl9gqbrw0000gn/T/jest_runner_zbi_repo_501.json --watch --no-coverage --reporters default --reporters /Users/johnakinyele/.vscode/extensions/orta.vscode-jest-5.2.3/out/reporter.js --colors
+
+[2J[3J[H[1m[2mDetermining test suites to run...[22m[22monRunStart: numTotalTestSuites: 8
+
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        0 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[999D[K
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        0 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        0 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        1 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        2 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        3 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        4 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        5 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        6 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        7 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        8 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        9 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m0 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        10 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m[1m[31m1 failed[39m[22m, [1m[32m29 passed[39m[22m, 30 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[0m[7m[1m[31m FAIL [39m[22m[27m[0m [2mtests/unit-tests/services/[22m[1mdefault.user.service.test.ts[22m ([0m[1m[41m10.153 s[49m[22m[0m)
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m[1m[31m1 failed[39m[22m, [1m[32m29 passed[39m[22m, 30 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A  [1m● [22mConsole
+
+    [2mconsole.log[22m
+      bean factory initialized ...
+[2m[22m
+[2m      [2mat new BeanFactory ([22m[2msrc/factory/bean.factory.ts[2m:34:21)[22m[2m[22m
+
+    [2m[31mconsole.error[39m[22m
+[31m      error occurred while signing = {}[39m
+[2m[22m
+[2m    [0m [90m 26 |[39m         [36mreturn[39m jwt[33m.[39msign(object[33m,[39m signingKey[33m,[39m {[33m...[39m(options [33m&&[39m options)[33m,[39m algorithm[33m:[39m [32m"RS256"[39m})[33m;[39m[0m[22m
+[2m    [0m [90m 27 |[39m     } [36mcatch[39m(err[33m:[39m any) {[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 28 |[39m         console[33m.[39merror([32m`error occurred while signing = ${JSON.stringify(err)}`[39m)[33m;[39m[0m[22m
+[2m    [0m [90m    |[39m                 [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 29 |[39m         [36mthrow[39m err[33m;[39m[0m[22m
+[2m    [0m [90m 30 |[39m     }[0m[22m
+[2m    [0m [90m 31 |[39m }[0m[22m
+[2m[22m
+[2m      [2mat signJwt ([22m[2msrc/libs/auth.libs.ts[2m:28:17)[22m[2m[22m
+[2m      [2mat DefaultUserService.authenticateUser ([22m[2msrc/services/default.user.service.ts[2m:48:48)[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtests/unit-tests/services/default.user.service.test.ts[39m[0m[2m:77:24)[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m[1m[31m1 failed[39m[22m, [1m[32m29 passed[39m[22m, 30 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[1m[31m  [1m● [22m[1mDefaultUserService › should authenticate user[39m[22m
+
+    secretOrPrivateKey must have a value
+[2m[22m
+[2m    [0m [90m 28 |[39m         console[33m.[39merror([32m`error occurred while signing = ${JSON.stringify(err)}`[39m)[33m;[39m[0m[22m
+[2m    [0m [90m 29 |[39m         [36mthrow[39m err[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 30 |[39m     }[0m[22m
+[2m    [0m [90m    |[39m      [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 31 |[39m }[0m[22m
+[2m    [0m [90m 32 |[39m[0m[22m
+[2m    [0m [90m 33 |[39m [36mexport[39m [36mfunction[39m verifyJwt(token[33m:[39m string[33m,[39m keyName[33m:[39m [32m"accessTokenPublicKey"[39m [33m|[39m [32m"refreshTokenPublicKey"[39m) {[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous>.module.exports [as sign] ([22m[2mnode_modules/jsonwebtoken/sign.js[2m:105:20)[22m[2m[22m
+[2m      [2mat signJwt ([22m[2msrc/libs/auth.libs.ts[2m:30:39)[22m[2m[22m
+[2m      [2mat DefaultUserService.authenticateUser ([22m[2msrc/services/default.user.service.ts[2m:45:65)[22m[2m[22m
+[2m      [2mat async Object.<anonymous> ([22m[2m[0m[36mtests/unit-tests/services/default.user.service.test.ts[39m[0m[2m:153:24)[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m[1m[31m1 failed[39m[22m, [1m[32m29 passed[39m[22m, 30 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m0 of 8 total
+[1mTests:       [22m[1m[31m1 failed[39m[22m, [1m[32m29 passed[39m[22m, 30 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m1 failed[39m[22m, 1 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m29 passed[39m[22m, 31 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m1 failed[39m[22m, 1 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m36 passed[39m[22m, 38 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[0m[7m[1m[31m FAIL [39m[22m[27m[0m [2mtests/unit-tests/controllers/[22m[1muser.controller.test.ts[22m ([0m[1m[41m10.638 s[49m[22m[0m)
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m1 failed[39m[22m, 1 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m36 passed[39m[22m, 38 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A  [1m● [22mConsole
+
+    [2mconsole.log[22m
+      bean factory initialized ...
+[2m[22m
+[2m      [2mat new BeanFactory ([22m[2msrc/factory/bean.factory.ts[2m:34:21)[22m[2m[22m
+
+    [2m[31mconsole.error[39m[22m
+[31m      error occurred while signing = {}[39m
+[2m[22m
+[2m    [0m [90m 26 |[39m         [36mreturn[39m jwt[33m.[39msign(object[33m,[39m signingKey[33m,[39m {[33m...[39m(options [33m&&[39m options)[33m,[39m algorithm[33m:[39m [32m"RS256"[39m})[33m;[39m[0m[22m
+[2m    [0m [90m 27 |[39m     } [36mcatch[39m(err[33m:[39m any) {[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 28 |[39m         console[33m.[39merror([32m`error occurred while signing = ${JSON.stringify(err)}`[39m)[33m;[39m[0m[22m
+[2m    [0m [90m    |[39m                 [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 29 |[39m         [36mthrow[39m err[33m;[39m[0m[22m
+[2m    [0m [90m 30 |[39m     }[0m[22m
+[2m    [0m [90m 31 |[39m }[0m[22m
+[2m[22m
+[2m      [2mat signJwt ([22m[2msrc/libs/auth.libs.ts[2m:28:17)[22m[2m[22m
+[2m      [2mat signJwtAccessToken ([22m[2msrc/libs/auth.libs.ts[2m:7:12)[22m[2m[22m
+[2m      [2mat Object.createValidAuthResult ([22m[2mtests/mock/mock_data.ts[2m:157:40)[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtests/unit-tests/controllers/user.controller.test.ts[39m[0m[2m:49:32)[22m[2m[22m
+
+    [2mconsole.log[22m
+      Body: {"email":"owner@zbitech.net","password":"password"}, Provider: local
+[2m[22m
+[2m      [2mat authenticateUser ([22m[2msrc/controllers/user.controller.ts[2m:133:21)[22m[2m[22m
+
+    [2mconsole.log[22m
+      Params: {"provider":"local"}
+[2m[22m
+[2m      [2mat authenticateUser ([22m[2msrc/controllers/user.controller.ts[2m:134:21)[22m[2m[22m
+
+    [2mconsole.log[22m
+      Auth result: {"valid":true,"registered":false}
+[2m[22m
+[2m      [2mat authenticateUser ([22m[2msrc/controllers/user.controller.ts[2m:135:21)[22m[2m[22m
+
+    [2mconsole.log[22m
+      Authentication Result => {"req":{"method":"POST","url":"http://127.0.0.1:54700/api/oauth/local","data":{"email":"owner@zbitech.net","password":"password"},"headers":{"content-type":"application/json"}},"header":{"content-security-policy":"default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests","cross-origin-embedder-policy":"require-corp","cross-origin-opener-policy":"same-origin","cross-origin-resource-policy":"same-origin","x-dns-prefetch-control":"off","x-frame-options":"SAMEORIGIN","strict-transport-security":"max-age=15552000; includeSubDomains","x-download-options":"noopen","x-content-type-options":"nosniff","origin-agent-cluster":"?1","x-permitted-cross-domain-policies":"none","referrer-policy":"no-referrer","x-xss-protection":"0","access-control-allow-origin":"*","content-type":"application/json; charset=utf-8","content-length":"54","etag":"W/\"36-dSO8odJfbQ9zcbvKqbBqanActw0\"","date":"Fri, 19 May 2023 03:03:49 GMT","connection":"close"},"status":403,"text":"{\"registered\":false,\"message\":\"Registration required\"}"}
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtests/unit-tests/controllers/user.controller.test.ts[39m[0m[2m:61:17)[22m[2m[22m
+
+    [2mconsole.log[22m
+      Body: {"email":"owner@zbitech.net","password":"password"}, Provider: local
+[2m[22m
+[2m      [2mat authenticateUser ([22m[2msrc/controllers/user.controller.ts[2m:133:21)[22m[2m[22m
+
+    [2mconsole.log[22m
+      Params: {"provider":"local"}
+[2m[22m
+[2m      [2mat authenticateUser ([22m[2msrc/controllers/user.controller.ts[2m:134:21)[22m[2m[22m
+
+    [2mconsole.log[22m
+      Auth result: {"valid":false,"registered":false}
+[2m[22m
+[2m      [2mat authenticateUser ([22m[2msrc/controllers/user.controller.ts[2m:135:21)[22m[2m[22m
+
+    [2mconsole.log[22m
+      Authentication Result => {"req":{"method":"POST","url":"http://127.0.0.1:54702/api/oauth/local","data":{"email":"owner@zbitech.net","password":"password"},"headers":{"content-type":"application/json"}},"header":{"content-security-policy":"default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests","cross-origin-embedder-policy":"require-corp","cross-origin-opener-policy":"same-origin","cross-origin-resource-policy":"same-origin","x-dns-prefetch-control":"off","x-frame-options":"SAMEORIGIN","strict-transport-security":"max-age=15552000; includeSubDomains","x-download-options":"noopen","x-content-type-options":"nosniff","origin-agent-cluster":"?1","x-permitted-cross-domain-policies":"none","referrer-policy":"no-referrer","x-xss-protection":"0","access-control-allow-origin":"*","content-type":"text/plain; charset=utf-8","content-length":"12","etag":"W/\"c-dAuDFQrdjS3hezqxDTNgW7AOlYk\"","date":"Fri, 19 May 2023 03:03:49 GMT","connection":"close"},"status":401,"text":"Unauthorized"}
+[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtests/unit-tests/controllers/user.controller.test.ts[39m[0m[2m:69:17)[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m1 failed[39m[22m, 1 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m36 passed[39m[22m, 38 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[1m[31m  [1m● [22m[1mUserController › should authenticate user[39m[22m
+
+    secretOrPrivateKey must have a value
+[2m[22m
+[2m    [0m [90m 28 |[39m         console[33m.[39merror([32m`error occurred while signing = ${JSON.stringify(err)}`[39m)[33m;[39m[0m[22m
+[2m    [0m [90m 29 |[39m         [36mthrow[39m err[33m;[39m[0m[22m
+[2m    [0m[31m[1m>[22m[2m[39m[90m 30 |[39m     }[0m[22m
+[2m    [0m [90m    |[39m      [31m[1m^[22m[2m[39m[0m[22m
+[2m    [0m [90m 31 |[39m }[0m[22m
+[2m    [0m [90m 32 |[39m[0m[22m
+[2m    [0m [90m 33 |[39m [36mexport[39m [36mfunction[39m verifyJwt(token[33m:[39m string[33m,[39m keyName[33m:[39m [32m"accessTokenPublicKey"[39m [33m|[39m [32m"refreshTokenPublicKey"[39m) {[0m[22m
+[2m[22m
+[2m      [2mat Object.<anonymous>.module.exports [as sign] ([22m[2mnode_modules/jsonwebtoken/sign.js[2m:105:20)[22m[2m[22m
+[2m      [2mat signJwt ([22m[2msrc/libs/auth.libs.ts[2m:30:39)[22m[2m[22m
+[2m      [2mat signJwtAccessToken ([22m[2msrc/libs/auth.libs.ts[2m:11:12)[22m[2m[22m
+[2m      [2mat Object.createValidAuthResult ([22m[2mtests/mock/mock_data.ts[2m:151:57)[22m[2m[22m
+[2m      [2mat Object.<anonymous> ([22m[2m[0m[36mtests/unit-tests/controllers/user.controller.test.ts[39m[0m[2m:193:32)[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m1 failed[39m[22m, 1 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m36 passed[39m[22m, 38 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, 2 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m36 passed[39m[22m, 38 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, 2 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m40 passed[39m[22m, 42 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mtests/unit-tests/services/[22m[1mbasic.identity.service.test.ts[22m ([0m[1m[41m10.894 s[49m[22m[0m)
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, 2 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m40 passed[39m[22m, 42 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A  [1m● [22mConsole
+
+    [2mconsole.log[22m
+      bean factory initialized ...
+[2m[22m
+[2m      [2mat new BeanFactory ([22m[2msrc/factory/bean.factory.ts[2m:34:21)[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, 2 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m40 passed[39m[22m, 42 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m1 passed[39m[22m, 3 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m45 passed[39m[22m, 47 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m1 passed[39m[22m, 3 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m49 passed[39m[22m, 51 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        11 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m1 passed[39m[22m, 3 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m51 passed[39m[22m, 53 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m1 passed[39m[22m, 3 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m56 passed[39m[22m, 58 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m1 passed[39m[22m, 3 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m61 passed[39m[22m, 63 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mtests/unit-tests/repositories/mongodb/[22m[1mproject.mongo.repository.test.ts[22m ([0m[1m[41m11.481 s[49m[22m[0m)
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m1 passed[39m[22m, 3 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m61 passed[39m[22m, 63 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m2 passed[39m[22m, 4 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m66 passed[39m[22m, 68 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mtests/unit-tests/repositories/mongodb/[22m[1muser.mongo.repository.test.ts[22m ([0m[1m[41m11.623 s[49m[22m[0m)
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m2 passed[39m[22m, 4 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m66 passed[39m[22m, 68 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m3 passed[39m[22m, 5 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m71 passed[39m[22m, 73 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m3 passed[39m[22m, 5 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m72 passed[39m[22m, 74 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[0m[7m[1m[31m FAIL [39m[22m[27m[0m [2mtests/unit-tests/services/[22m[1mauth0.identity.service.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m3 passed[39m[22m, 5 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m72 passed[39m[22m, 74 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+
+  [1m● [22mTest suite failed to run
+
+    TypeError: Cannot read properties of undefined (reading 'data')
+
+    [0m [90m 215 |[39m     [90m// }[39m[0m
+    [0m [90m 216 |[39m[0m
+    [0m[31m[1m>[22m[39m[90m 217 |[39m     [90m// async getAccountActivity(userid: string): Promise<void> {[39m[0m
+    [0m [90m     |[39m                                                               [31m[1m^[22m[39m[0m
+    [0m [90m 218 |[39m     [90m//     try {[39m[0m
+    [0m [90m 219 |[39m     [90m//         const headers = {"content-type": "application/json", "authorization": `Bearer: ${this.token}`}[39m[0m
+    [0m [90m 220 |[39m     [90m//         const response = await axios.get(`${AUTH0_URL}/api/v2/users/${userid}/logs`, {headers});[39m[0m
+
+      [2mat Auth0IdentityService.getToken ([22msrc/services/auth0.identity.service.ts[2m:217:63)[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m3 passed[39m[22m, 5 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m72 passed[39m[22m, 74 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[0m[7m[1m[32m PASS [39m[22m[27m[0m [2mtests/unit-tests/services/[22m[1mdefault.project.service.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m3 passed[39m[22m, 5 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m72 passed[39m[22m, 74 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A  [1m● [22mConsole
+
+    [2mconsole.log[22m
+      bean factory initialized ...
+[2m[22m
+[2m      [2mat new BeanFactory ([22m[2msrc/factory/bean.factory.ts[2m:34:21)[22m[2m[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m2 failed[39m[22m, [1m[32m3 passed[39m[22m, 5 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m72 passed[39m[22m, 74 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m3 failed[39m[22m, [1m[32m4 passed[39m[22m, 7 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m73 passed[39m[22m, 75 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m3 failed[39m[22m, [1m[32m4 passed[39m[22m, 7 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m74 passed[39m[22m, 76 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[0m[7m[1m[31m FAIL [39m[22m[27m[0m [2mtests/integration-tests/services/[22m[1mauth0.identity.service.test.ts[22m
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m3 failed[39m[22m, [1m[32m4 passed[39m[22m, 7 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m74 passed[39m[22m, 76 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+
+  [1m● [22mTest suite failed to run
+
+    getaddrinfo ENOTFOUND undefined.undefined
+
+      [2mat Function.Object.<anonymous>.AxiosError.from ([22mnode_modules/axios/lib/core/AxiosError.js[2m:89:14)[22m
+      [2mat RedirectableRequest.handleRequestError ([22mnode_modules/axios/lib/adapters/http.js[2m:533:25)[22m
+      [2mat ClientRequest.eventHandlers.<computed> ([22mnode_modules/follow-redirects/index.js[2m:14:24)[22m
+
+
+[0m[7m[33m[1m RUNS [22m[39m[27m[0m [1m...[22m
+
+[1mTest Suites: [22m[1m[31m3 failed[39m[22m, [1m[32m4 passed[39m[22m, 7 of 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m74 passed[39m[22m, 76 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        12 s, estimated 17 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[999D[KonRunComplete
+[1mTest Suites: [22m[1m[31m4 failed[39m[22m, [1m[32m4 passed[39m[22m, 8 total
+[1mTests:       [22m[1m[31m2 failed[39m[22m, [1m[32m74 passed[39m[22m, 76 total
+[1mSnapshots:   [22m0 total
+[1mTime:[22m        13.108 s, estimated 17 s
+[2mRan all test suites[22m[2m related to changed files[22m[2m.[22m
+Test results written to: ../../../../../../../var/folders/84/qr2cc7qn20g3_vchwl9gqbrw0000gn/T/jest_runner_zbi_repo_501.json
+
+[1mWatch Usage[22m
+[2m › Press [22ma[2m to run all tests.[22m
+[2m › Press [22mf[2m to run only failed tests.[22m
+[2m › Press[22m p [2mto filter by a filename regex pattern.[22m
+[2m › Press[22m t [2mto filter by a test name regex pattern.[22m
+[2m › Press[22m q [2mto quit watch mode.[22m
+[2m › Press[22m i [2mto run failing tests interactively.[22m
+[2m › Press [22mEnter[2m to trigger a test run.[22m

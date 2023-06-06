@@ -1,12 +1,12 @@
 import { Project, Instance, SnapshotScheduleRequest, KubernetesResources, KubernetesResource } from "src/model/model";
-import { ResourceType } from "src/model/zbi.enum";
+import { ResourceType } from "../model/zbi.enum";
 import { ControllerService } from "..//interfaces";
 import axios, { HttpStatusCode } from "axios";
 
 const ControllerURL = process.env.ZBI_CONTROLLER_URL || "http://localhost:8180";
 const HEADERS = {"Content-Type": "text/json"};
 
-export default class KubernetesControllerService implements ControllerService {
+class KubernetesControllerService implements ControllerService {
 
     async getStatus(): Promise<void> {
         throw new Error("Method not implemented.");
@@ -234,3 +234,5 @@ export default class KubernetesControllerService implements ControllerService {
         }
     }
 }
+
+export default new KubernetesControllerService();

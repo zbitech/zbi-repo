@@ -6,20 +6,24 @@ import { FieldError, ValidationError } from "../libs/errors";
 import { HttpStatusCode } from "axios";
 
 import { validateObject } from "../libs/validator";
+import beanFactory from "../factory/bean.factory";
 
-export const validator = (schema: ObjectSchema) => {
+export const validateRequest = (schema: ObjectSchema) => {
 
     return async (request: Request, response: Response, next: NextFunction) => {
         const logger: Logger = getLogger('zbi.validator');
 
         try {
 
-            const result = await validateObject(schema, request.body.project );
+            const payload = {body: request.body, query: request.query, params: request.params};
+            const result = await validateObject(schema, payload);
+            //logger.info(`validation result => ${JSON.stringify(result)}`);
+
             if(!result.success) {
 
-                logger.error(`error = ${JSON.stringify(result.error)} ${typeof result.error}`);
+                logger.error(`error = ${JSON.stringify(result.error)} ${result.error instanceof ValidationError}`);
 
-                if(typeof result.error == typeof ValidationError ) {
+                if(result.error instanceof ValidationError ) {
                     const error:ValidationError = result.error as ValidationError;
                     logger.error(`error = ${JSON.stringify(error)}`);
                     response.status(error.code).json({message: error.message, errors: error.fields})
@@ -29,19 +33,7 @@ export const validator = (schema: ObjectSchema) => {
                 response.status(code).json({message: result.error?.message});
                 return;
             }
-            // const result = await schema.validate(request.body.project, {abortEarly: false});
-            // if (result.error && result.error.details) {
-            //     const fieldErrors = result.error.details.map((error:any) => {
-            //         logger.info(`key: ${error.path[0]}, error: ${error.message}`);
-            //         return new FieldError(error.context.label, error.message);
-            //     })
-            //     logger.info(`validation error: ${JSON.stringify(fieldErrors)}`);
-            //     response.status(HttpStatusCode.UnprocessableEntity).json({
-            //         message: 'Invalid request',
-            //         errors: fieldErrors
-            //     });
-            //     return;
-            // }   
+
         } catch (err: any) {
             logger.error(`validation error: ${JSON.stringify(err)}`);
             response.status(HttpStatusCode.InternalServerError).json({message: err.message});
@@ -52,20 +44,20 @@ export const validator = (schema: ObjectSchema) => {
     }
 }
 
-// {"_original":{"name":"test","network":"testne"},"details":[{"message":"\"network\" must be one of [testnet, mainnet]","path":["network"],"type":"any.only","context":{"valids":["testnet","mainnet"],"label":"network","value":"testne","key":"network"}}]}
+export const validateDuplicateEmail = async (request: Request, response: Response, next: NextFunction) => {
+    const logger: Logger = getLogger('email.validator');
 
-// [
-//     {
-//         "message":"\"network\" must be one of [testnet, mainnet]",
-//         "path":["network"],
-//         "type":"any.only",
-//         "context":
-//         {
-//             "valids":["testnet","mainnet"],
-//             "label":"network",
-//             "value":"testne",
-//             "key":"network"
-//         }
-//     }
-// ]
-  
+    const email = request.body.email;
+    const userService = beanFactory.getUserService();
+
+    try {
+        logger.debug(`checking for duplicate email - ${email}`);
+        const user = await userService.getUserByEmail(email);
+        if(user) {
+            response.status(HttpStatusCode.UnprocessableEntity).json({message: "User with email already exists.", errors: [{name: "email", error: "\"email\" already exists"}]});
+            return;
+        }            
+    } catch (err: any) {}
+
+    next();
+}    

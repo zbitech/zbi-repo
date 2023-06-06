@@ -9,7 +9,7 @@ dotenv.config();
 
 import {mainLogger as logger, morganStream} from "./libs/logger";
 import { initRequest } from "./middlewares/request.middleware";
-import { jwtVerifier } from "./middlewares/auth.middleware";
+//import { jwtVerifier } from "./middlewares/auth.middleware";
 
 if(!process.env.PORT) {
     process.exit(1);
@@ -26,19 +26,7 @@ app.use(cors());
 app.use(express.json());
 
 
-app.use(jwtVerifier);
+//app.use(jwtVerifier);
 app.use(initRequest);
-
-// beanFactory.init().then(async () => {
-//     routes(app);
-//     app.listen(PORT, async () => {
-//         logger.info(`Running Node.js version ${process.version}`);
-//         logger.info(`App environment: ${process.env.NODE_ENV}`);
-    
-//         logger.info(`App is running on port ${PORT}`, `{request: '55'}`);
-//     });        
-// }).catch(error => {
-//    logger.error(`failed to initialize database: ${error}`);
-// });
 
 export default app;

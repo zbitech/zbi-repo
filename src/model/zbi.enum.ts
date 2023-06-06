@@ -73,7 +73,8 @@ export enum SnapshotScheduleType {
 
 export enum UserFilterType {
     userid = "userid",
-    username = "username",
+    role = "role",
+    status = "status",
     email = "email"
 }
 
@@ -109,4 +110,53 @@ export enum FilterConditionType {
 export enum LoginProvider {
     local = "local",
     google = "google",
+}
+
+export enum Permission {
+    create = "create",
+    read = "read",
+    update = "update",
+    delete = "delete"
+}
+
+export enum Action {
+    user = "user",
+    team = "team",
+    project = "project",
+    resource = "resource"
+}
+
+export enum UserPermissions {
+    create = "create:user",
+    read = "read:user",
+    update = "update:user",
+    delete = "delete:user"
+}
+
+export enum TeamPermissions {
+    create = "create:team",
+    read = "read:team",
+    update = "update:team",
+    delete = "delete:team"
+}
+
+export enum ProjectPermissions {
+    create = "create:project",
+    read = "read:project",
+    update = "update:project",
+    delete = "delete:project"
+}
+
+export enum InstancePermissions {
+    create = "create:instance",
+    read = "read:instance",
+    update = "update:instance",
+    delete = "delete:instance"
+}
+
+export enum ResourcePermissions {
+    create = "create:resource",
+    read = "read:resource",
+    update = "update:resource",
+    delete = "delete:resource"
 }

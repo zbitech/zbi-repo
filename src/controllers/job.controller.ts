@@ -8,9 +8,6 @@ import { HttpStatusCode } from 'axios';
 
 class JobController {
 
-    constructor() {
-    }
-
     async findProjectJobs(request: Request, response: Response): Promise<void> {
         let logger = getLogger('find-project-jobs');
         try {

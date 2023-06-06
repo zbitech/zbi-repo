@@ -17,14 +17,15 @@ export default class ProjectMongoRepository implements ProjectRepository {
     }
 
     async createProject(project: ProjectRequest): Promise<Project> {
-        let logger = getLogger('pmr.createProject');
+        let logger = getLogger('crete-project-repo');
         try {
             const obj:any = {...project, owner: project.owner, team: project.team};
             logger.info("creating project " + JSON.stringify(obj) );
             const proj = new this.projectModel(obj);
             await proj.save();
-            await proj.populate({path: 'owner', select: {userName: 1, email: 1, name: 1}});
+            await proj.populate({path: 'owner', select: {email: 1, name: 1}});
             await proj.populate({path: 'team', select: {name: 1}});
+            logger.debug(`populating project details - ${JSON.stringify(proj)}`);
             return helper.createProject(proj);
         } catch(err) {
             throw err;

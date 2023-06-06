@@ -6,6 +6,7 @@ import * as helper from "./helper";
 import { getLogger } from "../../libs/logger";
 import { Logger } from "winston";
 import { hashPassword, comparePassword } from "../../libs/auth.libs";
+import { AppErrorType, ApplicationError } from "../../libs/errors";
 
 export default class UserMongoRepository implements UserRepository {
 
@@ -18,12 +19,19 @@ export default class UserMongoRepository implements UserRepository {
     }
 
     async createUser(email: string, role: RoleType, status: UserStatusType): Promise<User> {
+        const logger = getLogger("create-user");
         try {
             const uc = new this.userModel({email, role, status, registration: {acceptedTerms: false}});
             await uc.save();
             return helper.createUser(uc);
-        } catch(err) {
-            throw err;
+        } catch(err: any) {
+            logger.error(`error creating user - ${JSON.stringify(err)}`);
+            const err_type = helper.getErrorType(err);
+            if( err_type === helper.MongoErrorType.DUPLICATE_KEY) {
+                throw new ApplicationError(AppErrorType.EMAIL_ALREADY_EXISTS, "email already exists");
+            }
+
+            throw new ApplicationError(AppErrorType.DB_SERVICE_ERROR, "database service error");
         }
     }
 
@@ -84,34 +92,41 @@ export default class UserMongoRepository implements UserRepository {
     }
 
     async findUser(params: QueryParam): Promise<User> {
+        const logger = getLogger("find-user");
         try {
             const p = helper.createParam(params);
             const uc = await this.userModel.findOne(p);
-            if(uc) {
-                return helper.createUser(uc);
-            }
-            throw new Error("user not found");
-        } catch(err) {
+
+            return helper.createUser(uc);
+        } catch(err: any) {
+            logger.error(`failed to find user - ${err}`);
             throw err;
         }
     }
 
     async getUserByEmail(email: string): Promise<User> {
+        const logger = getLogger("get-user(email)");
         try {
-            const param: QueryParam = {name: UserFilterType.userid, condition: FilterConditionType.equal, value: email};
-            const uc = await this.userModel.findUser(param);                
-            if(uc) {
-                return helper.createUser(uc);                
-            }
-            throw new Error("user not found");
+            const param: QueryParam = {name: UserFilterType.email, condition: FilterConditionType.equal, value: email};
+            return await this.findUser(param);                
+        } catch (err: any) {
+            logger.error(`failed to find user - ${JSON.stringify(err)}`);
+            throw err;
+        }
+    }
+
+    async getUserById(userid: string): Promise<User> {
+        try {
+            const param: QueryParam = {name: UserFilterType.userid, condition: FilterConditionType.equal, value: userid};
+            return await this.findUser(param);                
         } catch (err: any) {
             throw err;
         }
     }
 
-    async activateUser(email: string): Promise<User> {
+    async activateUser(userid: string): Promise<User> {
         try {
-            const uc = await this.userModel.findOne({email});
+            const uc = await this.userModel.findById(userid);
             if(uc) {
                 uc.status = UserStatusType.active;
                 await uc.save();
@@ -123,9 +138,9 @@ export default class UserMongoRepository implements UserRepository {
         }
     }
 
-    async deactivateUser(email: string): Promise<User> {
+    async deactivateUser(userid: string): Promise<User> {
         try {
-            const uc = await this.userModel.findOne({email});
+            const uc = await this.userModel.findById(userid);
             if(uc) {
                 uc.status = UserStatusType.inactive;
                 await uc.save();
@@ -137,9 +152,9 @@ export default class UserMongoRepository implements UserRepository {
         }
     }
 
-    async deleteUser(email: string): Promise<void> {
+    async deleteUser(userid: string): Promise<void> {
         try {
-            await this.userModel.deleteOne({email});
+            await this.userModel.deleteOne({_id: userid});
         } catch(err) {
             throw err;
         }
@@ -171,8 +186,10 @@ export default class UserMongoRepository implements UserRepository {
     }
 
     async createTeam(owner: string, name: string): Promise<Team> {
+        const logger = getLogger("create-team");
         try {
             const team = {name, owner: owner};
+            logger.debug(`creating new team - ${JSON.stringify(team)}`);
             const tc = new this.teamModel(team);
             if(tc) {
                 await tc.save();
@@ -181,6 +198,14 @@ export default class UserMongoRepository implements UserRepository {
                 return helper.createTeam(tc);
             }
             throw new Error("team not found");
+        } catch(err) {
+            throw err;
+        }
+    }
+
+    async deleteTeam(teamid: string): Promise<void> {
+        try {
+            await this.teamModel.deleteOne({teamid});
         } catch(err) {
             throw err;
         }
@@ -215,7 +240,7 @@ export default class UserMongoRepository implements UserRepository {
 
             const skip = page>0 ? (page-1) * size : 0;
             const tc = await this.teamModel.find({}, {_id: 1, name: 1, owner: 1, created: 1, updated: 1}).populate({
-                path: "owner", select: {userName: 1, email: 1, name: 1}
+                path: "owner", select: {email: 1, name: 1}
             }).skip(skip).limit(size);
 
             if(tc) {
@@ -230,10 +255,11 @@ export default class UserMongoRepository implements UserRepository {
     async findTeam(teamId: string): Promise<Team> {
         try {
             const tc = await this.teamModel.findById(teamId).populate({
-                path: "owner", select: {userName: 1, email: 1, name: 1}
+                path: "members.user", select: {email: 1, name: 1}
             }).populate({
-                path: "members.user", select: {userName: 1, email: 1, name: 1}
+                path: "owner", select: {email: 1, name: 1}
             });
+
             if(tc) {
                 return helper.createTeam(tc);
             }
@@ -251,7 +277,7 @@ export default class UserMongoRepository implements UserRepository {
                 members: {
                     $elemMatch: {user: userId}
                 }
-            }).populate({path: "members.user", select: {userName: 1, email: 1, name: 1}});
+            }).populate({path: "members.user", select: {_id: 1, email: 1, name: 1}});
 
             if(tc) return helper.createTeams(tc);
 
@@ -265,7 +291,7 @@ export default class UserMongoRepository implements UserRepository {
         try {
             const tc = await this.teamModel.findOneAndUpdate({"_id": teamId}, {"$pull": {
                 "members": {"user": userId}
-            }}).populate({path: "members.user", select: {username: 1, email: 1, name: 1}});
+            }}).populate({path: "members.user", select: {user: 1, email: 1, name: 1}});
             if(tc) return helper.createTeam(tc);
             throw new Error("team memberships not found");
         } catch(err) {
@@ -273,15 +299,17 @@ export default class UserMongoRepository implements UserRepository {
         }
     }
 
-    async addTeamMembership(teamId: string, userId: string): Promise<Team> {
+    async addTeamMembership(teamId: string, userid: string): Promise<Team> {
+        const logger = getLogger("repo-add-member");
         try {
             const tc = await this.teamModel.findById(teamId);
             if(tc) {
-                tc.members.push({userId, role: RoleType.user});
+                tc.members.push({_id: userid, user: userid, role: RoleType.user});
+                logger.debug(`added new member to ${JSON.stringify(tc)}`);
                 await tc.save();
 
-                await (await tc.populate({path: "owner", select: {username: 1, email: 1, name: 1}}))
-                        .populate({path: "members.user", select: {username: 1, email: 1, name: 1}})
+                await (await tc.populate({path: "owner", select: {userid: 1, email: 1, name: 1}}))
+                        .populate({path: "members.user", select: {userid: 1, email: 1, name: 1}})
                 return helper.createTeam(tc);
             }
     

@@ -1,5 +1,5 @@
 import { Instance, KubernetesResource, KubernetesResources, Project, ProjectRequest, QueryFilter, SnapshotScheduleRequest, Team, TeamMembership, User, QueryParam, AuthRequest, AuthResult, RegisterRequest, RegisterResult, Registration } from "./model/model";
-import { ResourceType, SnapshotScheduleType, NetworkType, StatusType, InviteStatusType, UserStatusType, RoleType, LoginProvider } from "./model/zbi.enum";
+import { ResourceType, SnapshotScheduleType, NetworkType, StatusType, InviteStatusType, UserStatusType, RoleType, LoginProvider, Action, Permission, JobType } from "./model/zbi.enum";
 import { Handler } from "express";
 
 export interface Database {
@@ -16,15 +16,17 @@ export interface UserRepository {
     findRegistration(email: string): Promise<Registration>;
     createRegistration(email: string, name: string, provider: LoginProvider): Promise<Registration>;
     getUserByEmail(email: string): Promise<User>;
+    getUserById(userid: string): Promise<User>;
     findUsers(params: QueryParam, size: number, page: number): Promise<Array<User>>;
     findUser(params: QueryParam): Promise<User>;
-    activateUser(username: string): Promise<User>;
-    deactivateUser(username: string): Promise<User>;
-    deleteUser(username: string): Promise<void>;
+    activateUser(userid: string): Promise<User>;
+    deactivateUser(userid: string): Promise<User>;
+    deleteUser(userid: string): Promise<void>;
     setPassword(email: string, password: string): Promise<void>;
     validatePassword(email: string, password: string): Promise<User|undefined>;
 
     createTeam(owner: string, name: string): Promise<Team>;
+    deleteTeam(teamid: string): Promise<void>;
     updateTeam(teamid: string, name: string): Promise<Team>;
     findTeams(size: number, page: number): Promise<Array<Team>>;
     findTeam(teamId: string): Promise<Team>;
@@ -57,40 +59,52 @@ export interface ProjectRepository {
     deleteInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<void>;
 }
 
-export interface IdentityService {
-//    createUser(email: string, name: string, role: RoleType, status: UserStatusType): Promise<User>;
-//    updateUser(email: string, name: string, status: UserStatusType): Promise<User>;
-//    getUserById(userid: string): Promise<User>;
-//    getUserByEmail(email: string): Promise<User>;
-//    setPassword(email: string, password: string): Promise<void>;
-//    resetPassword(userid: string): Promise<void>;
-//    deactivateUser(userid: string): Promise<void>;
-//    activateUser(userid: string): Promise<void>;
-//    deleteUser(userid: string): Promise<void>;
-//    getAccountActivity(userid: string): Promise<void>;
-//    getLoginURL(): string;
-//    getAccessVerifier(): Handler;
-    authenticateUser(user: AuthRequest): Promise<AuthResult>;
-//    registerUser(user: RegisterRequest): Promise<RegisterResult>;
+export interface IJobRepository {
+
+    // createProjectJob(userid: string, id: string, type: JobType): Promise<Job>;
+    // createInstanceJob(userid: string, id: string, type: JobType): Promise<Job>;
+    // createResourceJob(userid: string, id: string, resource: string, type: Job): Promise<Job>    
+
+    // getJobs(params: QueryParam, size: number, page: number): Promise<Job[]>;
+    // getJob(id: string): Promise<Job>;
+    // updateJob(id: string, job: Job): Promise<Job>;
+    // deleteJob(id: string): Promise<Job>;
+
 }
 
+export interface IdentityService {
+    authenticateUser(user: AuthRequest): Promise<AuthResult>;
+}
+
+export interface IAccessService {
+    
+    validateUserPermission(user: User, permission: Permission): Promise<boolean>;
+    validateTeamPermission(user: User, permission: Permission): Promise<boolean>;
+    validateProjectPermission(user: User, permission: Permission): Promise<boolean>;
+    validateInstancePermission(user: User, permission: Permission): Promise<boolean>;
+    validateResourcePermission(user: User, permission: Permission): Promise<boolean>;
+}
 
 export interface UserService {
     createUser(email: string, role: RoleType, status: UserStatusType): Promise<User>;
     updateUser(email: string, name: string, status: UserStatusType): Promise<User>;
-    authenticateUser(user: AuthRequest): Promise<AuthResult>;
+    authenticateUser(user: AuthRequest, provider: LoginProvider): Promise<AuthResult>;
     changePassword(email: string, old_password: string, new_password: string): Promise<User>;
-    registerUser(request: RegisterRequest): Promise<User>;
+    registerUser(provider: LoginProvider, email: string, name: string, password: string): Promise<User>;
     findUsers(params: QueryParam, size: number, page: number): Promise<User[]>;
     findUser(params: QueryParam): Promise<User>;
-    deactivateUser(email: string): Promise<User>;
-    reactivateUser(email: string): Promise<User>;
-    deleteUser(email: string): Promise<void>;
+    getUserByEmail(email: string): Promise<User>;
+    getUserById(userid: string): Promise<User>;
+    deactivateUser(userid: string): Promise<User>;
+    reactivateUser(userid: string): Promise<User>;
+    deleteUser(userid: string): Promise<void>;
     createTeam(ownerEmail: string, name: string): Promise<Team>;
     updateTeam(teamid: string, name: string): Promise<Team>;
+    deleteTeam(teamid: string): Promise<void>;
     findTeams(params: QueryParam, size: number, page: number): Promise<Team[]>;
     findTeam(teamid: string): Promise<Team>;
     findTeamMemberships(userid: string): Promise<TeamMembership[]>;
+//    findTeamMembership(teamid: string, userid: string): Promise<Team>;
     addTeamMember(teamid: string, email: string): Promise<Team>;
     removeTeamMember(teamid: string, email: string): Promise<Team>;
     updateTeamMembership(email: string, teamid: string, status: InviteStatusType): Promise<void>;
@@ -146,4 +160,26 @@ export interface ControllerService {
     getInstanceResources(projectName: string, instanceName: string): Promise<KubernetesResources>;
     getInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource>;
     deleteInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<void>;
+}
+
+export interface IJobService {
+
+    createProject(project: string): Promise<void>;
+    repairProject(project: string): Promise<void>;
+    deleteProject(project: string): Promise<void>;
+
+    createInstance(instance: string): Promise<void>;
+    updateInstance(instance: string): Promise<void>;
+    repairInstance(instance: string): Promise<void>;
+    deleteInstance(instance: string): Promise<void>;
+    startInstance(instance: string): Promise<void>;
+    stopInstance(instance: string): Promise<void>;
+
+    createInstanceSnapshot(instance: string, snapshot: string): Promise<void>;
+    deleteInstanceSnapshot(instance: string, snapshot: string): Promise<void>;
+
+    createInstanceSchedule(instance: string, schedule: string): Promise<void>;
+    deleteInstanceSchedule(instance: string, schedule: string): Promise<void>;
+
+    processJobs(): Promise<void>;
 }

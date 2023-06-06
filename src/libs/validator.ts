@@ -3,7 +3,6 @@ import { getLogger } from "./logger";
 import { Logger } from "winston";
 import { FieldError, InternalServerError, ValidationError } from "./errors";
 
-
 export const validateObject = async (schema: ObjectSchema, data: any) => {
 
     const logger: Logger = getLogger('zbi.validator');

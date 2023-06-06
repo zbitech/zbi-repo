@@ -1,7 +1,8 @@
 import { interfaces } from "inversify";
 import { RoleType, VolumeType, VolumeSourceType, ResourceType, StatusType, NetworkType, 
         NodeType, UserStatusType, InviteStatusType, SnapshotScheduleType, FilterConditionType, 
-        ProjectFilterType, InstanceFilterType, TeamFilterType, UserFilterType, LoginProvider } from "./zbi.enum";
+        ProjectFilterType, InstanceFilterType, TeamFilterType, UserFilterType, LoginProvider, JobItem, JobType } from "./zbi.enum";
+import { JobStatus } from "bull";
 
 
 export interface AuthRequest {
@@ -16,16 +17,14 @@ export interface AuthResult {
     registered: boolean;
     accessToken?: string;
     refreshToken?: string;
-    user?: User;
+    user?: any;
 }
 
 export interface RegisterRequest {
     email: string;
     name?: string;
     password?: string;
-    confirmPassword?: string;
     acceptedTerms: boolean;
-    provider: LoginProvider
 }
 
 export interface RegisterResult {
@@ -51,6 +50,15 @@ export interface User {
     logins_count?: string;
     password?: string;
 }
+
+export interface Subject {
+    email: string;
+    name: string;
+    role: string;
+
+}
+
+
 
 export interface UserInfo {
     userid: string;
@@ -169,9 +177,17 @@ export interface QueryParam {
 }
 
 export interface QueryFilter {
-    name: UserFilterType | ProjectFilterType | InstanceFilterType | TeamFilterType;
+    name: UserFilterType | ProjectFilterType | InstanceFilterType | TeamFilterType | JobStatus | JobType;
     condition: FilterConditionType;
     value: string;
     page: number;
     itemsPerPage: number;
+}
+
+export interface Job {
+    id: string;
+    user: User;
+    type: JobType;
+    status: JobStatus
+    payload: Object;
 }

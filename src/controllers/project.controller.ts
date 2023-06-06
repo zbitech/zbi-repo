@@ -5,6 +5,7 @@ import { Project, ProjectRequest } from '../model/model';
 import { UserService, ProjectService } from "../interfaces";
 import { getLogger } from '../libs/logger';
 import { HttpStatusCode } from 'axios';
+import { FilterConditionType, ProjectFilterType } from '../model/zbi.enum';
 
 class ProjectController {
 
@@ -12,13 +13,13 @@ class ProjectController {
     }
 
     async createProject(request: Request, response: Response): Promise<void> {
-        let projectService: ProjectService = beanFactory.getService("project");
         let logger = getLogger('pc.createProject');
 
         try {
+            let projectService: ProjectService = beanFactory.getProjectService();
             logger.info(`headers: ${JSON.stringify(request.auth)}`);
             const projectRequest: ProjectRequest = request.body;
-            projectRequest.owner = getCurrentUser();
+            projectRequest.owner = response.locals.subject.userid;
 
             logger.info(`create request: ${JSON.stringify(projectRequest)}`);
 
@@ -31,12 +32,21 @@ class ProjectController {
     }
 
     async findProjects(request: Request, response: Response): Promise<void> {
-        let projectService: ProjectService = beanFactory.getService("project");
-        let logger = getLogger('pc.findProjects');
+        let logger = getLogger('find-projects');
 
         try {
             
-            response.status(HttpStatusCode.Ok).json();
+            let projectService: ProjectService = beanFactory.getProjectService();
+
+            const name = request.query.name as ProjectFilterType;
+            const value = request.query.value as string;
+            const size = request.query.size;
+            const page = request.query.page;
+            const param = name ? {name, condition: FilterConditionType.equal, value: value} : {};
+
+            const projects = await projectService.findProjects(param, size, page);
+
+            response.status(HttpStatusCode.Ok).json({projects});
         } catch (err:any) {
             logger.error(`failed to create project: ${err}`)
             response.status(500).json({message: err.message});

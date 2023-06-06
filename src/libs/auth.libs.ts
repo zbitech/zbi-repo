@@ -3,6 +3,7 @@ import config from "config";
 import bcrypt from "bcrypt";
 import { User } from "src/model/model";
 
+
 export function signJwtAccessToken(user: User) {
     return signJwt(user, "accessTokenPrivateKey", { expiresIn: config.get("accesstokenTtl")});
 }
@@ -34,20 +35,26 @@ export function verifyJwt(token: string, keyName: "accessTokenPublicKey" | "refr
     //const publicKey = Buffer.from(config.get<string>(keyName), "base64").toString("ascii");
     const publicKey = config.get<string>(keyName);
     try {
-//        console.log(`public key => ${publicKey}`);
-        const decoded = jwt.verify(token, publicKey);
-        return {valid: true, expired: false, decoded};
+//        console.log(`verifying token ${token} with public key => ${publicKey}`);
+        const subject = jwt.verify(token, publicKey);
+//        console.log(`decoded token = ${JSON.stringify(subject)}`);
+
+        return {valid: true, expired: false, subject};
     } catch (e: any) {
-        return {valid: false, expired: e.message == "jwt expired", decoded: null};
+        console.error(`failed to verify token: ${e.message}`);
+        return {valid: false, expired: e.message == "jwt expired", subject: null};
     }
 }
 
 export async function hashPassword(password: string) {
     try {
-        const salt = await bcrypt.genSalt(config.get<number>("saltWorkFactor"));
+        const saltWorkFactor = config.get<string>("saltWorkFactor");
+        console.debug(`Work Factor - ${saltWorkFactor}`);
+        const salt = await bcrypt.genSalt( parseInt(saltWorkFactor));
+        console.debug(`salt - ${salt}`);
         return await bcrypt.hashSync(password, salt);            
     } catch (err: any) {
-//        console.error(err);
+        console.error(`${err}`);
         return false;
     }
 }

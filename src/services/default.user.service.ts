@@ -5,43 +5,54 @@ import { FilterConditionType, RoleType, UserFilterType, UserStatusType, InviteSt
 import config from "config";
 import { getLogger } from "../libs/logger";
 import { AppErrorType, ApplicationError } from "../libs/errors";
+import beanFactory from "../factory/bean.factory";
 
-export default class DefaultUserService implements UserService {
+class DefaultUserService implements UserService {
 
-    private userRepository: UserRepository;
-    private identityService: IdentityService;
-
-    constructor(userRepository: UserRepository, identityService: IdentityService) {
-        this.userRepository = userRepository;
-        this.identityService = identityService;
+    constructor() {
     }
 
     async createUser(email: string, role: RoleType, status: UserStatusType): Promise<User> {
-        try {            
-            return await this.userRepository.createUser(email, role, status);
+        const logger = getLogger("create-user");
+        try {
+
+            const userRepository = beanFactory.getUserRepository();
+            const user = await userRepository.createUser(email, role, status);
+
+            // TODO - send email to user
+
+            return user;
         } catch (err) {
+            logger.error(`error creating user - ${JSON.stringify(err)}`);
+
+//            {"index":0,"code":11000,"keyPattern":{"email":1},"keyValue":{"email":"alphegasolutions@gmail.com"}}
+ 
             throw err;
         }
     }
 
     async updateUser(email: string, name: string, status: UserStatusType): Promise<User> {
+        const userRepository = beanFactory.getUserRepository();
         try {            
-            return await this.userRepository.updateUser(email, name, status);
+            return await userRepository.updateUser(email, name, status);
         } catch (err: any) {
             throw err;
         }
     }
 
-    async authenticateUser(user: AuthRequest): Promise<AuthResult> {
+    async authenticateUser(user: AuthRequest, provider: LoginProvider): Promise<AuthResult> {
         const logger = getLogger("authenticate-user");
         try {
-            const result = await this.identityService.authenticateUser(user);
+            const userRepository = beanFactory.getUserRepository();
+            const identityService = beanFactory.getIdentityService(provider);
+
+            const result = await identityService.authenticateUser(user);
             logger.debug(`auth result => ${JSON.stringify(result)}`);
 
             if(result.valid) {
 
                 // find user's registration
-                const registration = await this.userRepository.findRegistration(result.email as string);
+                const registration = await userRepository.findRegistration(result.email as string);
                 logger.debug(`registration: ${JSON.stringify(registration)}`);
                 if( registration && registration.acceptedTerms ) {
                     const accessToken = signJwt( {...result.user}, "accessTokenPrivateKey", { expiresIn: config.get("accesstokenTtl")});
@@ -62,9 +73,10 @@ export default class DefaultUserService implements UserService {
     async changePassword(email: string, old_password: string, new_password: string): Promise<User> {
 
         try {
-            const user = await this.userRepository.validatePassword(email, old_password);
+            const userRepository = beanFactory.getUserRepository();
+            const user = await userRepository.validatePassword(email, old_password);
             if(user) {
-                await this.userRepository.setPassword(email, new_password);
+                await userRepository.setPassword(email, new_password);
                 return user as User;
             }
 
@@ -75,34 +87,44 @@ export default class DefaultUserService implements UserService {
 
     }
 
-    async registerUser(request: RegisterRequest): Promise<User> {
+    async registerUser(provider: LoginProvider, email: string, name: string, password: string): Promise<User> {
+
+        const logger = getLogger("register-user");
         try {
-            
-            const user: User = await this.userRepository.getUserByEmail(request.email);
+
+            logger.info(`registering new user ${email} with ${provider} login provider`);
+            const userRepository = beanFactory.getUserRepository();
+            const user: User = await userRepository.getUserByEmail(email);
     
             if(user) {
 
-                const name = request.name as string;
+                logger.debug(`found user for registration - ${JSON.stringify(user)}`);
 
-                if(request.provider === LoginProvider.local) {
+                if(provider === LoginProvider.local) {
                     // validate and save password
-                    const password = request.password as string;
-                    await this.userRepository.setPassword(request.email, password);
+                    await userRepository.setPassword(email, password);
                 }
 
-                await this.userRepository.createRegistration(request.email, name, request.provider);
-                return await this.userRepository.getUserByEmail(request.email);
+                await userRepository.createRegistration(email, name, provider);
+
+                if(user.role === RoleType.owner) {
+                    await this.createTeam(user.userid as string, "My Team");
+                }
+
+                return await userRepository.getUserByEmail(email);
             }
 
             throw new ApplicationError(AppErrorType.USER_NOT_PERMITTED, "user not permitted");
-        } catch (err) {
+        } catch (err: any) {
+            logger.error(`failed to register new user - ${JSON.stringify(err)}`);
             throw err;
         }
     }
 
     async findUsers(params: QueryParam, size: number, page: number): Promise<User[]> {
         try {
-            return await this.userRepository.findUsers(params, size, page);
+            const userRepository = beanFactory.getUserRepository();
+            return await userRepository.findUsers(params, size, page);
         } catch (err) {
             throw err;
         }
@@ -110,34 +132,55 @@ export default class DefaultUserService implements UserService {
 
     async findUser(param: QueryParam): Promise<User> {
         try {
-            return await this.userRepository.findUser(param);
+            const userRepository = beanFactory.getUserRepository();
+            return await userRepository.findUser(param);
         } catch (err) {
             throw err;
         }
     }
 
-    async deactivateUser(email: string): Promise<User> {
+    async getUserByEmail(email: string): Promise<User> {
         try {
-            const user: User = await this.userRepository.getUserByEmail(email);
+            const userRepository = beanFactory.getUserRepository();
+            return await userRepository.getUserByEmail(email);
+        } catch (err) {
+            throw err;
+        }        
+    }
+
+    async getUserById(userid: string): Promise<User> {
+        try {
+            const userRepository = beanFactory.getUserRepository();
+            return await userRepository.getUserById(userid);
+        } catch (err) {
+            throw err;
+        }        
+    }
+
+    async deactivateUser(userid: string): Promise<User> {
+        try {
+            const userRepository = beanFactory.getUserRepository();
+            const user: User = await userRepository.getUserById(userid);
             if(user.status != UserStatusType.active) {
                 throw new ApplicationError(AppErrorType.USER_NOT_ACTIVE, "user must be active to be deactivated");
             }
 
-            return await this.userRepository.deactivateUser(email);
+            return await userRepository.deactivateUser(userid);
 
         } catch (err) {
             throw err;
         }
     }
 
-    async reactivateUser(email: string): Promise<User> {
+    async reactivateUser(userid: string): Promise<User> {
         try {
-            const user: User = await this.userRepository.getUserByEmail(email);
+            const userRepository = beanFactory.getUserRepository();
+            const user: User = await userRepository.getUserById(userid);
             if(user.status != UserStatusType.inactive) {
                 throw new ApplicationError(AppErrorType.USER_NOT_INACTIVE, "user must be inactive to be re-activated");
             }
 
-            await this.userRepository.activateUser(email);            
+            await userRepository.activateUser(userid);            
             return user;
         } catch (err) {
             throw err;
@@ -145,14 +188,15 @@ export default class DefaultUserService implements UserService {
 
     }
 
-    async deleteUser(email: string): Promise<void> {
+    async deleteUser(userid: string): Promise<void> {
         try {
-            const user: User = await this.userRepository.getUserByEmail(email);
+            const userRepository = beanFactory.getUserRepository();
+            const user: User = await userRepository.getUserById(userid);
             if(user.status != UserStatusType.inactive) {
                 throw new ApplicationError(AppErrorType.USER_NOT_INACTIVE, "user must be inactive to be deleted");
             }
             
-            const newUser = await this.userRepository.deleteUser(email);
+            const newUser = await userRepository.deleteUser(userid);
 
         } catch (err) {
             throw err;
@@ -160,10 +204,20 @@ export default class DefaultUserService implements UserService {
 
     }
 
-    async createTeam(owner: string, name: string): Promise<Team> {
-        try {            
-            const user = await this.userRepository.getUserByEmail(owner);            
-            return await this.userRepository.createTeam(user.userid as string, name);
+    async createTeam(ownerid: string, name: string): Promise<Team> {
+        try {
+            const userRepository = beanFactory.getUserRepository();
+            return await userRepository.createTeam(ownerid, name);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async deleteTeam(teamid: string): Promise<void> {
+        try {
+            const userRepository = beanFactory.getUserRepository();
+            // TODO - check team status
+            await userRepository.deleteTeam(teamid);
         } catch (err) {
             throw err;
         }
@@ -171,7 +225,8 @@ export default class DefaultUserService implements UserService {
 
     async updateTeam(teamid: string, name: string): Promise<Team> {
         try {            
-            return await this.userRepository.updateTeam(teamid, name);
+            const userRepository = beanFactory.getUserRepository();
+            return await userRepository.updateTeam(teamid, name);
         } catch (err) {
             throw err;
         }
@@ -180,7 +235,8 @@ export default class DefaultUserService implements UserService {
 
     async findTeams(params: {}, size: number, page: number): Promise<Team[]> {
         try {            
-            return await this.userRepository.findTeams(size, page);
+            const userRepository = beanFactory.getUserRepository();
+            return await userRepository.findTeams(size, page);
         } catch (err) {
             throw err;
         }
@@ -189,7 +245,8 @@ export default class DefaultUserService implements UserService {
 
     async findTeam(teamid: string): Promise<Team> {
         try {
-            return await this.userRepository.findTeam(teamid);            
+            const userRepository = beanFactory.getUserRepository();
+            return await userRepository.findTeam(teamid);            
         } catch (err) {
             throw err;
         }
@@ -197,7 +254,8 @@ export default class DefaultUserService implements UserService {
 
     async findTeamMemberships(userid: string): Promise<TeamMembership[]> {
         try {            
-            await this.userRepository.findTeamMemberships(userid);
+            const userRepository = beanFactory.getUserRepository();
+            const memberships = await userRepository.findTeamMemberships(userid);
             return []
         } catch (err) {
             throw err;
@@ -205,14 +263,28 @@ export default class DefaultUserService implements UserService {
 
     }
 
+    // async findTeamMembership(userid: string): Promise<Team> {
+    //     const logger = getLogger("repo-team-membership");
+    //     try {
+    //         const userRepository = beanFactory.getUserRepository();
+    //     } catch (err: any) {
+    //         throw err;
+    //     }
+    // }
+
     async addTeamMember(teamid: string, email: string): Promise<Team> {
+        const logger = getLogger("add-member-svc");
         try {            
-            let user = await this.userRepository.getUserByEmail(email);
+            const userRepository = beanFactory.getUserRepository();
+            let user = await userRepository.getUserByEmail(email);
+
             if(!user) {
-                user = await this.createUser(email, RoleType.owner, UserStatusType.invited);
+                user = await this.createUser(email, RoleType.user, UserStatusType.invited);
             }
 
-            return await this.userRepository.addTeamMembership(teamid, user.userid as string);
+            // TODO - check for pre-existing membership
+
+            return await userRepository.addTeamMembership(teamid, user.userid as string); 
         } catch (err) {
             throw err;
         }
@@ -221,8 +293,14 @@ export default class DefaultUserService implements UserService {
 
     async removeTeamMember(teamid: string, email: string): Promise<Team> {
         try {            
-            const user = await this.userRepository.getUserByEmail(email);
-            return await this.userRepository.removeTeamMembership(teamid, user.userid as string);
+            const userRepository = beanFactory.getUserRepository();
+            const user = await userRepository.getUserByEmail(email);
+
+            if(!user) {
+                // TODO return error
+            }
+
+            return await userRepository.removeTeamMembership(teamid, user.userid as string);
         } catch (err) {
             throw err;
         }
@@ -230,11 +308,14 @@ export default class DefaultUserService implements UserService {
 
     async updateTeamMembership(email: string, teamid: string, status: InviteStatusType): Promise<void> {
         try {            
-            const user = await this.userRepository.getUserByEmail(email);
-            await this.userRepository.updateTeamMembership(teamid, user.userid as string, status);
+            const userRepository = beanFactory.getUserRepository();
+            const user = await userRepository.getUserByEmail(email);
+            await userRepository.updateTeamMembership(teamid, user.userid as string, status);
         } catch (err) {
             throw err;
         }
     }
 
 }
+
+export default new DefaultUserService();
