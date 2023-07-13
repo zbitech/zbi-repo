@@ -1,5 +1,5 @@
-import { Instance, KubernetesResource, KubernetesResources, Project, ProjectRequest, QueryFilter, SnapshotScheduleRequest, Team, TeamMembership, User, QueryParam, AuthRequest, AuthResult, RegisterRequest, RegisterResult, Registration } from "./model/model";
-import { ResourceType, SnapshotScheduleType, NetworkType, StatusType, InviteStatusType, UserStatusType, RoleType, LoginProvider, Action, Permission, JobType } from "./model/zbi.enum";
+import { Instance, KubernetesResource, KubernetesResources, Project, ProjectRequest, QueryFilter, SnapshotScheduleRequest, Team, TeamMembership, User, QueryParam, AuthRequest, AuthResult, RegisterRequest, RegisterResult, Registration, InstanceRequest, ResourceRequest, Job } from "./model/model";
+import { ResourceType, SnapshotScheduleType, NetworkType, StatusType, InviteStatusType, UserStatusType, RoleType, LoginProvider, Action, Permission, NodeType, VolumeType, VolumeSourceType } from "./model/zbi.enum";
 import { Handler } from "express";
 
 export interface Database {
@@ -17,7 +17,7 @@ export interface UserRepository {
     createRegistration(email: string, name: string, provider: LoginProvider): Promise<Registration>;
     getUserByEmail(email: string): Promise<User>;
     getUserById(userid: string): Promise<User>;
-    findUsers(params: QueryParam, size: number, page: number): Promise<Array<User>>;
+    findUsers(params: QueryParam): Promise<Array<User>>;
     findUser(params: QueryParam): Promise<User>;
     activateUser(userid: string): Promise<User>;
     deactivateUser(userid: string): Promise<User>;
@@ -28,7 +28,7 @@ export interface UserRepository {
     createTeam(owner: string, name: string): Promise<Team>;
     deleteTeam(teamid: string): Promise<void>;
     updateTeam(teamid: string, name: string): Promise<Team>;
-    findTeams(size: number, page: number): Promise<Array<Team>>;
+    findTeams(): Promise<Array<Team>>;
     findTeam(teamId: string): Promise<Team>;
     findTeamMemberships(username: string): Promise<Array<Team>>
     removeTeamMembership(teamId: string, username: string): Promise<Team>;
@@ -39,11 +39,15 @@ export interface UserRepository {
 
 export interface ProjectRepository {
     createProject(project: ProjectRequest): Promise<Project>;
-    findProjects(params: QueryParam, size: number, page: number): Promise<Project[]>;
+    findProjects(params: QueryParam): Promise<Project[]>;
     findProject(projectId: string): Promise<Project>;
     findProjectByName(name: string): Promise<Project>;
     updateProject(project: Project): Promise<Project>;
     deleteProject(projectId: string): Promise<void>;
+
+    getProjectJobs(projectId: string): Promise<string[]>;
+    addProjectJob(projectId: string, jobId: string): Promise<void>;
+    updateProjectJob(projectId: string, jobId: string, status: string): Promise<void>;
 
     createInstance(projectId: string, instance: Instance): Promise<Instance>;
     findInstances(params: QueryParam): Promise<Instance[]>;
@@ -52,23 +56,19 @@ export interface ProjectRepository {
     updateInstance(instance: Instance): Promise<Instance>;
     deleteInstance(instanceId: string): Promise<void>;
 
+    getInstanceJobs(instanceId: string): Promise<string[]>;
+    addInstanceJob(instanceId: string, jobId: string): Promise<void>;
+    updateInstanceJob(instanceId: string, jobId: string, status: string): Promise<void>;
+
     createInstanceResources(instanceId: string, resources: KubernetesResources): Promise<KubernetesResources>;
     getInstanceResources(instanceId: string): Promise<KubernetesResources>;
     getInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<KubernetesResource>;
-    updateInstanceResource(instanceId: string, resource: KubernetesResource, upddated: Date): Promise<KubernetesResource>;
+    updateInstanceResource(instanceId: string, resource: KubernetesResource): Promise<KubernetesResource>;
     deleteInstanceResource(instanceId: string, resourceType: ResourceType, name: string): Promise<void>;
-}
 
-export interface IJobRepository {
-
-    // createProjectJob(userid: string, id: string, type: JobType): Promise<Job>;
-    // createInstanceJob(userid: string, id: string, type: JobType): Promise<Job>;
-    // createResourceJob(userid: string, id: string, resource: string, type: Job): Promise<Job>    
-
-    // getJobs(params: QueryParam, size: number, page: number): Promise<Job[]>;
-    // getJob(id: string): Promise<Job>;
-    // updateJob(id: string, job: Job): Promise<Job>;
-    // deleteJob(id: string): Promise<Job>;
+    getInstanceResourceJobs(instanceId: string, resourceType: ResourceType, name: string): Promise<string[]>;
+    addInstanceResourceJob(instanceId: string, resourceType: ResourceType, name: string, jobId: string): Promise<void>;
+    updateInstanceResourceJob(instanceId: string, resourceType: ResourceType, name: string, jobId: string, status: string): Promise<void>;
 
 }
 
@@ -91,7 +91,7 @@ export interface UserService {
     authenticateUser(user: AuthRequest, provider: LoginProvider): Promise<AuthResult>;
     changePassword(email: string, old_password: string, new_password: string): Promise<User>;
     registerUser(provider: LoginProvider, email: string, name: string, password: string): Promise<User>;
-    findUsers(params: QueryParam, size: number, page: number): Promise<User[]>;
+    findUsers(params: QueryParam): Promise<User[]>;
     findUser(params: QueryParam): Promise<User>;
     getUserByEmail(email: string): Promise<User>;
     getUserById(userid: string): Promise<User>;
@@ -101,7 +101,7 @@ export interface UserService {
     createTeam(ownerEmail: string, name: string): Promise<Team>;
     updateTeam(teamid: string, name: string): Promise<Team>;
     deleteTeam(teamid: string): Promise<void>;
-    findTeams(params: QueryParam, size: number, page: number): Promise<Team[]>;
+    findTeams(params: QueryParam): Promise<Team[]>;
     findTeam(teamid: string): Promise<Team>;
     findTeamMemberships(userid: string): Promise<TeamMembership[]>;
 //    findTeamMembership(teamid: string, userid: string): Promise<Team>;
@@ -112,31 +112,33 @@ export interface UserService {
 
 export interface ProjectService {
     createProject(project: ProjectRequest): Promise<Project>;
-    findProjects(params: QueryParam, size: number, page: number): Promise<Project[]>;
+    findProjects(params: QueryParam): Promise<Project[]>;
     findProject(projectId: string): Promise<Project>;
+    findProjectByName(name: string): Promise<Project>;
     updateProject(project: Project): Promise<Project>;
     repairProject(projectId: string): Promise<Project>;
     deleteProject(projectId: string): Promise<Project>;
     purgeProject(projectId: string): Promise<void>;
     updateProjectResource(projectId: string, resource: KubernetesResource): Promise<void>
 
-    createInstance(project: Project, instance: Instance): Promise<Instance>;
-    findAllInstances(params: QueryParam, size: number, page: number): Promise<Instance[]>;
-    findInstances(params: QueryParam, size: number, page: number): Promise<Instance[]>;
+    createInstance(project: Project, instance: InstanceRequest): Promise<Instance>;
+    findAllInstances(params: QueryParam): Promise<Instance[]>;
+    findInstances(params: QueryParam): Promise<Instance[]>;
     findInstance(instanceId: string): Promise<Instance>;
-    updateInstance(instanceId: string, instance: Instance): Promise<Instance>;
-    repairInstance(instanceId: string): Promise<Instance>;
-    startInstance(instanceId: string): Promise<void>;
-    stopInstance(instanceId: string): Promise<void>;
-    createInstanceBackup(instanceId: string): Promise<void>;
-    createInstanceBackupSchedule(instanceId: string, request: SnapshotScheduleRequest): Promise<void>;
-    deleteInstance(instanceId: string): Promise<void>;
-    purgeInstance(instanceId: string): Promise<void>;
+    findInstanceByName(projectName: string, instanceName: string): Promise<Instance>;
+    updateInstance(project: Project, instance: Instance, request: InstanceRequest): Promise<Instance>;
+    repairInstance(projectName: string, instanceName: string): Promise<Instance>;
+    startInstance(projectName: string, instanceName: string): Promise<Instance>;
+    stopInstance(projectName: string, instanceName: string): Promise<Instance>;
+    createInstanceSnapshot(projectName: string, instanceName: string): Promise<Instance>;
+    createInstanceSnapshotSchedule(projectName: string, instanceName: string, request: SnapshotScheduleRequest): Promise<Instance>;
+    deleteInstance(projectName: string, instanceName: string): Promise<Instance>;
+    purgeInstance(projectName: string, instanceName: string): Promise<void>;
 
-    getInstanceResources(instanceId: string): Promise<KubernetesResources>;
-    getInstanceResource(instanceId: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource>;
-    updateInstanceResource(instanceId: string, resource: KubernetesResource, updated: Date): Promise<KubernetesResource>;
-    deleteInstanceResource(instanceId: string, resourceType: ResourceType, resourceName: string): Promise<void>;
+    getInstanceResources(projectName: string, instanceName: string): Promise<KubernetesResources>;
+    getInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource>;
+    updateInstanceResource(projectName: string, instanceName: string, resource: KubernetesResource): Promise<KubernetesResource>;
+    deleteInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource>;
 }
 
 export interface ControllerService {
@@ -149,13 +151,14 @@ export interface ControllerService {
 
     getInstance(projectName: string, instanceName: string): Promise<Instance>;
     createInstance(project: Project, instance: Instance): Promise<void>;
+    updateInstance(project: Project, instance: Instance): Promise<void>;
     repairInstance(project: Project, instance: Instance): Promise<Instance>;
     deleteInstance(projectName: string, instanceName: string): Promise<void>;
     stopInstance(project: Project, instance: Instance): Promise<Instance>;
     startInstance(project: Project, instance: Instance): Promise<Instance>;
     rotateInstanceCredentials(project: Project, instance: Instance): Promise<Instance>;
-    createInstanceBackup(project: Project, instance: Instance): Promise<Instance>;
-    createInstanceBackupSchedule(project: Project, instance: Instance, schedule: SnapshotScheduleRequest): Promise<Instance>;
+    createInstanceSnapshot(project: Project, instance: Instance): Promise<Instance>;
+    createInstanceSnapshotSchedule(project: Project, instance: Instance, schedule: SnapshotScheduleRequest): Promise<Instance>;
  
     getInstanceResources(projectName: string, instanceName: string): Promise<KubernetesResources>;
     getInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource>;
@@ -164,22 +167,28 @@ export interface ControllerService {
 
 export interface IJobService {
 
-    createProject(project: string): Promise<void>;
-    repairProject(project: string): Promise<void>;
-    deleteProject(project: string): Promise<void>;
+    createProject(project: Project): Promise<Job>;
+    repairProject(project: Project): Promise<Job>;
+    deleteProject(project: Project): Promise<Job>;
 
-    createInstance(instance: string): Promise<void>;
-    updateInstance(instance: string): Promise<void>;
-    repairInstance(instance: string): Promise<void>;
-    deleteInstance(instance: string): Promise<void>;
-    startInstance(instance: string): Promise<void>;
-    stopInstance(instance: string): Promise<void>;
+    createInstance(project: Project, instance: Instance): Promise<Job>;
+    updateInstance(project: Project, instance: Instance): Promise<Job>;
+    repairInstance(project: Project, instance: Instance): Promise<Job>;
+    deleteInstance(project: Project, instance: Instance): Promise<Job>;
+    startInstance(project: Project, instance: Instance): Promise<Job>;
+    stopInstance(project: Project, instance: Instance): Promise<Job>;
 
-    createInstanceSnapshot(instance: string, snapshot: string): Promise<void>;
-    deleteInstanceSnapshot(instance: string, snapshot: string): Promise<void>;
+    createInstanceSnapshot(project: Project, instance: Instance): Promise<Job>;
+    deleteInstanceSnapshot(project: Project, instance: Instance, snapshot: string): Promise<Job>;
 
-    createInstanceSchedule(instance: string, schedule: string): Promise<void>;
-    deleteInstanceSchedule(instance: string, schedule: string): Promise<void>;
+    createInstanceSchedule(project: Project, instance: Instance, scheduleRequest: SnapshotScheduleRequest): Promise<Job>;
+    deleteInstanceSchedule(project: Project, instance: Instance, schedule: string): Promise<Job>;
 
-    processJobs(): Promise<void>;
+    getProjectJobs(projectid: string): Promise<Job[]>;
+    getProjectJob(projectid: string, jobid: string): Promise<Job>;
+    cancelProjectJob(projectid: string, jobid: string): Promise<Job>;
+
+    getInstanceJobs(instanceid: string): Promise<Job[]>;
+    getInstanceJob(instanceid: string, jobid: string): Promise<Job>;
+    cancelInstanceJob(instanceid: string, jobid: string): Promise<Job>;
 }

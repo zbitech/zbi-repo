@@ -88,6 +88,7 @@ export function createInstance(instance: any): Instance {
         project: instance.project?.name,
         description: instance.description,
         status: instance.status,
+        state: instance.state,
         request: createResourceRequest(instance.request)
     }
 }
@@ -97,17 +98,29 @@ export function createInstances(instances: any[]): Instance[] {
 }
 
 export function createResourceRequest(request: any): ResourceRequest {
-    return {
-        volumeType: request.volumeType,
-        volumeSize: request.volumeSize,
-        volumeSourceType: request.volumeSourceType,
-        volumeSource: request.volumeSource,
-        volumeSourceProject: request.volumeSourceProject,
-        cpu: request.cpu,
-        memory: request.memory,
-        peers: request.peers,
-        properties: request.properties,
+    if (request) {
+        return {
+
+        // dataVolumeType: request.dataVolumeType,
+        // dataVolumeSize: request.dataVolumeSize,
+        // dataSourceType: request.dataSourceType,
+        // dataSource: request.dataSource,
+
+            cpu: request.cpu,
+            memory: request.memory,
+            peers: request.peers,
+            properties: request.properties,
+            volume: {
+                type: request.volume.type,
+                source: request.volume.source,
+                size: request.volume.size,
+                instance: request.volume.instance,
+                project: request.volume.project
+            }
+        }
     }
+
+    return request;
 }
 
 export function createKubernetesResource(resource: any): KubernetesResource {

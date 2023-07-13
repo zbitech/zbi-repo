@@ -17,21 +17,10 @@ export const validateRequest = (schema: ObjectSchema) => {
 
             const payload = {body: request.body, query: request.query, params: request.params};
             const result = await validateObject(schema, payload);
-            //logger.info(`validation result => ${JSON.stringify(result)}`);
 
             if(!result.success) {
-
-                logger.error(`error = ${JSON.stringify(result.error)} ${result.error instanceof ValidationError}`);
-
-                if(result.error instanceof ValidationError ) {
-                    const error:ValidationError = result.error as ValidationError;
-                    logger.error(`error = ${JSON.stringify(error)}`);
-                    response.status(error.code).json({message: error.message, errors: error.fields})
-                    return;
-                }
-                const code = result.error?.code||HttpStatusCode.InternalServerError;
-                response.status(code).json({message: result.error?.message});
-                return;
+                logger.error(`validation error = ${JSON.stringify(result.fields)}`);
+                response.status(HttpStatusCode.BadRequest).json({message: "Your message could not be processed", errors: result.fields})
             }
 
         } catch (err: any) {

@@ -25,7 +25,7 @@ export enum NodeType {
 
 export enum VolumeType {
     ephemeral = 'ephemeral',
-    persistentvolumeclaim = 'persistentvolumeclaim'
+    persistentvolumeclaim = 'pvc'
 }
 
 export enum VolumeSourceType {
@@ -51,6 +51,18 @@ export enum UserStatusType {
     invited = 'invited',
     active = 'active',
     inactive = 'inactive'
+}
+
+export enum StateType {
+    new = "new",
+    running = "running",
+    stopped = "stopped",
+    starting = "starting",
+    stopping = "stopping",
+    deleting = "deleting",
+    deleted = "deleted",
+
+    pending = "pending"
 }
 
 export enum StatusType {

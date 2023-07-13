@@ -1,6 +1,6 @@
 import axios, { HttpStatusCode } from "axios";
 import { AuthRequest, AuthResult, QueryParam, RegisterRequest, RegisterResult, User, UserInfo } from "../model/model";
-import { ServiceError, ServiceErrorType } from "../libs/errors";
+import { ServiceError } from "../libs/errors";
 import { IdentityService, UserRepository } from "../interfaces";
 import { getLogger } from "../libs/logger";
 import beanFactory from "../factory/bean.factory";

@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
-import { NetworkType, NodeType, RoleType, UserStatusType, InviteStatusType, ResourceType, LoginProvider } from "../../model/zbi.enum";
+import { NetworkType, NodeType, RoleType, UserStatusType, InviteStatusType, ResourceType, LoginProvider, StateType } from "../../model/zbi.enum";
 
 class MongoModel {
 
@@ -13,8 +13,19 @@ class MongoModel {
     teamModel: any;
     projectModel: any;
     instanceModel: any;
-
+ 
     constructor() {
+
+        const jobSchema = new Schema({id: {type: String}, status: {type: String},
+            /*name: {type: String},
+            type: {type: String, required: true, enum: ['project', 'instance', 'resource']},
+            active: {type: Boolean}, completed: {type: Boolean}, delayed: {type: Boolean}, failed: {type: Boolean},
+            waiting: {type: Boolean}, finishedOn: {type: Number}, failedReason: {type: String},
+            project: {type: String}, instance: {type: String},
+            resource_name: {type: String},
+            resource_type: {type: String, enum:[ResourceType.configmap, ResourceType.secret, ResourceType.persistentvolumeclaim, ResourceType.deployment, 
+                                        ResourceType.httpproxy, ResourceType.service, ResourceType.snapshotschedule, ResourceType.volumesnapshot]}*/
+        }, {timestamps: true});
 
         const registrationSchema = new Schema({acceptedTerms: {type: Boolean}, provider: {type: String, enum:[LoginProvider.local, LoginProvider.google]}}, {timestamps: true});
 
@@ -50,50 +61,131 @@ class MongoModel {
             owner: {type: Schema.Types.ObjectId, ref: "user"},
             team: {type: Schema.Types.ObjectId, ref: "team"},
             description: {type: String},
+            jobs: {type: [jobSchema]}
         }, { timestamps: true});
 
         this.projectModel = mongoose.model("project", this.projectSchema);
 
-        const resourceRequest = new Schema({
-            dataVolumeType: {type: String},
-            dataVolumeSize: {type: String},
-            dataSourceType: {type: String},
-            dataSource: {type: String},
-            cpu: {type: String},
-            memory: {type: String},
-            peers: {type: [String]},
-        }, { timestamps: true});
+        // const resourceRequest = new Schema({
+        //     dataVolumeType: {type: String},
+        //     dataVolumeSize: {type: String},
+        //     dataSourceType: {type: String},
+        //     dataSource: {type: String},
+        //     cpu: {type: String},
+        //     memory: {type: String},
+        //     peers: {type: [String]},
+        // }, { timestamps: true});
 
-        const resourceSchema = new Schema({
-            name: {type: String},
-            type: {type: String, enum:[ResourceType.configmap, ResourceType.secret, ResourceType.persistentvolumeclaim, ResourceType.deployment, 
-                                        ResourceType.httpproxy, ResourceType.service, ResourceType.snapshotschedule, ResourceType.volumesnapshot]},
-            status: {type: String},
-            properties: {type: Map, of: Object},
-        }, { timestamps: true});
-        resourceSchema.index({name: 1, type: 1}, {unique: true});
-
-        const resourcesSchema = new Schema({
-            configmap: {type: resourceSchema, default: {}},
-            secret: {type: resourceSchema, default: {}},
-            persistentvolumeclaim: {type: resourceSchema, default: {}},
-            deployment: {type: resourceSchema, default: {}},
-            service: {type: resourceSchema, default: {}},
-            httpproxy: {type: resourceSchema, default: {}},
-            volumesnapshot: {type: [resourceSchema], default: []},
-            snapshotschedule: {type: resourceSchema, default: {}}
-        });
+        // const resourceSchema = new Schema({
+        //     name: {type: String},
+        //     type: {type: String, enum:[ResourceType.configmap, ResourceType.secret, ResourceType.persistentvolumeclaim, ResourceType.deployment, 
+        //                                 ResourceType.httpproxy, ResourceType.service, ResourceType.snapshotschedule, ResourceType.volumesnapshot]},
+        //     status: {type: String},
+        //     createdAt: {type: Date, immutable: true},
+        //     updatedAt: {type: Date},
+        //     properties: {type: Map, of: Object},
+        //     jobs: {type: [jobSchema], default: []}
+        // }, { timestamps: true});
+        // resourceSchema.index({name: 1, type: 1}, {unique: true});
 
         this.instanceSchema = new Schema({
             name: {type: String, required: true, immutable: true},
             type: {type: String, required: true, immutable: true, enum: [NodeType.zcash, NodeType.lwd, NodeType.zebra]},
             description: {type: String},
             status: {type: String},
+            state: {type: String, enum: [StateType.new, StateType.running, StateType.stopped, StateType.pending]},
             project: {type: Schema.Types.ObjectId, ref: "project", immutable: true},
-            request: {type: resourceRequest},
-            resources: {type: resourcesSchema, default: {}},
+            request: {
+                cpu: {type: String},
+                memory: {type: String},
+                peers: {type: [String]},
+                volume: {
+                    type: {type: String}, 
+                    size: {type: String},
+                    source: {type: String},
+                    instance: {type: String},
+                    project: {type: String}
+                }
+            },
+            resources: {
+                configmap: {
+                    name: {type: String},
+                    type: {type: String, enum:[ResourceType.configmap, ResourceType.secret, ResourceType.persistentvolumeclaim, ResourceType.deployment, 
+                                                ResourceType.httpproxy, ResourceType.service, ResourceType.snapshotschedule, ResourceType.volumesnapshot]},
+                    status: {type: String},
+                    createdAt: {type: Date},
+                    updatedAt: {type: Date},
+                    properties: {type: Schema.Types.Mixed},
+                },
+                secret: {
+                    name: {type: String},
+                    type: {type: String, enum:[ResourceType.configmap, ResourceType.secret, ResourceType.persistentvolumeclaim, ResourceType.deployment, 
+                                                ResourceType.httpproxy, ResourceType.service, ResourceType.snapshotschedule, ResourceType.volumesnapshot]},
+                    status: {type: String},
+                    createdAt: {type: Date},
+                    updatedAt: {type: Date},
+                    properties: {type: Schema.Types.Mixed},
+                },
+                persistentvolumeclaim: {
+                    name: {type: String},
+                    type: {type: String, enum:[ResourceType.configmap, ResourceType.secret, ResourceType.persistentvolumeclaim, ResourceType.deployment, 
+                                                ResourceType.httpproxy, ResourceType.service, ResourceType.snapshotschedule, ResourceType.volumesnapshot]},
+                    status: {type: String},
+                    createdAt: {type: Date},
+                    updatedAt: {type: Date},
+                    properties: {type: Schema.Types.Mixed},
+                },
+                deployment: {
+                    name: {type: String},
+                    type: {type: String, enum:[ResourceType.configmap, ResourceType.secret, ResourceType.persistentvolumeclaim, ResourceType.deployment, 
+                                                ResourceType.httpproxy, ResourceType.service, ResourceType.snapshotschedule, ResourceType.volumesnapshot]},
+                    status: {type: String},
+                    createdAt: {type: Date},
+                    updatedAt: {type: Date},
+                    properties: {type: Schema.Types.Mixed},
+                },
+                service: {
+                    name: {type: String},
+                    type: {type: String, enum:[ResourceType.configmap, ResourceType.secret, ResourceType.persistentvolumeclaim, ResourceType.deployment, 
+                                                ResourceType.httpproxy, ResourceType.service, ResourceType.snapshotschedule, ResourceType.volumesnapshot]},
+                    status: {type: String},
+                    createdAt: {type: Date},
+                    updatedAt: {type: Date},
+                    properties: {type: Schema.Types.Mixed},
+                },
+                httpproxy: {
+                    name: {type: String},
+                    type: {type: String, enum:[ResourceType.configmap, ResourceType.secret, ResourceType.persistentvolumeclaim, ResourceType.deployment, 
+                                                ResourceType.httpproxy, ResourceType.service, ResourceType.snapshotschedule, ResourceType.volumesnapshot]},
+                    status: {type: String},
+                    createdAt: {type: Date},
+                    updatedAt: {type: Date},
+                    properties: {type: Schema.Types.Mixed},
+                },
+                volumesnapshot: [
+                    {
+                        name: {type: String},
+                        type: {type: String, enum:[ResourceType.configmap, ResourceType.secret, ResourceType.persistentvolumeclaim, ResourceType.deployment, 
+                                                    ResourceType.httpproxy, ResourceType.service, ResourceType.snapshotschedule, ResourceType.volumesnapshot]},
+                        status: {type: String},
+                        createdAt: {type: Date},
+                        updatedAt: {type: Date},
+                        properties: {type: Schema.Types.Mixed},
+                    }                    
+                ],
+                snapshotschedule: {
+                    name: {type: String},
+                    type: {type: String, enum:[ResourceType.configmap, ResourceType.secret, ResourceType.persistentvolumeclaim, ResourceType.deployment, 
+                                                ResourceType.httpproxy, ResourceType.service, ResourceType.snapshotschedule, ResourceType.volumesnapshot]},
+                    status: {type: String},
+                    createdAt: {type: Date},
+                    updatedAt: {type: Date},
+                    properties: {type: Schema.Types.Mixed},
+                }
+            },
+            jobs: {type: [jobSchema]}
         }, { timestamps: true});
-        this.instanceSchema.index({name: 1, type: 1}, {unique: true});
+        this.instanceSchema.index({project: 1, name: 1, type: 1}, {unique: true});
         
         this.instanceModel = mongoose.model("instance", this.instanceSchema);
     }

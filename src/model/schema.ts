@@ -1,5 +1,5 @@
 import Joi, { ObjectSchema } from "joi";
-import { NetworkType, NodeType, RoleType, UserFilterType } from "./zbi.enum";
+import { NetworkType, NodeType, RoleType, UserFilterType, VolumeSourceType, VolumeType } from "./zbi.enum";
 
 //import { object, string, TypeOf } from "zod";
 
@@ -66,8 +66,6 @@ export const schemas = {
         query: Joi.object({
             name: Joi.string().valid(UserFilterType.role, UserFilterType.status).label("name"),
             value: Joi.string().label("value"),
-            size: Joi.number().label("size"),
-            page: Joi.number().label("page")
         }),
         params: {}
     }),
@@ -108,8 +106,6 @@ export const schemas = {
             name: Joi.string().required().label("name"),
             condition: Joi.string().required().label("condition"),
             value: Joi.string().required().label("value"),
-            size: Joi.number().label("size"),
-            page: Joi.number().label("page")
         }),
         params: {}
     }),
@@ -135,11 +131,23 @@ export const schemas = {
         params: {}
     }),
 
-    newInstanceRequest: Joi.object({
-        name: Joi.string().alphanum().required(),
-        type: Joi.string().valid(NodeType.zcash, NodeType.lwd).required(),
-        description: Joi.string()
+    instanceRequest: Joi.object({
+        body: Joi.object({
+            name: Joi.string().alphanum().required().label("name"),
+            type: Joi.string().valid(NodeType.zcash, NodeType.lwd).required().label("type"),
+            description: Joi.string().label("description"),
+            peers: Joi.array().items(Joi.string()),
+            volume: Joi.object({
+                type: Joi.string().valid(VolumeType.ephemeral, VolumeType.persistentvolumeclaim).label("type"),
+                source: Joi.string().valid(VolumeSourceType.new, VolumeSourceType.volume, VolumeSourceType.snapshot).label("source"),
+                name: Joi.string().label("name")
+            })
 
+        }),
+        query: {},
+        params: {
+            projectid: Joi.string().required()
+        },
     }),
 
     newZcashRequest: Joi.object({

@@ -8,26 +8,28 @@ import config from "config";
 
 import { getLogger } from "../libs/logger";
 import { HttpStatusCode } from 'axios';
+import { handleError } from '../libs/errors';
 
 class UserController {
 
     async findUsers(request: Request, response: Response): Promise<void> {
 
-        let logger = getLogger('uc');
+        let logger = getLogger('uc-find-users');
         try {
             let userService:UserService = beanFactory.getUserService();
 
             const name = request.query.name as UserFilterType;
             const value = request.query.value as string;
-            const size = request.query.size;
-            const page = request.query.page;
+            const size = request.query.size ? parseInt(request.query.size as string): 10;
+            const page = request.query.page ? parseInt(request.query.page as string): 1;
             const param = name ? {name, condition: FilterConditionType.equal, value: value} : {};
 
-            const users = await userService.findUsers(param, size, page);
+            const users = await userService.findUsers(param);
             response.json({users, size, page});
         } catch(err:any) {
-            logger.error(`failed to find users: ${err}`)
-            response.status(500).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -36,7 +38,7 @@ class UserController {
 
     async inviteResourceOwner(request: Request, response: Response): Promise<void> {
 
-        let logger = getLogger('invite-owner');
+        let logger = getLogger('uc-invite-owner');
         try {
             let userService:UserService = beanFactory.getUserService();
 
@@ -46,8 +48,9 @@ class UserController {
             const user = await userService.createUser(email, RoleType.owner, UserStatusType.invited);
             response.status(HttpStatusCode.Ok).json({user});
         } catch(err:any) {
-            logger.error(`failed to invite resource uowner: ${err}`)
-            response.status(err.code).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -55,7 +58,7 @@ class UserController {
 
     async getAccount(request: Request, response: Response): Promise<void> {
 
-        let logger = getLogger('get-account');
+        let logger = getLogger('uc-get-account');
 
         try {
      
@@ -63,7 +66,9 @@ class UserController {
             const user = await userService.getUserByEmail(response.locals.subject.email);
             response.status(HttpStatusCode.Ok).json({user});            
         } catch(err:any) {
-
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -71,14 +76,16 @@ class UserController {
 
     async updateAccount(request: Request, response: Response): Promise<void> {
 
-        let logger = getLogger('update-account');
+        let logger = getLogger('uc-update-account');
 
         try {
             let userService:UserService = beanFactory.getUserService();
             const email = response.locals.subject.email;
             
         } catch(err:any) {
-
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -86,7 +93,7 @@ class UserController {
 
     async deleteAccount(request: Request, response: Response): Promise<void> {
 
-        let logger = getLogger('delete-account');
+        let logger = getLogger('uc-delete-account');
 
         try {
             let userService:UserService = beanFactory.getUserService();
@@ -95,7 +102,9 @@ class UserController {
             await userService.deleteUser(userid);
             response.sendStatus(HttpStatusCode.NoContent);
         } catch(err: any) {
-
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});
         } finally {
 
         }
@@ -114,8 +123,9 @@ class UserController {
             response.json(user);
 
         } catch(err:any) {
-            logger.error(`failed to find users: ${err}`)
-            response.status(500).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -123,7 +133,7 @@ class UserController {
 
 
     async authenticateUser(request: Request, response: Response): Promise<void> {
-        let logger = getLogger('register-user');
+        let logger = getLogger('uc-authenticate-user');
 
         try {
             let userService:UserService = beanFactory.getUserService();
@@ -153,14 +163,16 @@ class UserController {
             }
 
         } catch(err:any) {
-            response.status(HttpStatusCode.InternalServerError).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
     }
 
     async changePassword(request: Request, response: Response): Promise<void> {
-        let logger = getLogger('change-password');
+        let logger = getLogger('uc-change-password');
 
         try {
             let userService:UserService = beanFactory.getUserService();
@@ -175,14 +187,16 @@ class UserController {
             }
 
         } catch(err:any) {
-
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});
         } finally {
 
         }
     }
 
     async registerLocalUser(request: Request, response: Response): Promise<void> {
-        let logger = getLogger('register-user');
+        let logger = getLogger('uc-register-local-user');
 
         try {
 
@@ -197,14 +211,16 @@ class UserController {
 
             response.status(HttpStatusCode.Ok).json(user);
         } catch(err:any) {
-            response.status(err.code).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
     }
 
     async registerExternalUser(request: Request, response: Response): Promise<void> {
-        let logger = getLogger('register-user');
+        let logger = getLogger('uc-register-external-user');
 
         try {
 
@@ -219,14 +235,16 @@ class UserController {
             response.status(HttpStatusCode.Ok).json(user);
 
         } catch(err:any) {
-            response.status(err.code).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
     }
 
     async deactivateUser(request: Request, response: Response): Promise<void> {
-        let logger = getLogger(`deactivate-user`);
+        let logger = getLogger(`uc-deactivate-user`);
 
         try {
             let userService: UserService = beanFactory.getUserService();
@@ -236,13 +254,15 @@ class UserController {
             response.status(HttpStatusCode.Ok).json(user);
             
         } catch (err: any) {
-            response.status(err.code).json({message: err.message}); 
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         }
 
     }
 
     async reactivateUser(request: Request, response: Response): Promise<void> {
-        let logger = getLogger(`reactivate-user`);
+        let logger = getLogger(`uc-reactivate-user`);
 
         try {
             let userService: UserService = beanFactory.getUserService();
@@ -252,13 +272,15 @@ class UserController {
             response.status(HttpStatusCode.Ok).json(user);
             
         } catch (err: any) {
-            response.status(err.code).json({message: err.message}); 
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         }
 
     }
 
     async deleteUser(request: Request, response: Response): Promise<void> {
-        let logger = getLogger(`delete-user`);
+        let logger = getLogger(`uc-delete-user`);
 
         try {
             let userService: UserService = beanFactory.getUserService();
@@ -268,12 +290,14 @@ class UserController {
             response.sendStatus(HttpStatusCode.Ok)
             
         } catch (err: any) {
-            response.status(err.code).json({message: err.message}); 
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         }
     }
 
     async updateUser(request: Request, response: Response): Promise<void> {
-        let logger = getLogger(`update-user`);
+        let logger = getLogger(`uc-update-user`);
 
         try {
             let userService: UserService = beanFactory.getUserService();
@@ -283,12 +307,14 @@ class UserController {
 //            response.status(HttpStatusCode.Ok).json(user);
             
         } catch (err: any) {
-            response.status(err.code).json({message: err.message}); 
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         }
     }
 
     async findTeams(request: Request, response: Response): Promise<void> {
-        let logger = getLogger('find-teams');
+        let logger = getLogger('uc-find-teams');
 
         try {
             let userService: UserService = beanFactory.getUserService();
@@ -298,10 +324,12 @@ class UserController {
             const size = parseInt(request.query.size as string);
             const page = parseInt(request.query.page as string);
 
-            const teams = await userService.findTeams(param, size, page);
+            const teams = await userService.findTeams(param);
             response.status(HttpStatusCode.Ok).json({teams, size, page});
         } catch(err:any) {
-            response.status(err.code).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -317,7 +345,9 @@ class UserController {
 
             response.status(HttpStatusCode.Ok).json({team});
         } catch(err:any) {  
-            response.status(err.code).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -331,11 +361,13 @@ class UserController {
             const userid = response.locals.subject.userid;
             const params = {name: TeamFilterType.owner, condition: FilterConditionType.equal, value: userid};
 
-            const teams = await userService.findTeams(params, 10, 1);
+            const teams = await userService.findTeams(params);
 
             response.status(HttpStatusCode.Ok).json({teams});
         } catch(err:any) {  
-            response.status(err.code).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -350,7 +382,9 @@ class UserController {
             await userService.deleteTeam(teamid);
             response.status(HttpStatusCode.Ok);
         } catch(err:any) {
-            response.status(err.code).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -374,7 +408,9 @@ class UserController {
             team = await userService.addTeamMember(team.id, email);
             response.status(HttpStatusCode.Ok).json({team});
         } catch(err:any) {
-            response.status(err.code).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -392,7 +428,9 @@ class UserController {
             const team = await userService.removeTeamMember(teamid, email);
             response.status(HttpStatusCode.Ok).json({team});
         } catch(err:any) {
-            response.status(err.code).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -410,7 +448,9 @@ class UserController {
             const memberships = await userService.findTeamMemberships(userid);
             response.status(HttpStatusCode.Ok).json({memberships});
         } catch(err:any) {
-            response.status(err.code).json({message: err.message});
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -423,7 +463,9 @@ class UserController {
             let userService: UserService = beanFactory.getUserService();
 
         } catch(err:any) {
-
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});            
         } finally {
 
         }
@@ -437,7 +479,9 @@ class UserController {
             logger.info(`deleting membership ... ${JSON.stringify(request.body)}`);
 
         } catch(err:any) {
-
+            const result = handleError(err);
+            logger.error(`response - JSON.stringify(result)`);
+            response.status(result.code).json({message: result.message});
         } finally {
 
         }

@@ -1,6 +1,6 @@
 import axios, { HttpStatusCode } from "axios";
 import { AuthRequest, AuthResult, QueryParam, RegisterRequest, RegisterResult, User } from "../model/model";
-import { ServiceError, ServiceErrorType } from "../libs/errors";
+import { ServiceError } from "../libs/errors";
 import { IdentityService, UserRepository } from "../interfaces";
 import { Handler } from "express";
 import { auth } from 'express-oauth2-jwt-bearer';

@@ -4,9 +4,8 @@ import { FilterConditionType, InviteStatusType, LoginProvider, RoleType, UserFil
 import model from "./mongo.model";
 import * as helper from "./helper";
 import { getLogger } from "../../libs/logger";
-import { Logger } from "winston";
 import { hashPassword, comparePassword } from "../../libs/auth.libs";
-import { AppErrorType, ApplicationError } from "../../libs/errors";
+import { BadRequestError, ItemAlreadyExistsError, ItemNotFoundError, ItemType, ServiceError, ServiceType } from "../../libs/errors";
 
 export default class UserMongoRepository implements UserRepository {
 
@@ -19,24 +18,25 @@ export default class UserMongoRepository implements UserRepository {
     }
 
     async createUser(email: string, role: RoleType, status: UserStatusType): Promise<User> {
-        const logger = getLogger("create-user");
+        const logger = getLogger("repo-create-user");
         try {
             const uc = new this.userModel({email, role, status, registration: {acceptedTerms: false}});
             await uc.save();
             return helper.createUser(uc);
         } catch(err: any) {
-            logger.error(`error creating user - ${JSON.stringify(err)}`);
+            logger.error(err);
             const err_type = helper.getErrorType(err);
+
             if( err_type === helper.MongoErrorType.DUPLICATE_KEY) {
-                throw new ApplicationError(AppErrorType.EMAIL_ALREADY_EXISTS, "email already exists");
+                throw new ItemAlreadyExistsError(ItemType.user, "user with email already exists");
             }
 
-            throw new ApplicationError(AppErrorType.DB_SERVICE_ERROR, "database service error");
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async updateUser(email: string, name: string, status: UserStatusType): Promise<User> {
-        const logger = getLogger("update-user");
+        const logger = getLogger("repo-update-user");
         try {
 
             const uc = await this.userModel.findOneAndUpdate({email}, {email, name, status});
@@ -44,50 +44,53 @@ export default class UserMongoRepository implements UserRepository {
                 return helper.createUser(uc);
             }
 
-            throw new Error("user not found");
-        } catch (err) {
-            throw err;
+            throw new ItemNotFoundError(ItemType.user, "user not found");
+        } catch (err:any) {
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async findRegistration(email: string): Promise<Registration> {
+        const logger = getLogger("repo-find-registration");
         try {
-            const logger = getLogger("find-reg");
             const uc = await this.userModel.findOne({email});
-            if(uc) {
-                return helper.createRegistration(uc.registration);
-            }
-            throw new Error("registration not found");
+            if(!uc) throw new ItemNotFoundError(ItemType.user,'user not found');
+
+            return helper.createRegistration(uc.registration);
         } catch (err: any) {
-            throw err;
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async createRegistration(email: string, name: string, provider: LoginProvider): Promise<Registration> {
+        const logger = getLogger("repo-create-registration");
         try {
-            const logger = getLogger("create-registration");
             const reg = await this.userModel.findOneAndUpdate({email}, {name, status: UserStatusType.active, registration:{acceptedTerms: true, provider}});
             if(reg) {
                 return helper.createRegistration(reg);
             }
-            throw new Error("could not create registration");
+            throw new ItemNotFoundError(ItemType.user,"user not found");
 
         } catch(err: any) {
-            throw err;
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
-    async findUsers(params: QueryParam, size: number, page: number): Promise<User[]> {
+    async findUsers(params: QueryParam): Promise<User[]> {
+        const logger = getLogger("repo-create-registration");
         try {
             const p = helper.createParam(params);
-            const skip = page>0 ? (page-1) * size : 0;
-            const uc = await this.userModel.find(p).skip(skip).limit(size);
+            const uc = await this.userModel.find(p);
             if(uc) {
                 return helper.createUsers(uc);
             }
             return [];
-        } catch (err) {
-            throw err;
+        } catch (err:any) {
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
@@ -97,34 +100,51 @@ export default class UserMongoRepository implements UserRepository {
             const p = helper.createParam(params);
             const uc = await this.userModel.findOne(p);
 
-            return helper.createUser(uc);
+            if(uc) {
+                return helper.createUser(uc);
+            }
+
+            return uc;
         } catch(err: any) {
-            logger.error(`failed to find user - ${err}`);
-            throw err;
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async getUserByEmail(email: string): Promise<User> {
-        const logger = getLogger("get-user(email)");
+        const logger = getLogger("repo-get-user(email)");
         try {
             const param: QueryParam = {name: UserFilterType.email, condition: FilterConditionType.equal, value: email};
-            return await this.findUser(param);                
+            const uc = await this.findUser(param);                
+            if(uc) {
+                return helper.createUser(uc);
+            }
+
+            return uc;
         } catch (err: any) {
-            logger.error(`failed to find user - ${JSON.stringify(err)}`);
-            throw err;
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async getUserById(userid: string): Promise<User> {
+        const logger = getLogger("repo-get-user(id)");
         try {
             const param: QueryParam = {name: UserFilterType.userid, condition: FilterConditionType.equal, value: userid};
-            return await this.findUser(param);                
+            const uc =  await this.findUser(param);                
+            if(uc) {
+                return helper.createUser(uc);
+            }
+
+            return uc;
         } catch (err: any) {
-            throw err;
-        }
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
+        }        
     }
 
     async activateUser(userid: string): Promise<User> {
+        const logger = getLogger("repo-activate-user");
         try {
             const uc = await this.userModel.findById(userid);
             if(uc) {
@@ -132,13 +152,15 @@ export default class UserMongoRepository implements UserRepository {
                 await uc.save();
                 return helper.createUser(uc);
             }
-            throw new Error("user not found");
-        } catch(err) {
-            throw err;
+            throw new ItemNotFoundError(ItemType.user,"user not found");
+        } catch(err:any) {
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async deactivateUser(userid: string): Promise<User> {
+        const logger = getLogger("repo-deactivate-user");
         try {
             const uc = await this.userModel.findById(userid);
             if(uc) {
@@ -146,47 +168,58 @@ export default class UserMongoRepository implements UserRepository {
                 await uc.save();
                 return helper.createUser(uc);
             }
-            throw new Error("user not found");
-        } catch(err) {
-            throw err;
+            throw new ItemNotFoundError(ItemType.user,"user not found");
+        } catch(err:any) {
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async deleteUser(userid: string): Promise<void> {
+        const logger = getLogger("repo-delete-user");
         try {
             await this.userModel.deleteOne({_id: userid});
-        } catch(err) {
-            throw err;
+        } catch(err:any) {
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async setPassword(email: string, password: string): Promise<void> {
+        const logger = getLogger("repo-set-password");
+
         try {
             const user = await this.userModel.findOne({email});
+            if(!user) throw new ItemNotFoundError(ItemType.user,'user not found');
+
             user.password = await hashPassword(password);
             await user.save();
-        } catch(err) {
-            throw err;
+        } catch(err:any) {
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async validatePassword(email: string, password: string): Promise<User|undefined> {
-        const logger = getLogger("validate-password");
+        const logger = getLogger("repo-validate-password");
         try {
             const user = await this.userModel.findOne({email});
+            if(!user) throw new ItemNotFoundError(ItemType.user,'user not found');
+
             logger.debug(`found user: ${JSON.stringify(user)}`);
             if(await comparePassword(password, user.password)) {
                 return helper.createUser(user);
             }
 
-            return undefined;
-        } catch(err) {
-            throw err;
+            throw new BadRequestError("invalid password")
+        } catch(err:any) {
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async createTeam(owner: string, name: string): Promise<Team> {
-        const logger = getLogger("create-team");
+        const logger = getLogger("repo-create-team");
         try {
             const team = {name, owner: owner};
             logger.debug(`creating new team - ${JSON.stringify(team)}`);
@@ -197,21 +230,25 @@ export default class UserMongoRepository implements UserRepository {
                 await tc.populate({path: "owner", select: {userName: 1, email: 1, name: 1}});
                 return helper.createTeam(tc);
             }
-            throw new Error("team not found");
-        } catch(err) {
+            throw new ItemNotFoundError(ItemType.team, "team not found");
+        } catch(err:any) {
+            logger.error(err);
             throw err;
         }
     }
 
     async deleteTeam(teamid: string): Promise<void> {
+        const logger = getLogger("repo-delete-team");
         try {
             await this.teamModel.deleteOne({teamid});
-        } catch(err) {
-            throw err;
+        } catch(err:any) {
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async updateTeam(teamid: string, name: string): Promise<Team> {
+        const logger = getLogger("repo-update-team");
         try {
             const tc = await this.teamModel.findById(teamid);
 
@@ -228,31 +265,34 @@ export default class UserMongoRepository implements UserRepository {
                 return helper.createTeam(tc);
             }
 
-            throw new Error("team not found");
+            throw new ItemNotFoundError(ItemType.team, "team not found");
             
-        } catch(err) {
-            throw err; //TODO - service error
+        } catch(err:any) {
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
-    async findTeams(size: number, page: number): Promise<Team[]> {
+    async findTeams(): Promise<Team[]> {
+        const logger = getLogger("repo-find-teams");
         try {
 
-            const skip = page>0 ? (page-1) * size : 0;
             const tc = await this.teamModel.find({}, {_id: 1, name: 1, owner: 1, created: 1, updated: 1}).populate({
                 path: "owner", select: {email: 1, name: 1}
-            }).skip(skip).limit(size);
+            });
 
             if(tc) {
                 return helper.createTeams(tc);
             }
             return [];
-        } catch (err) {
-            throw err;
+        } catch (err:any) {
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async findTeam(teamId: string): Promise<Team> {
+        const logger = getLogger("repo-find-team");
         try {
             const tc = await this.teamModel.findById(teamId).populate({
                 path: "members.user", select: {email: 1, name: 1}
@@ -264,13 +304,15 @@ export default class UserMongoRepository implements UserRepository {
                 return helper.createTeam(tc);
             }
 
-            throw new Error("team not found");
-        } catch(err) {
-            throw err;
+            throw new ItemNotFoundError(ItemType.team, "team not found");
+        } catch(err:any) {
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 
     async findTeamMemberships(userId: string): Promise<Array<Team>> {
+        const logger = getLogger("repo-find-team-membershps");
         try {
             const tc = await this.teamModel.find({"members.user": userId}, {
                 name: 1,
@@ -282,8 +324,9 @@ export default class UserMongoRepository implements UserRepository {
             if(tc) return helper.createTeams(tc);
 
             throw new Error("team memberships not found");
-        } catch(err) {
-            throw err;
+        } catch(err:any) {
+            logger.error(err);
+            throw new ServiceError(ServiceType.database, err.message);
         }
     }
 

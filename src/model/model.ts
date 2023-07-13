@@ -1,7 +1,7 @@
 import { interfaces } from "inversify";
 import { RoleType, VolumeType, VolumeSourceType, ResourceType, StatusType, NetworkType, 
         NodeType, UserStatusType, InviteStatusType, SnapshotScheduleType, FilterConditionType, 
-        ProjectFilterType, InstanceFilterType, TeamFilterType, UserFilterType, LoginProvider, JobItem, JobType } from "./zbi.enum";
+        ProjectFilterType, InstanceFilterType, TeamFilterType, UserFilterType, LoginProvider, StateType } from "./zbi.enum";
 import { JobStatus } from "bull";
 
 
@@ -96,15 +96,11 @@ export interface TeamMembership {
 };
 
 export interface ResourceRequest {
-    volumeType: VolumeType;
-    volumeSize: string;
-    volumeSourceType: VolumeSourceType;
-    volumeSource?: string;
-    volumeSourceProject?: string;
     cpu?: string;
     memory?: string;
     peers?: Array<string>;
-    properties: Map<string, string>;
+    volume?: VolumeRequest;
+    properties?: Map<string, any>;
 }
 
 export interface KubernetesResource {
@@ -112,7 +108,7 @@ export interface KubernetesResource {
     name: string;
     type: ResourceType;
     status: StatusType;
-    properties: {};
+    properties: Map<String, Object>;
 }
 
 export interface KubernetesResources {
@@ -154,13 +150,29 @@ export interface Instance {
     description: string;
     request: ResourceRequest;
     status: StatusType;
+    state: StateType;
 }
 
 export interface InstanceRequest {
     name: string;
     type: NodeType;
     description: string;
-    request: ResourceRequest;
+    peers?: Array<string>;
+    volume?: {
+        type: VolumeType;
+        size?: string;
+        source: VolumeSourceType;
+        instance?: string;
+        project?: string;    
+    }
+}
+
+export interface VolumeRequest {
+    type: VolumeType;
+    size?: string;
+    source: VolumeSourceType;
+    instance?: string;
+    project?: string;
 }
 
 export interface SnapshotScheduleRequest {
@@ -177,7 +189,7 @@ export interface QueryParam {
 }
 
 export interface QueryFilter {
-    name: UserFilterType | ProjectFilterType | InstanceFilterType | TeamFilterType | JobStatus | JobType;
+    name: UserFilterType | ProjectFilterType | InstanceFilterType | TeamFilterType | JobStatus;
     condition: FilterConditionType;
     value: string;
     page: number;
@@ -186,8 +198,13 @@ export interface QueryFilter {
 
 export interface Job {
     id: string;
-    user: User;
-    type: JobType;
-    status: JobStatus
-    payload: Object;
+    created: string;
+    name: string;
+    active: boolean;
+    completed: boolean;
+    delayed: boolean;
+    failed: boolean;
+    waiting: boolean;
+    finishedOn: number;
+    failedReason: string;
 }

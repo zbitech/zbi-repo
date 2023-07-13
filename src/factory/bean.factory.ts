@@ -2,7 +2,8 @@ import { AppErrorType, ApplicationError } from "../libs/errors";
 import { LoginProvider, RoleType, UserStatusType } from "../model/zbi.enum";
 import basicIdentityService from "../services/basic.identity.service";
 import googleIdentityService from "../services/google.identity.service";
-import { ControllerService, Database, IAccessService, IdentityService, ProjectRepository, ProjectService, UserRepository, UserService } from "../interfaces";
+import jobService from "../services/job.service";
+import { ControllerService, Database, IAccessService, IJobService, IdentityService, ProjectRepository, ProjectService, UserRepository, UserService } from "../interfaces";
 import databaseFactory from "./database.factory";
 import repositoryFactory from "./repository.factory";
 import controllerService from '../services/k8s.controller.service';
@@ -91,6 +92,10 @@ class BeanFactory {
 
     getAccessService(): IAccessService {
         return accessService;
+    }
+
+    getJobService(): IJobService {
+        return jobService;
     }
 
     getRepository(name: string) {

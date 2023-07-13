@@ -13,7 +13,7 @@ class DefaultUserService implements UserService {
     }
 
     async createUser(email: string, role: RoleType, status: UserStatusType): Promise<User> {
-        const logger = getLogger("create-user");
+        const logger = getLogger("usvc-create-user");
         try {
 
             const userRepository = beanFactory.getUserRepository();
@@ -22,8 +22,8 @@ class DefaultUserService implements UserService {
             // TODO - send email to user
 
             return user;
-        } catch (err) {
-            logger.error(`error creating user - ${JSON.stringify(err)}`);
+        } catch (err:any) {
+            logger.error(`error creating user - ${err}}`);
 
 //            {"index":0,"code":11000,"keyPattern":{"email":1},"keyValue":{"email":"alphegasolutions@gmail.com"}}
  
@@ -32,6 +32,7 @@ class DefaultUserService implements UserService {
     }
 
     async updateUser(email: string, name: string, status: UserStatusType): Promise<User> {
+        const logger = getLogger("usvc-update-user");
         const userRepository = beanFactory.getUserRepository();
         try {            
             return await userRepository.updateUser(email, name, status);
@@ -41,7 +42,7 @@ class DefaultUserService implements UserService {
     }
 
     async authenticateUser(user: AuthRequest, provider: LoginProvider): Promise<AuthResult> {
-        const logger = getLogger("authenticate-user");
+        const logger = getLogger("usvc-authenticate-user");
         try {
             const userRepository = beanFactory.getUserRepository();
             const identityService = beanFactory.getIdentityService(provider);
@@ -72,6 +73,7 @@ class DefaultUserService implements UserService {
 
     async changePassword(email: string, old_password: string, new_password: string): Promise<User> {
 
+        const logger = getLogger("usvc-change-password");
         try {
             const userRepository = beanFactory.getUserRepository();
             const user = await userRepository.validatePassword(email, old_password);
@@ -89,7 +91,7 @@ class DefaultUserService implements UserService {
 
     async registerUser(provider: LoginProvider, email: string, name: string, password: string): Promise<User> {
 
-        const logger = getLogger("register-user");
+        const logger = getLogger("usvc-register-user");
         try {
 
             logger.info(`registering new user ${email} with ${provider} login provider`);
@@ -122,6 +124,7 @@ class DefaultUserService implements UserService {
     }
 
     async findUsers(params: QueryParam, size: number, page: number): Promise<User[]> {
+        const logger = getLogger("usvc-find-users");
         try {
             const userRepository = beanFactory.getUserRepository();
             return await userRepository.findUsers(params, size, page);
@@ -131,6 +134,7 @@ class DefaultUserService implements UserService {
     }
 
     async findUser(param: QueryParam): Promise<User> {
+        const logger = getLogger("usvc-find-user");
         try {
             const userRepository = beanFactory.getUserRepository();
             return await userRepository.findUser(param);
@@ -140,6 +144,7 @@ class DefaultUserService implements UserService {
     }
 
     async getUserByEmail(email: string): Promise<User> {
+        const logger = getLogger("usvc-get-user-email");
         try {
             const userRepository = beanFactory.getUserRepository();
             return await userRepository.getUserByEmail(email);
@@ -149,6 +154,7 @@ class DefaultUserService implements UserService {
     }
 
     async getUserById(userid: string): Promise<User> {
+        const logger = getLogger("usvc-get-user-id");
         try {
             const userRepository = beanFactory.getUserRepository();
             return await userRepository.getUserById(userid);
@@ -158,6 +164,7 @@ class DefaultUserService implements UserService {
     }
 
     async deactivateUser(userid: string): Promise<User> {
+        const logger = getLogger("usvc-deactivate-user");
         try {
             const userRepository = beanFactory.getUserRepository();
             const user: User = await userRepository.getUserById(userid);
@@ -173,6 +180,7 @@ class DefaultUserService implements UserService {
     }
 
     async reactivateUser(userid: string): Promise<User> {
+        const logger = getLogger("usvc-reactivate-user");
         try {
             const userRepository = beanFactory.getUserRepository();
             const user: User = await userRepository.getUserById(userid);
@@ -189,6 +197,7 @@ class DefaultUserService implements UserService {
     }
 
     async deleteUser(userid: string): Promise<void> {
+        const logger = getLogger("usvc-delete-user");
         try {
             const userRepository = beanFactory.getUserRepository();
             const user: User = await userRepository.getUserById(userid);
@@ -205,6 +214,7 @@ class DefaultUserService implements UserService {
     }
 
     async createTeam(ownerid: string, name: string): Promise<Team> {
+        const logger = getLogger("usvc-create-team");
         try {
             const userRepository = beanFactory.getUserRepository();
             return await userRepository.createTeam(ownerid, name);
@@ -214,6 +224,7 @@ class DefaultUserService implements UserService {
     }
 
     async deleteTeam(teamid: string): Promise<void> {
+        const logger = getLogger("usvc-delete-team");
         try {
             const userRepository = beanFactory.getUserRepository();
             // TODO - check team status
@@ -224,6 +235,7 @@ class DefaultUserService implements UserService {
     }
 
     async updateTeam(teamid: string, name: string): Promise<Team> {
+        const logger = getLogger("usvc-update-team");
         try {            
             const userRepository = beanFactory.getUserRepository();
             return await userRepository.updateTeam(teamid, name);
@@ -234,6 +246,7 @@ class DefaultUserService implements UserService {
     }
 
     async findTeams(params: {}, size: number, page: number): Promise<Team[]> {
+        const logger = getLogger("usvc-find-teams");
         try {            
             const userRepository = beanFactory.getUserRepository();
             return await userRepository.findTeams(size, page);
@@ -244,6 +257,7 @@ class DefaultUserService implements UserService {
     }
 
     async findTeam(teamid: string): Promise<Team> {
+        const logger = getLogger("usvc-find-team");
         try {
             const userRepository = beanFactory.getUserRepository();
             return await userRepository.findTeam(teamid);            
@@ -263,17 +277,8 @@ class DefaultUserService implements UserService {
 
     }
 
-    // async findTeamMembership(userid: string): Promise<Team> {
-    //     const logger = getLogger("repo-team-membership");
-    //     try {
-    //         const userRepository = beanFactory.getUserRepository();
-    //     } catch (err: any) {
-    //         throw err;
-    //     }
-    // }
-
     async addTeamMember(teamid: string, email: string): Promise<Team> {
-        const logger = getLogger("add-member-svc");
+        const logger = getLogger("usvc-add-member");
         try {            
             const userRepository = beanFactory.getUserRepository();
             let user = await userRepository.getUserByEmail(email);

@@ -1,5 +1,7 @@
 export default {
-    port: 3000,
+    port: 4000,
+    database: ``,
+    redis: ``,
     dbUri: "mongodb://localhost:27017/zbiRepo",
     createAdmin: ``,
     adminEmail: ``,
@@ -11,6 +13,7 @@ export default {
     accessTokenPublicKey: ``,
     refreshTokenPrivateKey: ``,
     refreshTokenPublicKey: ``,
+    googleTokenEndpoint: ``,
     googleClientId: ``,
     googleClientSecret: ``,
     googleOauthRedirectUrl: ``   

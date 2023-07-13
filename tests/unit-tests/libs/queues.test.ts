@@ -4,6 +4,7 @@ import { validateObject } from "../../../src/libs/validator";
 import { schemas } from "../../../src/model/schema";
 import { signJwtAccessToken, signJwtRefreshToken, verifyJwtAccessToken, verifyJwtRefreshToken } from "../../../src/libs/auth.libs";
 import { RoleType } from "../../../src/model/zbi.enum";
+import * as queues from "../../../src/libs/queues";
 
 let logger: Logger;
 const admin = {email: "admin@zbitech.net", name: "Admin one", role: RoleType.admin};
@@ -17,7 +18,6 @@ beforeAll(async () => {
 afterAll(async () => {
 });
 
-
 describe('auth library', () => {
     
     beforeEach(async () => {
@@ -28,18 +28,12 @@ describe('auth library', () => {
     });
 
 
-    test('should verify access token', async () => {
-        const token = signJwtAccessToken(admin);
-        const result = verifyJwtAccessToken(token);
+    test('should init queue', async () => {
 
+        const result = await queues.createProject("test");
         console.log(`Result = ${JSON.stringify(result)}`);
+        await queues.closeQueue();
     });
 
-    test('should verify refresh token', async () => {
-        const token = signJwtRefreshToken(admin);
-        const result = verifyJwtRefreshToken(token);
-
-        console.log(`Result = ${JSON.stringify(result)}`);
-    });
 
 });

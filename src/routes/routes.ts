@@ -82,7 +82,7 @@ export default function (app: Application) {
         .get(projectController.findProjects)
         .post(validateRequest(schemas.projectRequest), projectController.createProject);
 
-    app.route(`/api/projects/:projectid`)
+    app.route(`/api/projects/:project`)
         .all(validateAccessToken, validateUser)
         .get(projectController.findProject)
         .put(projectController.updateProject)
@@ -90,7 +90,7 @@ export default function (app: Application) {
         .delete(projectController.deleteProject)
         .purge(projectController.purgeProject);
 
-    app.route(`/api/projects/:projectid/resources`)
+    app.route(`/api/projects/:project/resources`)
         .all(validateAccessToken, validateUser)
         .get()
         .put()
@@ -100,12 +100,12 @@ export default function (app: Application) {
         .all(validateAccessToken, validateUser)
         .get(projectController.findAllInstances);
 
-    app.route(`/api/projects/:projectid/instances`)
+    app.route(`/api/projects/:project/instances`)
         .all(validateAccessToken, validateUser)
         .get(projectController.findInstances)
-        .post(projectController.createInstance);
+        .post(validateRequest(schemas.instanceRequest), projectController.createInstance);
     
-    app.route(`/api/instances/:instanceid`)
+    app.route(`/api/projects/:project/instances/:instance`)
         .all(validateAccessToken, validateUser)
         .get(projectController.findInstance)
         .post(projectController.updateInstance)
@@ -114,15 +114,10 @@ export default function (app: Application) {
         .delete(projectController.deleteInstance)
         .purge(projectController.purgeInstance);
 
-    app.route(`/api/instances/:instanceid/resources`)
-        .all(validateAccessToken, validateUser)
-        .get(projectController.getInstanceResources);
-
-    app.route(`/api/instances/:instanceid/resources/:resourceid`)
-        .all(validateAccessToken, validateUser)
-        .get(projectController.getInstanceResource)
+    app.route(`/api/projects/:project/instances/:instance/resources`)
+        .get(validateAccessToken, validateUser, projectController.getInstanceResources)
         .put(projectController.updateInstanceResource)
-        .delete(projectController.deleteInstanceResource);
+        .delete(validateAccessToken, validateUser, projectController.deleteInstanceResource);
         
     app.route(`/api/projects/jobs`)
         .all(validateAccessToken, validateUser)
