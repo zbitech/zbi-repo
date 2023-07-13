@@ -150,6 +150,8 @@ export class ItemNotFoundError extends DataError {
     }
 }
 
+export class UserNotPermittedError extends Error {}
+
 export class ResourcePermissionError extends Error {
 
 }

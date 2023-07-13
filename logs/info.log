@@ -4023,3 +4023,161 @@
 [32minfo | 2023-07-13T05:39:38.697Z | 6edd05b1-7504-4647-ad41-46b76e876319 | zbi | main | connected to memory server[39m
 [32minfo | 2023-07-13T05:39:38.755Z | 6edd05b1-7504-4647-ad41-46b76e876319 | zbi | main | closed connection[39m
 [32minfo | 2023-07-13T05:39:38.807Z | 924851db-bc7e-4d83-820f-470380fb7905 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:44:55.813Z | c5433fbb-77a4-499f-81fc-7472c28a3187 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:44:55.818Z | c5433fbb-77a4-499f-81fc-7472c28a3187 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:44:55.840Z | 95eb367e-e75e-4487-ad51-124a990602b4 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:44:55.843Z | 95eb367e-e75e-4487-ad51-124a990602b4 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:44:56.464Z | 95eb367e-e75e-4487-ad51-124a990602b4 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:44:56.464Z | c5433fbb-77a4-499f-81fc-7472c28a3187 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:44:56.499Z | c5433fbb-77a4-499f-81fc-7472c28a3187 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:44:56.499Z | 95eb367e-e75e-4487-ad51-124a990602b4 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:44:56.579Z | 95eb367e-e75e-4487-ad51-124a990602b4 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:44:56.610Z | c5433fbb-77a4-499f-81fc-7472c28a3187 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:47:37.174Z | 9625a4c1-b50a-4625-bf75-d51b6642c21c | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:47:37.176Z | 9625a4c1-b50a-4625-bf75-d51b6642c21c | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:47:37.181Z | daeef95b-d81a-4618-b876-f438d5cd3bf2 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:47:37.184Z | daeef95b-d81a-4618-b876-f438d5cd3bf2 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:47:37.624Z | 9625a4c1-b50a-4625-bf75-d51b6642c21c | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:47:37.624Z | daeef95b-d81a-4618-b876-f438d5cd3bf2 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:47:37.649Z | daeef95b-d81a-4618-b876-f438d5cd3bf2 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:47:37.650Z | 9625a4c1-b50a-4625-bf75-d51b6642c21c | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:47:37.725Z | daeef95b-d81a-4618-b876-f438d5cd3bf2 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:47:37.778Z | 9625a4c1-b50a-4625-bf75-d51b6642c21c | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:47:52.473Z | facb28d1-d56d-469a-b41b-60bee091afc5 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:47:52.473Z | 8350e868-607d-47bf-a4c4-a4b04941bcbc | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:47:52.476Z | 8350e868-607d-47bf-a4c4-a4b04941bcbc | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:47:52.476Z | facb28d1-d56d-469a-b41b-60bee091afc5 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:47:52.968Z | facb28d1-d56d-469a-b41b-60bee091afc5 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:47:52.968Z | 8350e868-607d-47bf-a4c4-a4b04941bcbc | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:47:53.004Z | facb28d1-d56d-469a-b41b-60bee091afc5 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:47:53.005Z | 8350e868-607d-47bf-a4c4-a4b04941bcbc | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:47:53.112Z | 8350e868-607d-47bf-a4c4-a4b04941bcbc | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:47:53.237Z | facb28d1-d56d-469a-b41b-60bee091afc5 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:48:14.118Z | 16d42d4d-d5a9-4f5f-be89-bbe98629f839 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:48:14.120Z | 16d42d4d-d5a9-4f5f-be89-bbe98629f839 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:48:14.107Z | 68c6db3a-c981-4422-ad7e-d120e1931408 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:48:14.110Z | 68c6db3a-c981-4422-ad7e-d120e1931408 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:48:14.567Z | 68c6db3a-c981-4422-ad7e-d120e1931408 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:48:14.568Z | 16d42d4d-d5a9-4f5f-be89-bbe98629f839 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:48:14.594Z | 16d42d4d-d5a9-4f5f-be89-bbe98629f839 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:48:14.595Z | 68c6db3a-c981-4422-ad7e-d120e1931408 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:48:14.651Z | 16d42d4d-d5a9-4f5f-be89-bbe98629f839 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:48:14.703Z | 68c6db3a-c981-4422-ad7e-d120e1931408 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:48:46.854Z | 8a1d93c8-188d-473d-a64f-5175e0866f81 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:48:46.856Z | 8a1d93c8-188d-473d-a64f-5175e0866f81 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:48:46.867Z | d7eda351-f7c9-460d-bfc9-c46bb9cba3e0 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:48:46.869Z | d7eda351-f7c9-460d-bfc9-c46bb9cba3e0 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:48:47.531Z | 8a1d93c8-188d-473d-a64f-5175e0866f81 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:48:47.531Z | d7eda351-f7c9-460d-bfc9-c46bb9cba3e0 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:48:47.562Z | d7eda351-f7c9-460d-bfc9-c46bb9cba3e0 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:48:47.564Z | 8a1d93c8-188d-473d-a64f-5175e0866f81 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:48:47.640Z | 8a1d93c8-188d-473d-a64f-5175e0866f81 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:48:47.721Z | d7eda351-f7c9-460d-bfc9-c46bb9cba3e0 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:49:12.785Z | b8eb8045-87af-4b41-a291-f466960e6f61 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:12.796Z | b8eb8045-87af-4b41-a291-f466960e6f61 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:49:12.929Z | 5e27b8d7-74d5-4fe0-b77a-ded8fe9b6594 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:12.949Z | 5e27b8d7-74d5-4fe0-b77a-ded8fe9b6594 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:49:13.841Z | 5e27b8d7-74d5-4fe0-b77a-ded8fe9b6594 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:49:13.841Z | b8eb8045-87af-4b41-a291-f466960e6f61 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:49:13.879Z | b8eb8045-87af-4b41-a291-f466960e6f61 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:49:13.879Z | 5e27b8d7-74d5-4fe0-b77a-ded8fe9b6594 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:49:13.994Z | 5e27b8d7-74d5-4fe0-b77a-ded8fe9b6594 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:49:14.031Z | b8eb8045-87af-4b41-a291-f466960e6f61 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:49:15.591Z | c0cf5bf9-ee31-410c-8ef7-aa6e690d4f37 | zbi | main | initializing database - mongodb-mem[39m
+[32minfo | 2023-07-13T05:49:15.593Z | c0cf5bf9-ee31-410c-8ef7-aa6e690d4f37 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:15.595Z | c0cf5bf9-ee31-410c-8ef7-aa6e690d4f37 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:15.596Z | c0cf5bf9-ee31-410c-8ef7-aa6e690d4f37 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:49:15.618Z | d49e1cc2-31b6-44f3-ae35-25479fab5756 | zbi | main | initializing database - mongodb-mem[39m
+[32minfo | 2023-07-13T05:49:15.620Z | d49e1cc2-31b6-44f3-ae35-25479fab5756 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:15.620Z | d49e1cc2-31b6-44f3-ae35-25479fab5756 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:15.622Z | d49e1cc2-31b6-44f3-ae35-25479fab5756 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:49:15.775Z | c0cf5bf9-ee31-410c-8ef7-aa6e690d4f37 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:49:15.811Z | c0cf5bf9-ee31-410c-8ef7-aa6e690d4f37 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:49:15.823Z | d49e1cc2-31b6-44f3-ae35-25479fab5756 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:49:15.856Z | d49e1cc2-31b6-44f3-ae35-25479fab5756 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:49:15.948Z | c0cf5bf9-ee31-410c-8ef7-aa6e690d4f37 | zbi | main | closed connection[39m
+[37mdebug | 2023-07-13T05:49:16.039Z | d49e1cc2-31b6-44f3-ae35-25479fab5756 | zbi | repo-validate-password | found user: {"_id":"64af905ba4948650d4b0faa8","email":"test@zbitech.net","name":"Owner","role":"owner","status":"active","password":"$2b$10$AqoDInJZwIjwR/QtyCCna.sD9EJOHJaGBZ7ObpaOtW0dfV5wj5Ws6","registration":{"acceptedTerms":true,"provider":"local","_id":"64af905ba4948650d4b0faa9","createdAt":"2023-07-13T05:49:15.959Z","updatedAt":"2023-07-13T05:49:15.959Z"},"createdAt":"2023-07-13T05:49:15.961Z","updatedAt":"2023-07-13T05:49:15.961Z","__v":0}[39m
+[37mdebug | 2023-07-13T05:49:16.119Z | d49e1cc2-31b6-44f3-ae35-25479fab5756 | zbi | authenticate-user | found user: {"userid":"64af905ba4948650d4b0faa8","name":"Owner","email":"test@zbitech.net","status":"active","role":"owner"}[39m
+[32minfo | 2023-07-13T05:49:16.119Z | d49e1cc2-31b6-44f3-ae35-25479fab5756 | zbi | test-basic-id-svc | result = {"email":"test@zbitech.net","valid":true,"registered":true,"user":{"userid":"64af905ba4948650d4b0faa8","name":"Owner","email":"test@zbitech.net","status":"active","role":"owner"}}[39m
+[32minfo | 2023-07-13T05:49:16.270Z | d49e1cc2-31b6-44f3-ae35-25479fab5756 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:49:16.917Z | 304e387e-a5a6-4e50-b1f4-104e211033ea | zbi | main | initializing database - mongodb-mem[39m
+[32minfo | 2023-07-13T05:49:16.919Z | 304e387e-a5a6-4e50-b1f4-104e211033ea | zbi | main | initializing mongo memory db[39m
+[37mdebug | 2023-07-13T05:49:16.943Z | 304e387e-a5a6-4e50-b1f4-104e211033ea | zbi | usvc-authenticate-user | auth result => {"email":"owner@zbitech.net","valid":true,"registered":true,"user":{"email":"owner@zbitech.net","name":"Owner one","role":"owner"}}[39m
+[37mdebug | 2023-07-13T05:49:16.944Z | 304e387e-a5a6-4e50-b1f4-104e211033ea | zbi | usvc-authenticate-user | registration: {"acceptedTerms":true,"provider":"local"}[39m
+[37mdebug | 2023-07-13T05:49:16.951Z | 304e387e-a5a6-4e50-b1f4-104e211033ea | zbi | usvc-authenticate-user | auth result => {"email":"owner@zbitech.net","valid":true,"registered":false,"user":{"email":"owner@zbitech.net","name":"Owner one","role":"owner"}}[39m
+[32minfo | 2023-07-13T05:49:16.968Z | 304e387e-a5a6-4e50-b1f4-104e211033ea | zbi | usvc-register-user | registering new user undefined with [object Object] login provider[39m
+[37mdebug | 2023-07-13T05:49:16.970Z | 304e387e-a5a6-4e50-b1f4-104e211033ea | zbi | usvc-register-user | found user for registration - {"email":"owner@zbitech.net","name":"Owner one","role":"owner"}[39m
+[32minfo | 2023-07-13T05:49:18.180Z | c7835c4d-6e17-48e9-8ec8-0589cedf2d22 | zbi | main | initializing database - mongodb-mem[39m
+[32minfo | 2023-07-13T05:49:18.181Z | c7835c4d-6e17-48e9-8ec8-0589cedf2d22 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:43.851Z | 2d6416d8-0cda-4082-839a-f4cb2fd582e4 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:43.853Z | 2d6416d8-0cda-4082-839a-f4cb2fd582e4 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:49:43.877Z | 29129bb5-da25-4ab0-ba29-5b319e51d2fc | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:43.880Z | 29129bb5-da25-4ab0-ba29-5b319e51d2fc | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:49:43.999Z | 9c9d5332-3d40-4ecf-a6b4-c31917ae3523 | zbi | main | initializing database - mongodb-mem[39m
+[32minfo | 2023-07-13T05:49:44.004Z | 9c9d5332-3d40-4ecf-a6b4-c31917ae3523 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:44.005Z | 9c9d5332-3d40-4ecf-a6b4-c31917ae3523 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:44.009Z | 9c9d5332-3d40-4ecf-a6b4-c31917ae3523 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:49:43.982Z | 2fa842ff-6c6c-4ac9-92b9-2ff40a349648 | zbi | main | initializing database - mongodb-mem[39m
+[32minfo | 2023-07-13T05:49:43.983Z | 2fa842ff-6c6c-4ac9-92b9-2ff40a349648 | zbi | main | initializing mongo memory db[39m
+[37mdebug | 2023-07-13T05:49:44.011Z | 2fa842ff-6c6c-4ac9-92b9-2ff40a349648 | zbi | usvc-authenticate-user | auth result => {"email":"owner@zbitech.net","valid":true,"registered":true,"user":{"email":"owner@zbitech.net","name":"Owner one","role":"owner"}}[39m
+[37mdebug | 2023-07-13T05:49:44.012Z | 2fa842ff-6c6c-4ac9-92b9-2ff40a349648 | zbi | usvc-authenticate-user | registration: {"acceptedTerms":true,"provider":"local"}[39m
+[37mdebug | 2023-07-13T05:49:44.020Z | 2fa842ff-6c6c-4ac9-92b9-2ff40a349648 | zbi | usvc-authenticate-user | auth result => {"email":"owner@zbitech.net","valid":true,"registered":false,"user":{"email":"owner@zbitech.net","name":"Owner one","role":"owner"}}[39m
+[32minfo | 2023-07-13T05:49:44.030Z | 2fa842ff-6c6c-4ac9-92b9-2ff40a349648 | zbi | usvc-register-user | registering new user undefined with [object Object] login provider[39m
+[37mdebug | 2023-07-13T05:49:44.030Z | 2fa842ff-6c6c-4ac9-92b9-2ff40a349648 | zbi | usvc-register-user | found user for registration - {"email":"owner@zbitech.net","name":"Owner one","role":"owner"}[39m
+[32minfo | 2023-07-13T05:49:44.451Z | 29129bb5-da25-4ab0-ba29-5b319e51d2fc | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:49:44.451Z | 9c9d5332-3d40-4ecf-a6b4-c31917ae3523 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:49:44.451Z | 2d6416d8-0cda-4082-839a-f4cb2fd582e4 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:49:44.475Z | 29129bb5-da25-4ab0-ba29-5b319e51d2fc | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:49:44.476Z | 2d6416d8-0cda-4082-839a-f4cb2fd582e4 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:49:44.478Z | 9c9d5332-3d40-4ecf-a6b4-c31917ae3523 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:49:44.549Z | 29129bb5-da25-4ab0-ba29-5b319e51d2fc | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:49:44.608Z | 2d6416d8-0cda-4082-839a-f4cb2fd582e4 | zbi | main | closed connection[39m
+[37mdebug | 2023-07-13T05:49:44.618Z | 9c9d5332-3d40-4ecf-a6b4-c31917ae3523 | zbi | repo-validate-password | found user: {"_id":"64af9078dc256061a29437b0","email":"test@zbitech.net","name":"Owner","role":"owner","status":"active","password":"$2b$10$kZ7hXOz76cUxzua5HUFAC.fjrkQiVuCQNV6y/03W6UHllMNbqKtwG","registration":{"acceptedTerms":true,"provider":"local","_id":"64af9078dc256061a29437b1","createdAt":"2023-07-13T05:49:44.577Z","updatedAt":"2023-07-13T05:49:44.577Z"},"createdAt":"2023-07-13T05:49:44.578Z","updatedAt":"2023-07-13T05:49:44.578Z","__v":0}[39m
+[32minfo | 2023-07-13T05:49:44.668Z | 4aa76c43-3f03-4ff3-a0c3-9b6f167f9202 | zbi | main | initializing database - mongodb-mem[39m
+[32minfo | 2023-07-13T05:49:44.669Z | 4aa76c43-3f03-4ff3-a0c3-9b6f167f9202 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:44.670Z | 4aa76c43-3f03-4ff3-a0c3-9b6f167f9202 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:44.672Z | 4aa76c43-3f03-4ff3-a0c3-9b6f167f9202 | zbi | main | initializing db[39m
+[37mdebug | 2023-07-13T05:49:44.690Z | 9c9d5332-3d40-4ecf-a6b4-c31917ae3523 | zbi | authenticate-user | found user: {"userid":"64af9078dc256061a29437b0","name":"Owner","email":"test@zbitech.net","status":"active","role":"owner"}[39m
+[32minfo | 2023-07-13T05:49:44.690Z | 9c9d5332-3d40-4ecf-a6b4-c31917ae3523 | zbi | test-basic-id-svc | result = {"email":"test@zbitech.net","valid":true,"registered":true,"user":{"userid":"64af9078dc256061a29437b0","name":"Owner","email":"test@zbitech.net","status":"active","role":"owner"}}[39m
+[32minfo | 2023-07-13T05:49:44.780Z | 9c9d5332-3d40-4ecf-a6b4-c31917ae3523 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:49:44.795Z | 4aa76c43-3f03-4ff3-a0c3-9b6f167f9202 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:49:44.823Z | 4aa76c43-3f03-4ff3-a0c3-9b6f167f9202 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:49:46.021Z | 4aa76c43-3f03-4ff3-a0c3-9b6f167f9202 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:49:47.763Z | 8660ea93-3c78-460a-9bd7-8078f75e09d1 | zbi | main | initializing database - mongodb-mem[39m
+[32minfo | 2023-07-13T05:49:47.765Z | 8660ea93-3c78-460a-9bd7-8078f75e09d1 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:59.099Z | 94f82764-d021-4063-aea4-929dc5e1ccf6 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:59.102Z | 94f82764-d021-4063-aea4-929dc5e1ccf6 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:49:59.099Z | e2f4cad2-63f7-4dae-bbea-52d6276d48ca | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:59.102Z | e2f4cad2-63f7-4dae-bbea-52d6276d48ca | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:49:59.120Z | 53aea34d-f57b-4711-a16e-44412a681599 | zbi | main | initializing database - mongodb-mem[39m
+[32minfo | 2023-07-13T05:49:59.121Z | 53aea34d-f57b-4711-a16e-44412a681599 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:59.122Z | 53aea34d-f57b-4711-a16e-44412a681599 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:59.124Z | 53aea34d-f57b-4711-a16e-44412a681599 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:49:59.150Z | 7a42e53d-7cd2-4a5a-96ce-50334546d49d | zbi | main | initializing database - mongodb-mem[39m
+[32minfo | 2023-07-13T05:49:59.151Z | 7a42e53d-7cd2-4a5a-96ce-50334546d49d | zbi | main | initializing mongo memory db[39m
+[37mdebug | 2023-07-13T05:49:59.177Z | 7a42e53d-7cd2-4a5a-96ce-50334546d49d | zbi | usvc-authenticate-user | auth result => {"email":"owner@zbitech.net","valid":true,"registered":true,"user":{"email":"owner@zbitech.net","name":"Owner one","role":"owner"}}[39m
+[37mdebug | 2023-07-13T05:49:59.178Z | 7a42e53d-7cd2-4a5a-96ce-50334546d49d | zbi | usvc-authenticate-user | registration: {"acceptedTerms":true,"provider":"local"}[39m
+[37mdebug | 2023-07-13T05:49:59.183Z | 7a42e53d-7cd2-4a5a-96ce-50334546d49d | zbi | usvc-authenticate-user | auth result => {"email":"owner@zbitech.net","valid":true,"registered":false,"user":{"email":"owner@zbitech.net","name":"Owner one","role":"owner"}}[39m
+[32minfo | 2023-07-13T05:49:59.188Z | 7a42e53d-7cd2-4a5a-96ce-50334546d49d | zbi | usvc-register-user | registering new user undefined with [object Object] login provider[39m
+[37mdebug | 2023-07-13T05:49:59.189Z | 7a42e53d-7cd2-4a5a-96ce-50334546d49d | zbi | usvc-register-user | found user for registration - {"email":"owner@zbitech.net","name":"Owner one","role":"owner"}[39m
+[32minfo | 2023-07-13T05:49:59.565Z | 94f82764-d021-4063-aea4-929dc5e1ccf6 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:49:59.565Z | 53aea34d-f57b-4711-a16e-44412a681599 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:49:59.566Z | e2f4cad2-63f7-4dae-bbea-52d6276d48ca | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:49:59.589Z | 94f82764-d021-4063-aea4-929dc5e1ccf6 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:49:59.590Z | 53aea34d-f57b-4711-a16e-44412a681599 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:49:59.593Z | e2f4cad2-63f7-4dae-bbea-52d6276d48ca | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:49:59.659Z | e2f4cad2-63f7-4dae-bbea-52d6276d48ca | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:49:59.726Z | 94f82764-d021-4063-aea4-929dc5e1ccf6 | zbi | main | closed connection[39m
+[37mdebug | 2023-07-13T05:49:59.770Z | 53aea34d-f57b-4711-a16e-44412a681599 | zbi | repo-validate-password | found user: {"_id":"64af9087496b866e1587e5d2","email":"test@zbitech.net","name":"Owner","role":"owner","status":"active","password":"$2b$10$N/nJYmuM3wyUVLO.hlT9.eJd3cbwz21barypk3c4XhOZmQ1Jk.hsq","registration":{"acceptedTerms":true,"provider":"local","_id":"64af9087496b866e1587e5d3","createdAt":"2023-07-13T05:49:59.688Z","updatedAt":"2023-07-13T05:49:59.688Z"},"createdAt":"2023-07-13T05:49:59.688Z","updatedAt":"2023-07-13T05:49:59.688Z","__v":0}[39m
+[37mdebug | 2023-07-13T05:49:59.846Z | 53aea34d-f57b-4711-a16e-44412a681599 | zbi | authenticate-user | found user: {"userid":"64af9087496b866e1587e5d2","name":"Owner","email":"test@zbitech.net","status":"active","role":"owner"}[39m
+[32minfo | 2023-07-13T05:49:59.846Z | 53aea34d-f57b-4711-a16e-44412a681599 | zbi | test-basic-id-svc | result = {"email":"test@zbitech.net","valid":true,"registered":true,"user":{"userid":"64af9087496b866e1587e5d2","name":"Owner","email":"test@zbitech.net","status":"active","role":"owner"}}[39m
+[32minfo | 2023-07-13T05:49:59.874Z | 3cd222dd-cfcc-4969-bb43-b10154eaf337 | zbi | main | initializing database - mongodb-mem[39m
+[32minfo | 2023-07-13T05:49:59.875Z | 3cd222dd-cfcc-4969-bb43-b10154eaf337 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:59.876Z | 3cd222dd-cfcc-4969-bb43-b10154eaf337 | zbi | main | initializing mongo memory db[39m
+[32minfo | 2023-07-13T05:49:59.877Z | 3cd222dd-cfcc-4969-bb43-b10154eaf337 | zbi | main | initializing db[39m
+[32minfo | 2023-07-13T05:49:59.918Z | 53aea34d-f57b-4711-a16e-44412a681599 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:50:00.039Z | 3cd222dd-cfcc-4969-bb43-b10154eaf337 | zbi | main | db initialized[39m
+[32minfo | 2023-07-13T05:50:00.065Z | 3cd222dd-cfcc-4969-bb43-b10154eaf337 | zbi | main | connected to memory server[39m
+[32minfo | 2023-07-13T05:50:00.170Z | 3cd222dd-cfcc-4969-bb43-b10154eaf337 | zbi | main | closed connection[39m
+[32minfo | 2023-07-13T05:50:01.064Z | 3ecb6fa1-34fc-4015-97c7-cdb9e84e1e7b | zbi | main | initializing database - mongodb-mem[39m
+[32minfo | 2023-07-13T05:50:01.066Z | 3ecb6fa1-34fc-4015-97c7-cdb9e84e1e7b | zbi | main | initializing mongo memory db[39m

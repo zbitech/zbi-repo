@@ -1,4 +1,4 @@
-import { AppErrorType, ApplicationError } from "../libs/errors";
+import { ApplicationError, BadRequestError } from "../libs/errors";
 import { LoginProvider, RoleType, UserStatusType } from "../model/zbi.enum";
 import basicIdentityService from "../services/basic.identity.service";
 import googleIdentityService from "../services/google.identity.service";
@@ -75,7 +75,7 @@ class BeanFactory {
             return googleIdentityService;
         }
 
-        throw new ApplicationError(AppErrorType.INVALID_LOGIN_PROVIDER, `unknown login provider - ${provider}`);
+        throw new BadRequestError(`unknown login provider - ${provider}`);
     }
 
     getControllerService(): ControllerService {

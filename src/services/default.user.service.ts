@@ -4,7 +4,7 @@ import { Team, TeamMembership, User, QueryParam, AuthRequest, AuthResult, Regist
 import { FilterConditionType, RoleType, UserFilterType, UserStatusType, InviteStatusType, LoginProvider } from "../model/zbi.enum";
 import config from "config";
 import { getLogger } from "../libs/logger";
-import { AppErrorType, ApplicationError } from "../libs/errors";
+import { ApplicationError, BadRequestError, UserNotPermittedError } from "../libs/errors";
 import beanFactory from "../factory/bean.factory";
 
 class DefaultUserService implements UserService {
@@ -82,7 +82,7 @@ class DefaultUserService implements UserService {
                 return user as User;
             }
 
-            throw new ApplicationError(AppErrorType.USER_NOT_PERMITTED, "user not permitted");
+            throw new UserNotPermittedError("user not permitted");
         } catch (err: any) {
             throw err;            
         }
@@ -116,18 +116,18 @@ class DefaultUserService implements UserService {
                 return await userRepository.getUserByEmail(email);
             }
 
-            throw new ApplicationError(AppErrorType.USER_NOT_PERMITTED, "user not permitted");
+            throw new UserNotPermittedError("user not permitted");
         } catch (err: any) {
             logger.error(`failed to register new user - ${JSON.stringify(err)}`);
             throw err;
         }
     }
 
-    async findUsers(params: QueryParam, size: number, page: number): Promise<User[]> {
+    async findUsers(params: QueryParam): Promise<User[]> {
         const logger = getLogger("usvc-find-users");
         try {
             const userRepository = beanFactory.getUserRepository();
-            return await userRepository.findUsers(params, size, page);
+            return await userRepository.findUsers(params);
         } catch (err) {
             throw err;
         }
@@ -169,7 +169,7 @@ class DefaultUserService implements UserService {
             const userRepository = beanFactory.getUserRepository();
             const user: User = await userRepository.getUserById(userid);
             if(user.status != UserStatusType.active) {
-                throw new ApplicationError(AppErrorType.USER_NOT_ACTIVE, "user must be active to be deactivated");
+                throw new BadRequestError("user must be active to be deactivated");
             }
 
             return await userRepository.deactivateUser(userid);
@@ -185,7 +185,7 @@ class DefaultUserService implements UserService {
             const userRepository = beanFactory.getUserRepository();
             const user: User = await userRepository.getUserById(userid);
             if(user.status != UserStatusType.inactive) {
-                throw new ApplicationError(AppErrorType.USER_NOT_INACTIVE, "user must be inactive to be re-activated");
+                throw new BadRequestError("user must be inactive to be re-activated");
             }
 
             await userRepository.activateUser(userid);            
@@ -202,7 +202,7 @@ class DefaultUserService implements UserService {
             const userRepository = beanFactory.getUserRepository();
             const user: User = await userRepository.getUserById(userid);
             if(user.status != UserStatusType.inactive) {
-                throw new ApplicationError(AppErrorType.USER_NOT_INACTIVE, "user must be inactive to be deleted");
+                throw new BadRequestError("user must be inactive to be deleted");
             }
             
             const newUser = await userRepository.deleteUser(userid);
@@ -245,11 +245,11 @@ class DefaultUserService implements UserService {
 
     }
 
-    async findTeams(params: {}, size: number, page: number): Promise<Team[]> {
+    async findTeams(params: {}): Promise<Team[]> {
         const logger = getLogger("usvc-find-teams");
         try {            
             const userRepository = beanFactory.getUserRepository();
-            return await userRepository.findTeams(size, page);
+            return await userRepository.findTeams();
         } catch (err) {
             throw err;
         }
