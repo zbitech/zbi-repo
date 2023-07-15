@@ -20,6 +20,7 @@ export const validateRequest = (schema: ObjectSchema) => {
             if(!result.success) {
                 logger.error(`validation error = ${JSON.stringify(result.fields)}`);
                 response.status(HttpStatusCode.BadRequest).json({message: "Your message could not be processed", errors: result.fields})
+                return;
             }
 
         } catch (err: any) {

@@ -116,10 +116,10 @@ export interface ProjectService {
     findProject(projectId: string): Promise<Project>;
     findProjectByName(name: string): Promise<Project>;
     updateProject(project: Project): Promise<Project>;
-    repairProject(projectId: string): Promise<Project>;
-    deleteProject(projectId: string): Promise<Project>;
-    purgeProject(projectId: string): Promise<void>;
-    updateProjectResource(projectId: string, resource: KubernetesResource): Promise<void>
+    repairProject(project: Project): Promise<Project>;
+    deleteProject(project: Project): Promise<Project>;
+    purgeProject(project: Project): Promise<void>;
+    updateProjectResource(project: Project, resource: KubernetesResource): Promise<void>
 
     createInstance(project: Project, instance: InstanceRequest): Promise<Instance>;
     findAllInstances(params: QueryParam): Promise<Instance[]>;
@@ -127,18 +127,18 @@ export interface ProjectService {
     findInstance(instanceId: string): Promise<Instance>;
     findInstanceByName(projectName: string, instanceName: string): Promise<Instance>;
     updateInstance(project: Project, instance: Instance, request: InstanceRequest): Promise<Instance>;
-    repairInstance(projectName: string, instanceName: string): Promise<Instance>;
-    startInstance(projectName: string, instanceName: string): Promise<Instance>;
-    stopInstance(projectName: string, instanceName: string): Promise<Instance>;
-    createInstanceSnapshot(projectName: string, instanceName: string): Promise<Instance>;
-    createInstanceSnapshotSchedule(projectName: string, instanceName: string, request: SnapshotScheduleRequest): Promise<Instance>;
-    deleteInstance(projectName: string, instanceName: string): Promise<Instance>;
-    purgeInstance(projectName: string, instanceName: string): Promise<void>;
+    repairInstance(project: Project, instance: Instance): Promise<Instance>;
+    startInstance(project: Project, instance: Instance): Promise<Instance>;
+    stopInstance(project: Project, instance: Instance): Promise<Instance>;
+    createInstanceSnapshot(project: Project, instance: Instance): Promise<Instance>;
+    createInstanceSnapshotSchedule(projec: Project, instance: Instance, request: SnapshotScheduleRequest): Promise<Instance>;
+    deleteInstance(project: Project, instance: Instance): Promise<Instance>;
+    purgeInstance(project: Project, instance: Instance): Promise<void>;
 
-    getInstanceResources(projectName: string, instanceName: string): Promise<KubernetesResources>;
-    getInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource>;
-    updateInstanceResource(projectName: string, instanceName: string, resource: KubernetesResource): Promise<KubernetesResource>;
-    deleteInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource>;
+    getInstanceResources(project: Project, instance: Instance): Promise<KubernetesResources>;
+    getInstanceResource(project: Project, instance: Instance, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource>;
+    updateInstanceResource(project: Project, instance: Instance, resource: KubernetesResource): Promise<KubernetesResource>;
+    deleteInstanceResource(project: Project, instance: Instance, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource>;
 }
 
 export interface ControllerService {

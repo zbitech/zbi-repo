@@ -4,7 +4,7 @@ import { ProjectFilterType, ResourceType, StateType, StatusType, VolumeSourceTyp
 import { getLogger } from "../libs/logger"
 import beanFactory from "../factory/bean.factory";
 import { createResourceRequest } from "../libs/projects";
-import { ServiceError, ItemNotFoundError, BadRequestError, ItemType } from "../libs/errors";
+import { ServiceError, ItemNotFoundError, BadRequestError, ItemType, DataError } from "../libs/errors";
 
 class DefaultProjectService implements ProjectService {
 
@@ -20,10 +20,12 @@ class DefaultProjectService implements ProjectService {
             // TODO - validate project
 
             const project = await projectRepository.createProject(projectRequest);
-
-            await controllerService.createProject(project);
-
-            return project;
+            if(project) {
+                await controllerService.createProject(project);
+                return project;
+            } else {
+                throw new BadRequestError('unable to create project');
+            }
         } catch (err:any) {
             logger.error(err);
             throw err
@@ -74,81 +76,75 @@ class DefaultProjectService implements ProjectService {
             if(proj) {
                 return proj;
             }
-            throw new BadRequestError(`project ${project.name} does not exist`);
+            throw new BadRequestError(`unable to update project`);
         } catch (err:any) {
             logger.error(err);
             throw err;
         }
     }
 
-    async repairProject(name: string): Promise<Project> {
+    async repairProject(project: Project): Promise<Project> {
         let logger = getLogger('psvc-repair-project');
         try {
             const projectRepository = beanFactory.getProjectRepository();
             const controllerService = beanFactory.getControllerService();
 
-            const project = await projectRepository.findProjectByName(name);
-
-            // TODO - invoke kubernetes to repair project
             await controllerService.repairProject(project);
-
-            return project;
+            project.status = StatusType.pending;
+            return await projectRepository.updateProject(project);
         } catch (err:any) {
             logger.err(err);
             throw err;
         }
     }
 
-    async deleteProject(projectId: string): Promise<Project> {
+    async deleteProject(project: Project): Promise<Project> {
         let logger = getLogger('psvc-delete-project');
         try {
             const projectRepository = beanFactory.getProjectRepository();
             const controllerService = beanFactory.getControllerService();
 
-            const project = await projectRepository.findProject(projectId);
+            if(project.status === StatusType.deleted) {
+               throw new BadRequestError('project is already deleted');
+            } else if(project.status === StatusType.pending) {
+                throw new BadRequestError('project status is pending');
+            }
 
-            // TODO - invoke kubernetes to delete project.
             await controllerService.deleteProject(project);
 
             project.status = StatusType.deleted;
-            await projectRepository.updateProject(project);
+            return await projectRepository.updateProject(project);
 
-            return project;
         } catch (err:any) {
             logger.error(err);
             throw err;
         }
     }
 
-    async purgeProject(projectId: string): Promise<void> {
+    async purgeProject(project: Project): Promise<void> {
         let logger = getLogger('psvc-purge-project');
         try {
             const projectRepository = beanFactory.getProjectRepository();
 
-            // TODO - validate project status is deleted
-            const project = await projectRepository.findProject(projectId);
             if(project.status != StatusType.deleted) {
-
+                throw new BadRequestError("cannot purge project");
             }
 
-            await projectRepository.deleteProject(projectId);
+            await projectRepository.deleteProject(project.id as string);
         } catch (err:any) {
             logger.error(err);
             throw err;
         }
     }
 
-    async updateProjectResource(projectId: string, resource: KubernetesResource): Promise<void> {
+    async updateProjectResource(project: Project, resource: KubernetesResource): Promise<void> {
         let logger = getLogger('psvc-update-project-resource');
         try {
             const projectRepository = beanFactory.getProjectRepository();
-
             if(resource.type === ResourceType.namespace) {
-                const project = await projectRepository.findProject(projectId);
                 project.status = resource.status;
                 await projectRepository.updateProject(project);
             }
-
         } catch (err:any) {
             logger.error(err);
             throw err;
@@ -180,14 +176,14 @@ class DefaultProjectService implements ProjectService {
             
             const newInstance = await projectRepository.createInstance(projectId, instance)
 
-//            const jobService = beanFactory.getJobService();
-//            await jobService.createInstance(project, newInstance);
+            if(newInstance) {
+                const controllerService = beanFactory.getControllerService();
+                await controllerService.createInstance(project, newInstance);
 
-            // TODO - invoke k8s service to create instance
-            const controllerService = beanFactory.getControllerService();
-            await controllerService.createInstance(project, newInstance);
-
-            return newInstance;
+                return newInstance;
+            } else {
+                throw new BadRequestError("unable to create instance");
+            }
         } catch (err:any) {
             logger.error(err);
             throw err;
@@ -237,7 +233,7 @@ class DefaultProjectService implements ProjectService {
             if(project) {
                 return await projectRepository.findInstanceByName(project.id as string, instanceName);
             }
-            throw new ItemNotFoundError(ItemType.project, `project ${projectName} does not exist`);
+            throw new ItemNotFoundError(ItemType.project, `project not found`);
         } catch (err:any) {
             logger.error(err);
             throw err;
@@ -254,39 +250,31 @@ class DefaultProjectService implements ProjectService {
             instance.request.peers = request.peers;
 
             const newInstance = await projectRepository.updateInstance(instance);
-            await controllerService.updateInstance(project, instance);
+            if(newInstance) {
+                await controllerService.updateInstance(project, instance);
 
-            return newInstance;
-
+                return newInstance;
+            } else {
+                throw new BadRequestError("unable to update instance");
+            }
         } catch (err: any) {
             logger.error(err);
             throw err;
         }
     }
 
-    async repairInstance(projectName: string, instanceName: string): Promise<Instance> {
+    async repairInstance(project: Project, instance: Instance): Promise<Instance> {
         let logger = getLogger('psvc-repair-instance');
         try {
             const projectRepository = beanFactory.getProjectRepository();
             const controllerService = beanFactory.getControllerService();
 
-            const project = await projectRepository.findProjectByName(projectName);
-            if(project) {
-                const instance = await projectRepository.findInstanceByName(project.id as string, instanceName);
-                if(instance) {
+            await controllerService.repairInstance(project, instance);
 
-                    await controllerService.repairInstance(project, instance);
+            instance.state = StateType.pending;
+            await projectRepository.updateInstance(instance);
 
-                    //instance.status = StatusType.pending;
-                    //await projectRepository.updateInstance(instance);
-
-                    return instance;
-                }
-
-                throw new ItemNotFoundError(ItemType.instance, `instance ${instanceName} does not exist`);
-            }
-
-            throw new ItemNotFoundError(ItemType.project, `project ${projectName} does not exist`);
+            return instance;
 
         } catch (err:any) {
             logger.error(err);
@@ -294,150 +282,105 @@ class DefaultProjectService implements ProjectService {
         }
     }
 
-    async startInstance(projectName: string, instanceName: string): Promise<Instance> {
+    async startInstance(project: Project, instance: Instance): Promise<Instance> {
         let logger = getLogger('psvc-start-instance');
         try {
             const projectRepository = beanFactory.getProjectRepository();
             const controllerService = beanFactory.getControllerService();
 
-            const project = await projectRepository.findProjectByName(projectName);
-            if(project) {
-                const instance = await projectRepository.findInstanceByName(project.id as string, instanceName);
-                if(instance) {
-
-                    if(instance.state == StateType.stopping) { // throw BadRequest error - stopping in progress
-                        throw new BadRequestError('instance is currently stopping');
-                    } else if(instance.state == StateType.starting) { // throw BadRequest error - already starting
-                        throw new BadRequestError('instance is currently starting');
-                    } else if(instance.state === StateType.running) { // throw BadRequest error - already stopped
-                        throw new BadRequestError('instance is currently running');
-                    }
-
-                    logger.info(`starting instance - ${instanceName}`);
-                    await controllerService.startInstance(project, instance);
-
-                    instance.state = StateType.starting;
-                    await projectRepository.updateInstance(instance);
-
-                    return instance;
-                }
-
-                throw new ItemNotFoundError(ItemType.instance, `instance ${instanceName} does not exist`);
+            if(instance.state == StateType.stopping) { // throw BadRequest error - stopping in progress
+                throw new BadRequestError('instance is currently stopping');
+            } else if(instance.state == StateType.starting) { // throw BadRequest error - already starting
+                throw new BadRequestError('instance is currently starting');
+            } else if(instance.state === StateType.running) { // throw BadRequest error - already stopped
+                throw new BadRequestError('instance is currently running');
             }
 
-            throw new ItemNotFoundError(ItemType.project, `project ${projectName} does not exist`);
-            
+            logger.info(`starting instance - ${instance.name}`);
+            await controllerService.startInstance(project, instance);
+
+            instance.state = StateType.starting;
+            await projectRepository.updateInstance(instance);
+
+            return instance;
         } catch (err:any) {
             logger.error(err);
             throw err;
         }
     }
 
-    async stopInstance(projectName: string, instanceName: string): Promise<Instance> {
+    async stopInstance(project: Project, instance: Instance): Promise<Instance> {
         let logger = getLogger('psvc-stop-instance');
         try {
             const projectRepository = beanFactory.getProjectRepository();
             const controllerService = beanFactory.getControllerService();
 
-            const project = await projectRepository.findProjectByName(projectName);
-            if(project) {
-                const instance = await projectRepository.findInstanceByName(project.id as string, instanceName);
-                if(instance) {
-
-                    if(instance.state == StateType.stopping) { // throw BadRequest error - already stopping
-                        throw new BadRequestError(`instance is currently stopping`);
-                    } else if(instance.state == StateType.starting) { // throw BadRequest error - starting in progress
-                        throw new BadRequestError('instance is currently starting');
-                    } else if(instance.state === StateType.stopped) { // throw BadRequest error -  already stopped
-                        throw new BadRequestError('instance is currently stopped');
-                    }
-
-                    logger.info(`stopping instance - ${instanceName}`);
-                    await controllerService.stopInstance(project, instance);
-
-                    instance.state = StateType.stopping
-                    return await projectRepository.updateInstance(instance);
-                }
-                throw new ItemNotFoundError(ItemType.instance, `instance ${instanceName} does not exist`);
+            if(instance.state == StateType.stopping) { // throw BadRequest error - already stopping
+                throw new BadRequestError(`instance is currently stopping`);
+            } else if(instance.state == StateType.starting) { // throw BadRequest error - starting in progress
+                throw new BadRequestError('instance is currently starting');
+            } else if(instance.state === StateType.stopped) { // throw BadRequest error -  already stopped
+                throw new BadRequestError('instance is currently stopped');
             }
-            throw new ItemNotFoundError(ItemType.project, `project ${projectName} does not exist`);
+
+            logger.info(`stopping instance - ${instance.id}`);
+            await controllerService.stopInstance(project, instance);
+
+            instance.state = StateType.stopping
+            return await projectRepository.updateInstance(instance);
+
         } catch (err:any) {
             logger.error(err);
             throw err;
         }
     }
 
-    async createInstanceSnapshot(projectName: string, instanceName: string): Promise<Instance> {
+    async createInstanceSnapshot(project: Project, instance: Instance): Promise<Instance> {
         let logger = getLogger('psvc-create-instance-snapshot');
         try {
             const projectRepository = beanFactory.getProjectRepository();
             const controllerService = beanFactory.getControllerService();
 
-            const project = await projectRepository.findProjectByName(projectName);
-            if(project) {
-                const instance = await projectRepository.findInstanceByName(project.id as string, instanceName);
-                if(instance) {
-                    await controllerService.createInstanceSnapshot(project, instance);
-
-                    return instance;
-                }
-                throw new ItemNotFoundError(ItemType.instance, `instance ${instanceName} does not exist`);
-            }
-            throw new ItemNotFoundError(ItemType.project, `project ${projectName} does not exist`);
+            // TODO - get the resource back from k8s
+            await controllerService.createInstanceSnapshot(project, instance);
+            return instance;
         } catch (err:any) {
             logger.error(err);
             throw err;
         }
     }
 
-    async createInstanceSnapshotSchedule(projectName: string, instanceName: string, request: SnapshotScheduleRequest): Promise<Instance> {
+    async createInstanceSnapshotSchedule(project: Project, instance: Instance, request: SnapshotScheduleRequest): Promise<Instance> {
         let logger = getLogger('psvc-create-instance-snapshot-schedule');
         try {
             const projectRepository = beanFactory.getProjectRepository();
             const controllerService = beanFactory.getControllerService();
 
-            const project = await projectRepository.findProjectByName(projectName);
-            if(project) {
-                const instance = await projectRepository.findInstanceByName(project.id as string, instanceName);
-
-                if(instance) {            
-                    await controllerService.createInstanceSnapshotSchedule(project, instance, request);
-                    return instance;
-                }
-                throw new ItemNotFoundError(ItemType.instance, `instance ${instanceName} does not exist`);
-            }
-            throw new ItemNotFoundError(ItemType.project, `project ${projectName} does not exist`);
+            // TODO - get resource back from k8s
+            await controllerService.createInstanceSnapshotSchedule(project, instance, request);
+            return instance;
         } catch (err:any) {
             logger.error(err);
             throw err;
         }
     }
 
-    async deleteInstance(projectName: string, instanceName: string): Promise<Instance> {
+    async deleteInstance(project: Project, instance: Instance): Promise<Instance> {
         let logger = getLogger('psvc-delete-instance');
         try {
             const projectRepository = beanFactory.getProjectRepository();
             const controllerService = beanFactory.getControllerService();
 
-            const project = await projectRepository.findProjectByName(projectName);
-            if(project) {
-                const instance = await projectRepository.findInstanceByName(project.id as string, instanceName);
-                if(instance) {
 
-                    if(instance.state === StateType.starting || instance.state == StateType.running || instance.state == StateType.stopping
-                        || instance.state === StateType.deleting) {
-                        throw new BadRequestError(`unable to delete instance in ${instance.state} state`);
-                    } 
+            if(instance.state === StateType.starting || instance.state == StateType.running || instance.state == StateType.stopping
+                || instance.state === StateType.deleting) {
+                throw new BadRequestError(`unable to delete instance in ${instance.state} state`);
+            } 
 
-                    await controllerService.deleteInstance(projectName, instanceName);
+            await controllerService.deleteInstance(project.name, instance.name);
 
-                    //TODO - update instance status
-                    instance.state = StateType.deleting;
-                    return await projectRepository.updateInstance(instance);
-                }
-                throw new ItemNotFoundError(ItemType.instance, `instance ${instanceName} does not exist`);
-            }
-            throw new ItemNotFoundError(ItemType.project, `project ${projectName} does not exist`);
+            instance.state = StateType.deleting;
+            return await projectRepository.updateInstance(instance);
 
         } catch (err: any) {
             logger.error(err);
@@ -446,26 +389,16 @@ class DefaultProjectService implements ProjectService {
 
     }
 
-    async purgeInstance(projectName: string, instanceName: string): Promise<void> {
+    async purgeInstance(project: Project, instance: Instance): Promise<void> {
         let logger = getLogger('psvc-purge-instance');
         try {
             const projectRepository = beanFactory.getProjectRepository();
 
-            const project = await projectRepository.findProjectByName(projectName);
-            if(project) {
-                const instance = await projectRepository.findInstanceByName(project.id as string, instanceName);
-                if(instance) {
-
-                    if(instance.state != StateType.deleted) { // throw error - can only purge deleted instances
-                        throw new BadRequestError(`only deleted instances can be purged`);
-                    }
-
-                    // verify instance is deleted
-                    await projectRepository.deleteInstance(instance.id as string);
-                }
-                throw new ItemNotFoundError(ItemType.instance, `instance ${instanceName} does not exist`);
+            if(instance.state != StateType.deleted) { // throw error - can only purge deleted instances
+                throw new BadRequestError(`project not yet deleted`);
             }
-            throw new ItemNotFoundError(ItemType.project, `project ${projectName} does not exist`);
+
+            await projectRepository.deleteInstance(instance.id as string);
 
          } catch (err:any) {
             logger.error(err);
@@ -473,92 +406,57 @@ class DefaultProjectService implements ProjectService {
         }
     }
 
-    async getInstanceResources(projectName: string, instanceName: string): Promise<KubernetesResources> {
+    async getInstanceResources(project: Project, instance: Instance): Promise<KubernetesResources> {
         let logger = getLogger('psvc-get-instance-resources');
         try {
             const projectRepository = beanFactory.getProjectRepository();
-
-            const project = await projectRepository.findProjectByName(projectName);
-            if(project) {
-                const instance = await projectRepository.findInstanceByName(project.id as string, instanceName);
-                if(instance) {
-                    return await projectRepository.getInstanceResources(instance.id as string);
-                }
-                throw new ItemNotFoundError(ItemType.instance, `instance ${instanceName} does not exist`);
-            }
-            throw new ItemNotFoundError(ItemType.project, `project ${projectName} does not exist`);
+            return await projectRepository.getInstanceResources(instance.id as string);
          } catch (err:any) {
             logger.error(err);
             throw err;
         }
     }
 
-    async getInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource> {
+    async getInstanceResource(project: Project, instance: Instance, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource> {
         let logger = getLogger('psvc-get-instance-resource');
         try {
             const projectRepository = beanFactory.getProjectRepository();
-
-            const project = await projectRepository.findProjectByName(projectName);
-            if(project) {
-                const instance = await projectRepository.findInstanceByName(project.id as string, instanceName);
-                if(instance) {
-                    return await projectRepository.getInstanceResource(instance.id as string, resourceType, resourceName);
-                }
-                throw new ItemNotFoundError(ItemType.instance, `instance ${instanceName} does not exist`);
-            }
-            throw new ItemNotFoundError(ItemType.project, `project ${projectName} does not exist`);
+            return await projectRepository.getInstanceResource(instance.id as string, resourceType, resourceName);
          } catch (err:any) {
             logger.error(err);
             throw err;
         }
     }
 
-    async updateInstanceResource(projectName: string, instanceName: string, resource: KubernetesResource): Promise<KubernetesResource> {
+    async updateInstanceResource(project: Project, instance: Instance, resource: KubernetesResource): Promise<KubernetesResource> {
         let logger = getLogger('psvc-update-instance-resource');
         try {
             const projectRepository = beanFactory.getProjectRepository();
-
-            const project = await projectRepository.findProjectByName(projectName);
-            if(project) {
-                const instance = await projectRepository.findInstanceByName(project.id as string, instanceName);
-                if(instance) {
-                    return await projectRepository.updateInstanceResource(instance.id as string, resource);
-                }
-                throw new ItemNotFoundError(ItemType.instance, `instance ${instanceName} does not exist`);
-            }
-            throw new ItemNotFoundError(ItemType.project, `project ${projectName} does not exist`);
+            return await projectRepository.updateInstanceResource(instance.id as string, resource);
          } catch (err: any) {
             logger.error(err);
             throw err;
         }
     }
 
-    async deleteInstanceResource(projectName: string, instanceName: string, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource> {
+    async deleteInstanceResource(project: Project, instance: Instance, resourceType: ResourceType, resourceName: string): Promise<KubernetesResource> {
         let logger = getLogger('psvc-delete-instance-resource');
         try {
 
             const projectRepository = beanFactory.getProjectRepository();
             const controllerService = beanFactory.getControllerService();
-            const project = await projectRepository.findProjectByName(projectName);
-            if(project) {
-                const instance = await projectRepository.findInstanceByName(project.id as string, instanceName);
-                if(instance) {
-                    const resource = await projectRepository.getInstanceResource(instance.id as string, resourceType, resourceName);
-                    if(resource) {
+            const resource = await projectRepository.getInstanceResource(instance.id as string, resourceType, resourceName);
+            if(resource) {
 
-                        // TODO - check status of resource before deleting ...
+                // TODO - check status of resource before deleting ...
 
-                        await controllerService.deleteInstanceResource(instance.project, instance.name, resource.type, resource.name);
+                await controllerService.deleteInstanceResource(instance.project, instance.name, resource.type, resource.name);
 
-                        // TODO - update resource to pending
-                        resource.status = StatusType.pending;
-                        return await projectRepository.updateInstanceResource(instance.id as string, resource);
-                    }
-                    throw new ItemNotFoundError( ItemType.resource, `instance ${instanceName} does not have ${resourceType} resource called ${resourceName}`);
-                }
-                throw new ItemNotFoundError(ItemType.instance, `instance ${instanceName} does not exist`);
+                // TODO - update resource to pending
+                resource.status = StatusType.pending;
+                return await projectRepository.updateInstanceResource(instance.id as string, resource);
             }
-            throw new ItemNotFoundError(ItemType.project, `project ${projectName} does not exist`);
+            throw new ItemNotFoundError( ItemType.resource, `instance resource not found`);
         } catch (err:any) {
             logger.error(err);
             throw err;

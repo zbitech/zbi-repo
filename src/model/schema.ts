@@ -8,7 +8,7 @@ export const schemas = {
 
     localAuthRequest: Joi.object({
         body: Joi.object({
-            email: Joi.string().email().required().label("email").messages({"any.required": "Email is required"}),
+            email: Joi.string().email().required().label("email").messages({"any.required": "Email is required", "email": "must be a valid email"}),
             password: Joi.string().required().label("password").messages({"any.required": "Password is required"})
         }),
         query: {},
@@ -146,7 +146,7 @@ export const schemas = {
         }),
         query: {},
         params: {
-            projectid: Joi.string().required()
+            project: Joi.string().required()
         },
     }),
 

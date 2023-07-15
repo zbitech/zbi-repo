@@ -67,7 +67,6 @@ export class AppResponse {
 // }
 
 export function handleError(err: Error) {
-
     if(err instanceof ItemNotFoundError) {
         return {code: HttpStatusCode.NotFound, message: err.message};
     } 
@@ -82,6 +81,14 @@ export function handleError(err: Error) {
 
     else if(err instanceof ResourceQuotaExceededError) {
         return {code: HttpStatusCode.TooManyRequests, message: err.message};
+    }
+
+    else if(err instanceof BadRequestError) {
+        return {code: HttpStatusCode.BadRequest, message: err.message};
+    }
+
+    else if(err instanceof UnAuthorizedError) {
+        return {code: HttpStatusCode.Unauthorized, message: err.message};
     }
 
     else if(err instanceof ServiceError) {
@@ -121,15 +128,20 @@ export class ServiceError extends Error {
 
 }
 
-export class BadRequestError extends Error {
-
-}
 
 export class DataError extends Error {
     constructor(message: string) {
         super(message);
         this.name = "DataError";
     }
+}
+
+export class UnAuthorizedError extends DataError {
+
+}
+
+export class BadRequestError extends DataError {
+
 }
 
 export class ItemAlreadyExistsError extends DataError {

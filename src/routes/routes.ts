@@ -105,7 +105,7 @@ export default function (app: Application) {
         .get(projectController.findInstances)
         .post(validateRequest(schemas.instanceRequest), projectController.createInstance);
     
-    app.route(`/api/projects/:project/instances/:instance`)
+    app.route(`/api/instances/:instance`)
         .all(validateAccessToken, validateUser)
         .get(projectController.findInstance)
         .post(projectController.updateInstance)
@@ -114,7 +114,7 @@ export default function (app: Application) {
         .delete(projectController.deleteInstance)
         .purge(projectController.purgeInstance);
 
-    app.route(`/api/projects/:project/instances/:instance/resources`)
+    app.route(`/api/instances/:instance/resources`)
         .get(validateAccessToken, validateUser, projectController.getInstanceResources)
         .put(projectController.updateInstanceResource)
         .delete(validateAccessToken, validateUser, projectController.deleteInstanceResource);
@@ -123,7 +123,7 @@ export default function (app: Application) {
         .all(validateAccessToken, validateUser)
         .get(jobController.findProjectJobs);
 
-    app.route(`/api/projects/:projectid/jobs`)
+    app.route(`/api/projects/:project/jobs`)
         .all(validateAccessToken, validateUser)
         .get(jobController.findProjectJob)
         .patch(jobController.updateProjectJob)
@@ -133,7 +133,7 @@ export default function (app: Application) {
         .all(validateAccessToken, validateUser)
         .get(jobController.findInstanceJobs);
 
-    app.route(`/api/instances/:instanceid/jobs`)
+    app.route(`/api/instances/:instance/jobs`)
         .all(validateAccessToken, validateUser)
         .get(jobController.findInstanceJob)
         .patch(jobController.updateInstanceJob)

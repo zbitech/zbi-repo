@@ -5,7 +5,7 @@ import model from "./mongo.model";
 import * as helper from "./helper";
 import { getLogger } from "../../libs/logger";
 import { hashPassword, comparePassword } from "../../libs/auth.libs";
-import { BadRequestError, ItemAlreadyExistsError, ItemNotFoundError, ItemType, ServiceError, ServiceType } from "../../libs/errors";
+import { BadRequestError, DataError, ItemAlreadyExistsError, ItemNotFoundError, ItemType, ServiceError, ServiceType, UnAuthorizedError } from "../../libs/errors";
 
 export default class UserMongoRepository implements UserRepository {
 
@@ -25,6 +25,7 @@ export default class UserMongoRepository implements UserRepository {
             return helper.createUser(uc);
         } catch(err: any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             const err_type = helper.getErrorType(err);
 
             if( err_type === helper.MongoErrorType.DUPLICATE_KEY) {
@@ -47,6 +48,7 @@ export default class UserMongoRepository implements UserRepository {
             throw new ItemNotFoundError(ItemType.user, "user not found");
         } catch (err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -60,6 +62,7 @@ export default class UserMongoRepository implements UserRepository {
             return helper.createRegistration(uc.registration);
         } catch (err: any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -75,6 +78,7 @@ export default class UserMongoRepository implements UserRepository {
 
         } catch(err: any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -90,6 +94,7 @@ export default class UserMongoRepository implements UserRepository {
             return [];
         } catch (err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -107,6 +112,7 @@ export default class UserMongoRepository implements UserRepository {
             return uc;
         } catch(err: any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -123,6 +129,7 @@ export default class UserMongoRepository implements UserRepository {
             return uc;
         } catch (err: any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -139,6 +146,7 @@ export default class UserMongoRepository implements UserRepository {
             return uc;
         } catch (err: any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }        
     }
@@ -155,6 +163,7 @@ export default class UserMongoRepository implements UserRepository {
             throw new ItemNotFoundError(ItemType.user,"user not found");
         } catch(err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -171,6 +180,7 @@ export default class UserMongoRepository implements UserRepository {
             throw new ItemNotFoundError(ItemType.user,"user not found");
         } catch(err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -181,6 +191,7 @@ export default class UserMongoRepository implements UserRepository {
             await this.userModel.deleteOne({_id: userid});
         } catch(err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -196,6 +207,7 @@ export default class UserMongoRepository implements UserRepository {
             await user.save();
         } catch(err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -211,9 +223,10 @@ export default class UserMongoRepository implements UserRepository {
                 return helper.createUser(user);
             }
 
-            throw new BadRequestError("invalid password")
+            throw new UnAuthorizedError("unauthorized user")
         } catch(err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -233,6 +246,7 @@ export default class UserMongoRepository implements UserRepository {
             throw new ItemNotFoundError(ItemType.team, "team not found");
         } catch(err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw err;
         }
     }
@@ -243,6 +257,7 @@ export default class UserMongoRepository implements UserRepository {
             await this.teamModel.deleteOne({teamid});
         } catch(err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -269,6 +284,7 @@ export default class UserMongoRepository implements UserRepository {
             
         } catch(err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -287,6 +303,7 @@ export default class UserMongoRepository implements UserRepository {
             return [];
         } catch (err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -307,6 +324,7 @@ export default class UserMongoRepository implements UserRepository {
             throw new ItemNotFoundError(ItemType.team, "team not found");
         } catch(err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
@@ -326,6 +344,7 @@ export default class UserMongoRepository implements UserRepository {
             throw new Error("team memberships not found");
         } catch(err:any) {
             logger.error(err);
+            if(err instanceof DataError) throw err;
             throw new ServiceError(ServiceType.database, err.message);
         }
     }

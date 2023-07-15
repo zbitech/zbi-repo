@@ -319,7 +319,7 @@ class KubernetesControllerService implements ControllerService {
 
 function createProject(project: Project) {
     return {
-//        id: project.id,
+        id: project.id,
         name: project.name,
         owner: project.owner.userid,
         team: project.team.id,
@@ -329,7 +329,7 @@ function createProject(project: Project) {
 
 function createInstance(instance: Instance) {
     return {
-//        id: instance.id,
+        id: instance.id,
         name: instance.name,
         instanceType: instance.type,
         project: instance.project,

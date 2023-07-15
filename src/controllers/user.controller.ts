@@ -164,7 +164,7 @@ class UserController {
 
         } catch(err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         } finally {
 

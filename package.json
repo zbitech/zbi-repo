@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "NODE_ENV=dev ts-node-dev --respawn --pretty --transpile-only src/index.ts",
-    "start": "tsc && node --unhandled-rejections=strict ./dist/index.js",
+    "start": "NODE_ENV=dev tsc && node --unhandled-rejections=strict ./dist/index.js",
     "test": "NODE_ENV=test jest",
     "coverage": "LOG_LEVEL=debug NODE_ENV=test jest --coverage",
     "compile": "tsc -p .",

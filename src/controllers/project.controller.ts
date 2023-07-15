@@ -3,7 +3,7 @@ import {Request, Response} from 'express';
 import beanFactory from '../factory/bean.factory';
 import projectValidator from '../services/project.validator.service';
 import { Instance, InstanceRequest, KubernetesResource, Project, ProjectRequest, SnapshotScheduleRequest } from '../model/model';
-import { UserService, ProjectService, ControllerService } from "../interfaces";
+import { ProjectService } from "../interfaces";
 import { getLogger } from '../libs/logger';
 import { HttpStatusCode } from 'axios';
 import { FilterConditionType, InstanceFilterType, ProjectFilterType, ResourceType } from '../model/zbi.enum';
@@ -29,7 +29,7 @@ class ProjectController {
             response.status(HttpStatusCode.Created).json(project);
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
     }
@@ -51,7 +51,7 @@ class ProjectController {
             response.status(HttpStatusCode.Ok).json({projects});
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
 
@@ -64,18 +64,18 @@ class ProjectController {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            const name = request.params.project;
-            logger.info(`project name: ${name}`);
+            const id = request.params.project;
+            logger.info(`project id: ${id}`);
 
-            const project = await projectService.findProjectByName(name);
+            const project = await projectService.findProject(id);
             if(project) {
                 response.status(HttpStatusCode.Ok).json({project});
             } else {
-                response.status(HttpStatusCode.NotFound).json({message: `project ${name} not found`});
+                response.status(HttpStatusCode.NotFound).json({message: `project not found`});
             }
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
 
@@ -92,18 +92,22 @@ class ProjectController {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            const name = request.params.project;
-            logger.info(`project name: ${name}`);
-
-            const project = await projectService.repairProject(name);
+            const id = request.params.project;
+            logger.info(`project id: ${id}`);
+            let project = await projectService.findProject(id);
             if(project) {
-                response.status(HttpStatusCode.Ok).json({project});
+                project = await projectService.repairProject(project);
+                if(project) {
+                    response.status(HttpStatusCode.Ok).json({project});
+                } else {
+                    response.status(HttpStatusCode.BadRequest).json({message: `unable to repair project`});
+                }
             } else {
-                response.status(HttpStatusCode.BadRequest).json({message: `${name} is not a valid project`});
-            }
+                response.status(HttpStatusCode.NotFound).json({message: `project not found`});
+            }     
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
     }
@@ -115,18 +119,23 @@ class ProjectController {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            const name = request.params.project;
-            logger.info(`project name: ${name}`);
+            const id = request.params.project;
+            logger.info(`project: ${id}`);
 
-            const project = await projectService.deleteProject(name);
+            let project = await projectService.findProject(id);
             if(project) {
-                response.status(HttpStatusCode.Ok).json({project});
+                project = await projectService.deleteProject(project);
+                if(project) {
+                    response.status(HttpStatusCode.Ok).json({project});
+                } else {
+                    response.status(HttpStatusCode.BadRequest).json({message: `unable to delete project`});
+                }
             } else {
-                response.status(HttpStatusCode.BadRequest).json({message: `${name} is not a valid project`});
+                response.status(HttpStatusCode.NotFound).json({message: `project not found`});
             }
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
  
@@ -139,14 +148,19 @@ class ProjectController {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            const name = request.params.project;
-            logger.info(`searching for project: ${name}`);
+            const id = request.params.project;
+            logger.info(`searching for project: ${id}`);
 
-            await projectService.purgeProject(name);
-            response.status(HttpStatusCode.Ok).json({});
+            let project = await projectService.findProject(id);
+            if(project) {
+                await projectService.purgeProject(project);
+                response.sendStatus(HttpStatusCode.Ok);
+            } else {
+                response.status(HttpStatusCode.NotFound).json({message: `project not found`});
+            }
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
 
@@ -159,14 +173,19 @@ class ProjectController {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            const name = request.params.project;
-            logger.info(`project name: ${name}`);
+            const id = request.params.project;
+            logger.info(`project name: ${id}`);
 
-            const project = await projectService.repairProject(name);
-            response.status(HttpStatusCode.Ok).json({project});
+            let project = await projectService.findProject(id);
+            if(project) {
+                project = await projectService.repairProject(project);
+                response.status(HttpStatusCode.Ok).json({project});
+            } else {
+                response.status(HttpStatusCode.NotFound).json({message: `project not found`});
+            }
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
  
@@ -207,7 +226,7 @@ class ProjectController {
             }
         } catch (err: any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
     }
@@ -224,70 +243,74 @@ class ProjectController {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            let projectName = request.params.project;
-            const project = await projectService.findProjectByName(projectName);
+            let projectId = request.params.project;
+            //const project = await projectService.findProject(projectId);
 
-            const param = {name: InstanceFilterType.project, condition: FilterConditionType.equal, value: project.id};
-            logger.info(`projects - ${JSON.stringify(param)}`);
+            const param = {name: InstanceFilterType.project, condition: FilterConditionType.equal, value: projectId};
+            logger.info(`query parameter = ${JSON.stringify(param)}`);
 
             const instances = await projectService.findInstances(param);
             response.status(HttpStatusCode.Ok).json({instances});
 
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
     }
 
     async findInstance(request: Request, response: Response): Promise<void> {
-        let logger = getLogger('find-instance');
+        let logger = getLogger('pctrl-find-instance');
 
         try {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            let projectName = request.params.project;
-            let instanceName = request.params.instance;
+//            let projectName = request.params.project;
+            let instanceId = request.params.instance;
 
-            logger.info(`project: ${projectName}, instance: ${instanceName}`);
-            const instance = await projectService.findInstanceByName(projectName, instanceName);
+            logger.info(`instance: ${instanceId}`);
+            const instance = await projectService.findInstance(instanceId);
 
             if(instance) {
                 logger.info(`found instance - ${JSON.stringify(instance)}`);
                 response.status(HttpStatusCode.Ok).json({instance});
             } else {
-                response.sendStatus(HttpStatusCode.NotFound).json({message: `failed to find instance ${instanceName} in project ${projectName}`});
+                response.sendStatus(HttpStatusCode.NotFound).json({message: `failed to find instance ${instanceId}`});
             }
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
     }
 
     async updateInstance(request: Request, response: Response): Promise<void> {
-        let logger = getLogger('pctrl-create-instance');
+        let logger = getLogger('pctrl-update-instance');
 
         try {
             let projectService: ProjectService = beanFactory.getProjectService();
-            const projectName = request.params.project;
-            const instanceName = request.params.instance;
+//            const projectName = request.params.project;
+            const instanceId = request.params.instance;
 
-            const project = await projectService.findProjectByName(projectName);
-            let instance = await projectService.findInstanceByName(project.id as string, instanceName);
-            const instanceRequest: InstanceRequest = request.body;
-            logger.info(`project name = ${projectName}, instance = ${instanceName}, request = ${JSON.stringify(instanceRequest)}`);
-
-            instance = await projectService.updateInstance(project, instance, instanceRequest);
+            let instance = await projectService.findInstance(instanceId);
             if(instance) {
-                response.status(HttpStatusCode.Ok).json({instance});
+                const project = await projectService.findProjectByName(instance.project);
+                const instanceRequest: InstanceRequest = request.body;
+                logger.info(`project name = ${project.name}, instance = ${instance.name}, request = ${JSON.stringify(instanceRequest)}`);
+
+                instance = await projectService.updateInstance(project, instance, instanceRequest);
+                if(instance) {
+                    response.status(HttpStatusCode.Ok).json({instance});
+                } else {
+                    response.status(HttpStatusCode.InternalServerError).json({message: `failed to create instance`});
+                }
             } else {
-                response.status(HttpStatusCode.InternalServerError).json({message: `failed to create instance`});
+                response.status(HttpStatusCode.NotFound).json({message: `instance not found`});
             }
         } catch (err: any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
     }
@@ -299,18 +322,23 @@ class ProjectController {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            let projectName = request.params.project;
-            let instanceName = request.params.instance;
-
-            const instance = await projectService.repairInstance(projectName, instanceName);
+//            let projectName = request.params.project;
+            let instanceId = request.params.instance;
+            let instance = await projectService.findInstance(instanceId);
             if(instance) {
-                response.status(HttpStatusCode.Ok).json({instance});
+                const project = await projectService.findProject(instance.project);
+                instance = await projectService.repairInstance(project, instance);
+                if(instance) {
+                    response.status(HttpStatusCode.Ok).json({instance});
+                } else {
+                    response.status(HttpStatusCode.BadRequest).json({message: `request is not valid`});
+                }
             } else {
-                response.status(HttpStatusCode.BadRequest).json({message: `instance ${instanceName} in project ${projectName} is not valid`});
+                response.status(HttpStatusCode.NotFound).json({message: `instance not found`});
             }
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
     }
@@ -323,30 +351,35 @@ class ProjectController {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            let projectName = request.params.project;
-            let instanceName = request.params.instance;
+//            let projectName = request.params.project;
+            let instanceId = request.params.instance;
             let op = request.body.op;
 
-            logger.info(`project = ${projectName}, instance = ${instanceName}, ${JSON.stringify(request.body)}`);
-            if( op === "start") {
-                const instance = await projectService.startInstance(projectName, instanceName);
-                response.status(HttpStatusCode.Ok).json({instance});
-            } else if( op === "stop" ) {
-                const instance = await projectService.stopInstance(projectName, instanceName);
-                response.status(HttpStatusCode.Ok).json({instance});
-            } else if( op === "snapshot" ) {
-                const instance = await projectService.createInstanceSnapshot(projectName, instanceName);
-                response.status(HttpStatusCode.Ok).json({instance});
-            } else if( op === "schedule" ) { 
-                let scheduleRequest:SnapshotScheduleRequest = request.body.schedule;
-                const instance = await projectService.createInstanceSnapshotSchedule(projectName, instanceName, scheduleRequest);
-                response.status(HttpStatusCode.Ok).json({instance});
-            } else if(op === "rotate") {
+            let instance = await projectService.findInstance(instanceId);
+            if(instance) {
+                const project = await projectService.findProject(instance.project);
+                logger.info(`project = ${project.name}, instance = ${instance.name}, ${JSON.stringify(request.body)}`);
+                if( op === "start") {
+                    instance = await projectService.startInstance(project, instance);
+                    response.status(HttpStatusCode.Ok).json({instance});
+                } else if( op === "stop" ) {
+                    instance = await projectService.stopInstance(project, instance);
+                    response.status(HttpStatusCode.Ok).json({instance});
+                } else if( op === "snapshot" ) {
+                    instance = await projectService.createInstanceSnapshot(project, instance);
+                    response.status(HttpStatusCode.Ok).json({instance});
+                } else if( op === "schedule" ) { 
+                    let scheduleRequest:SnapshotScheduleRequest = request.body.schedule;
+                    instance = await projectService.createInstanceSnapshotSchedule(project, instance, scheduleRequest);
+                    response.status(HttpStatusCode.Ok).json({instance});
+                } else if(op === "rotate") {
 
+                } else {
+                    response.status(HttpStatusCode.BadRequest).json({message: `${op} is not a valid operation`});
+                }
             } else {
-                response.status(HttpStatusCode.BadRequest).json({message: `${op} is not a valid operation`});
+                response.status(HttpStatusCode.NotFound).json({message: `instance not found`});
             }
-
 
         } catch (err:any) {
             const result = handleError(err);
@@ -363,16 +396,20 @@ class ProjectController {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            let projectName = request.params.project;
-            let instanceName = request.params.instance;
-
-            const instance = await projectService.deleteInstance(projectName, instanceName);
-            if( instance ) {
-                response.status(HttpStatusCode.Ok).json({instance});
+//            let projectName = request.params.project;
+            let instanceId = request.params.instance;
+            let instance = await projectService.findInstance(instanceId);
+            if(instance) {
+                const project = await projectService.findProject(instance.project);
+                instance = await projectService.deleteInstance(project, instance);
+                if( instance ) {
+                    response.status(HttpStatusCode.Ok).json({instance});
+                } else {
+                    response.status(HttpStatusCode.BadRequest).json({message: `not a valid instance`});
+                }
             } else {
-                response.status(HttpStatusCode.BadRequest).json({message: `not a valid instance`});
+                response.status(HttpStatusCode.NotFound).json({message: `instance not found`});
             }
-
 
         } catch (err:any) {
             logger.error(`failed to create project: ${err}`)
@@ -387,12 +424,16 @@ class ProjectController {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            let projectName = request.params.project;
-            let instanceName = request.params.instance;
-
-            await projectService.purgeInstance(projectName, instanceName);
-            response.status(HttpStatusCode.Ok).json();
-
+//            let projectName = request.params.project;
+            let instanceId = request.params.instance;
+            let instance = await projectService.findInstance(instanceId);
+            if(instance) {
+                const project = await projectService.findProject(instance.project);
+                await projectService.purgeInstance(project, instance);
+                response.status(HttpStatusCode.Ok).json();
+            }else {
+                response.status(HttpStatusCode.NotFound).json({message: `instance not found`});
+            }
         } catch (err:any) {
             const result = handleError(err);
             logger.error(`response - JSON.stringify(result)`);
@@ -406,20 +447,26 @@ class ProjectController {
         try {
             
             let projectService: ProjectService = beanFactory.getProjectService();
-            let projectName = request.params.project;            
-            let instanceName = request.params.instance;
+//            let projectName = request.params.project;            
+            let instanceId = request.params.instance;
+            let instance = await projectService.findInstance(instanceId);
 
-            const {type, name} = request.query;
-            if(!type && !name) {
-                const resources = await projectService.getInstanceResources(projectName, instanceName);
-                response.status(HttpStatusCode.Ok).json({resources});
-            } else {
-                const resource = await projectService.getInstanceResource(projectName, instanceName, type as ResourceType, name as string);
-                if(resource) {
-                    response.status(HttpStatusCode.Ok).json(resource);
+            if(instance) {
+                const project = await projectService.findProject(instance.project);
+                const {type, name} = request.query;
+                if(!type && !name) {
+                    const resources = await projectService.getInstanceResources(project, instance);
+                    response.status(HttpStatusCode.Ok).json({resources});
                 } else {
-                    response.status(HttpStatusCode.NotFound).json({message: `invalid resource parameter`});
+                    const resource = await projectService.getInstanceResource(project, instance, type as ResourceType, name as string);
+                    if(resource) {
+                        response.status(HttpStatusCode.Ok).json(resource);
+                    } else {
+                        response.status(HttpStatusCode.NotFound).json({message: `invalid resource parameter`});
+                    }
                 }
+            } else {
+                response.status(HttpStatusCode.NotFound).json({message: `instance not found`});
             }
         } catch (err:any) {
             const result = handleError(err);
@@ -435,17 +482,23 @@ class ProjectController {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            let projectName = request.params.project;
-            let instanceName = request.params.instance;
+//            let projectName = request.params.project;
+            let instanceId = request.params.instance;
+            let instance = await projectService.findInstance(instanceId);
 
-            let resource: KubernetesResource = request.body;
-            logger.debug(`project: ${projectName}, instance: ${instanceName}, resource: ${JSON.stringify(resource)}`);
+            if(instance) {
+                const project = await projectService.findProject(instance.project);
+                let resource: KubernetesResource = request.body;
+                logger.debug(`project: ${project.name}, instance: ${instance.name}, resource: ${JSON.stringify(resource)}`);
             
-            resource = await projectService.updateInstanceResource(projectName, instanceName, resource);
-            if(resource) {
-                response.status(HttpStatusCode.Ok).json({resource});
+                resource = await projectService.updateInstanceResource(project, instance, resource);
+                if(resource) {
+                    response.status(HttpStatusCode.Ok).json({resource});
+                } else {
+                    response.status(HttpStatusCode.BadRequest).json({message: `instance ${instance.name} in project ${project.name} is not valid`});
+                }
             } else {
-                response.status(HttpStatusCode.BadRequest).json({message: `instance ${instanceName} in project ${projectName} is not valid`});
+                response.status(HttpStatusCode.NotFound).json({message: `instance not found`});
             }
         } catch (err:any) {
             const result = handleError(err);
@@ -462,17 +515,23 @@ class ProjectController {
             
             let projectService: ProjectService = beanFactory.getProjectService();
 
-            let projectName = request.params.project;
-            let instanceName = request.params.instance;
+//            let projectName = request.params.project;
+            let instanceId = request.params.instance;
+            let instance = await projectService.findInstance(instanceId);
 
-            const {type, name} = request.body;
-            logger.info(`deleting resource: ${type}-${name} project: ${projectName}, instance: ${instanceName}`);
+            if(instance) {
+                const project = await projectService.findProject(instance.project);
+                const {type, name} = request.body;
+                logger.info(`deleting resource: ${type}-${name} project: ${project.name}, instance: ${instance.name}`);
             
-            const resource = await projectService.deleteInstanceResource(projectName, instanceName, type, name);
-            if(resource) {
-                response.sendStatus(HttpStatusCode.Ok).json({resource});
+                const resource = await projectService.deleteInstanceResource(project, instance, type, name);
+                if(resource) {
+                    response.sendStatus(HttpStatusCode.Ok).json({resource});
+                } else {
+                    response.status(HttpStatusCode.BadRequest).json({message: `instance ${instance.name} in project ${project.name} is not valid`});
+                }
             } else {
-                response.status(HttpStatusCode.BadRequest).json({message: `instance ${instanceName} in project ${projectName} is not valid`});
+                response.status(HttpStatusCode.NotFound).json({message: `instance not found`});
             }
         } catch (err:any) {
             const result = handleError(err);
