@@ -326,7 +326,7 @@ class ProjectController {
             let instanceId = request.params.instance;
             let instance = await projectService.findInstance(instanceId);
             if(instance) {
-                const project = await projectService.findProject(instance.project);
+                const project = await projectService.findProjectByName(instance.project);
                 instance = await projectService.repairInstance(project, instance);
                 if(instance) {
                     response.status(HttpStatusCode.Ok).json({instance});
@@ -357,7 +357,7 @@ class ProjectController {
 
             let instance = await projectService.findInstance(instanceId);
             if(instance) {
-                const project = await projectService.findProject(instance.project);
+                const project = await projectService.findProjectByName(instance.project);
                 logger.info(`project = ${project.name}, instance = ${instance.name}, ${JSON.stringify(request.body)}`);
                 if( op === "start") {
                     instance = await projectService.startInstance(project, instance);
@@ -383,7 +383,7 @@ class ProjectController {
 
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
 
@@ -400,7 +400,7 @@ class ProjectController {
             let instanceId = request.params.instance;
             let instance = await projectService.findInstance(instanceId);
             if(instance) {
-                const project = await projectService.findProject(instance.project);
+                const project = await projectService.findProjectByName(instance.project);
                 instance = await projectService.deleteInstance(project, instance);
                 if( instance ) {
                     response.status(HttpStatusCode.Ok).json({instance});
@@ -428,7 +428,7 @@ class ProjectController {
             let instanceId = request.params.instance;
             let instance = await projectService.findInstance(instanceId);
             if(instance) {
-                const project = await projectService.findProject(instance.project);
+                const project = await projectService.findProjectByName(instance.project);
                 await projectService.purgeInstance(project, instance);
                 response.status(HttpStatusCode.Ok).json();
             }else {
@@ -436,7 +436,7 @@ class ProjectController {
             }
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
     }
@@ -452,7 +452,7 @@ class ProjectController {
             let instance = await projectService.findInstance(instanceId);
 
             if(instance) {
-                const project = await projectService.findProject(instance.project);
+                const project = await projectService.findProjectByName(instance.project);
                 const {type, name} = request.query;
                 if(!type && !name) {
                     const resources = await projectService.getInstanceResources(project, instance);
@@ -470,7 +470,7 @@ class ProjectController {
             }
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
     }
@@ -502,7 +502,7 @@ class ProjectController {
             }
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
 
@@ -535,7 +535,7 @@ class ProjectController {
             }
         } catch (err:any) {
             const result = handleError(err);
-            logger.error(`response - JSON.stringify(result)`);
+            logger.error(`response - ${JSON.stringify(result)}`);
             response.status(result.code).json({message: result.message});            
         }
     }

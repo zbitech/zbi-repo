@@ -6,6 +6,8 @@ import mongoose from 'mongoose';
 import { getLogger } from "../../libs/logger"
 import * as helper from "./helper";
 import { BadRequestError, ItemAlreadyExistsError, ItemNotFoundError, ItemType, ServiceError, ServiceType } from "../../libs/errors";
+import { ObjectId } from "mongodb";
+import { BSONTypeError } from "bson";
 
 export default class ProjectMongoRepository implements ProjectRepository {
 
@@ -64,7 +66,8 @@ export default class ProjectMongoRepository implements ProjectRepository {
     async findProject(projectId: string): Promise<Project> {
         let logger = getLogger('repo-find-project');
         try {
-            const project = await this.projectModel.findById(projectId)
+            const objId = new ObjectId(projectId);
+            const project = await this.projectModel.findById(objId)
                                         .populate({path: "owner", select: {name: 1}})
                                         .populate({path: "team", select:{name: 1}});
             if(project) {
@@ -74,6 +77,7 @@ export default class ProjectMongoRepository implements ProjectRepository {
             return project;
         } catch(err:any) {
             logger.error(err);
+            if(err instanceof BSONTypeError) throw new BadRequestError(`invalid request`);
             throw new ServiceError(ServiceType.database, err.message);
         }
     }
