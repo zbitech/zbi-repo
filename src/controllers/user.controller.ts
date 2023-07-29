@@ -1,4 +1,4 @@
-import {Request, Response} from 'express';
+import {CookieOptions, Request, Response} from 'express';
 import { AuthRequest, QueryParam, Team, User } from '../model/model';
 import { FilterConditionType, LoginProvider, RoleType, TeamFilterType, UserFilterType, UserStatusType } from '../model/zbi.enum';
 import beanFactory from '../factory/bean.factory';
@@ -9,6 +9,20 @@ import config from "config";
 import { getLogger } from "../libs/logger";
 import { HttpStatusCode } from 'axios';
 import { handleError } from '../libs/errors';
+
+const accessTokenCookeOptions: CookieOptions = {
+    maxAge: 60 * 1000 * 60 * 24,
+    httpOnly: true,
+    domain: "localhost",
+    path: "/",
+    sameSite: "lax",
+    secure: false
+}
+
+const refreshTokenCookieOptions: CookieOptions = {
+    ...accessTokenCookeOptions,
+    maxAge: 3.154e10
+}
 
 class UserController {
 
@@ -148,7 +162,9 @@ class UserController {
             if(result.valid) {
                 if(result.registered) {
                     // add tokens to cookie
-                    response.status(HttpStatusCode.Ok).send({accessToken: result.accessToken, refreshToken: result.refreshToken});
+                    response.cookie("accessToken", result.accessToken, accessTokenCookeOptions);
+                    response.cookie("refreshToken", result.refreshToken, refreshTokenCookieOptions);
+                    response.status(HttpStatusCode.Ok).send({registered: true, accessToken: result.accessToken, refreshToken: result.refreshToken});
 
                     // need to handle redirect if necessary
 
