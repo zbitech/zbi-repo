@@ -487,7 +487,7 @@ class ProjectController {
             let instance = await projectService.findInstance(instanceId);
 
             if(instance) {
-                const project = await projectService.findProject(instance.project);
+                const project = await projectService.findProjectByName(instance.project);
                 let resource: KubernetesResource = request.body;
                 logger.debug(`project: ${project.name}, instance: ${instance.name}, resource: ${JSON.stringify(resource)}`);
             
@@ -520,7 +520,7 @@ class ProjectController {
             let instance = await projectService.findInstance(instanceId);
 
             if(instance) {
-                const project = await projectService.findProject(instance.project);
+                const project = await projectService.findProjectByName(instance.project);
                 const {type, name} = request.body;
                 logger.info(`deleting resource: ${type}-${name} project: ${project.name}, instance: ${instance.name}`);
             
