@@ -35,12 +35,18 @@ export const validateObject = async (schema: ObjectSchema, data: any) => {
         const result = await schema.validate(data, {abortEarly: false});
         if (result.error && result.error.details) {
             const fieldErrors = result.error.details.map((error:any) => {
-                logger.info(`key: ${error.path[0]}, error: ${error.message}`);
-                return new FieldError(error.context.label, error.message);
+                //logger.info(`key: ${error.path[0]}, error: ${error.message}`);
+                //return new FieldError(error.context.label, error.message);
+                // const m = new Map();
+                // m.set(error.context.label, error.message);
+                // logger.debug(`returning error: ${JSON.stringify(Object.fromEntries(m))}`);
+                // return Object.fromEntries(m);
+                return [error.context.label, error.message];
             })
 
-            logger.info(`validation error: ${JSON.stringify(fieldErrors)}`);
-            return {success: false, fields: fieldErrors};
+            const fields = Object.fromEntries(fieldErrors);
+            logger.info(`validation error: ${JSON.stringify(fields)}`);
+            return {success: false, fields};
         }   
         return {success: true};
     } catch (err: any) {

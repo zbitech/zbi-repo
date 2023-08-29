@@ -1,6 +1,6 @@
 import { getLogger } from "../libs/logger";
 import { IJobService } from "../interfaces";
-import * as queues from "../libs/queues";
+//import * as queues from "../libs/queues";
 import beanFactory from "../factory/bean.factory";
 import { Instance, Job, Project, SnapshotScheduleRequest } from "../model/model";
 
@@ -34,157 +34,166 @@ class JobService implements IJobService {
     }
 
     async createProject(project: Project): Promise<Job> {
-        const logger = getLogger('create-project-job');
-        try {
+        throw new Error("Method not implemented.");
+        // const logger = getLogger('create-project-job');
+        // try {
 
-            const job = await queues.createProject(project);
+        //     const job = await queues.createProject(project);
 
-            const projRepo = beanFactory.getProjectRepository();
-            await projRepo.addProjectJob(project.id as string, job.id as string);
+        //     const projRepo = beanFactory.getProjectRepository();
+        //     await projRepo.addProjectJob(project.id as string, job.id as string);
 
-            return await createJob(job);
+        //     return await createJob(job);
 
-        } catch (err: any) {
-            throw err;            
-        }
+        // } catch (err: any) {
+        //     throw err;            
+        // }
     }
     
     async repairProject(project: Project): Promise<Job> {
-        const logger = getLogger('repair-project-job');
-        try {
-            const job = await queues.repairProject(project);
+        throw new Error("Method not implemented.");
+        // const logger = getLogger('repair-project-job');
+        // try {
+        //     const job = await queues.repairProject(project);
 
-            const projRepo = beanFactory.getProjectRepository();
-            await projRepo.addProjectJob(project.id as string, job.id as string);
+        //     const projRepo = beanFactory.getProjectRepository();
+        //     await projRepo.addProjectJob(project.id as string, job.id as string);
 
-            return await createJob(job);
-        } catch (err: any) {
-            throw err;            
-        }
+        //     return await createJob(job);
+        // } catch (err: any) {
+        //     throw err;            
+        // }
     }
     
     async deleteProject(project: Project): Promise<Job> {
-        const logger = getLogger('delete-project-job');
-        try {
+        throw new Error("Method not implemented.");
+        // const logger = getLogger('delete-project-job');
+        // try {
 
-            const job = await queues.deleteProject(project);
+        //     const job = await queues.deleteProject(project);
 
-            const projRepo = beanFactory.getProjectRepository();
-            await projRepo.addProjectJob(project.id as string, job.id as string);
+        //     const projRepo = beanFactory.getProjectRepository();
+        //     await projRepo.addProjectJob(project.id as string, job.id as string);
 
-            return await createJob(job);
-        } catch (err: any) {
-            throw err;            
-        }
+        //     return await createJob(job);
+        // } catch (err: any) {
+        //     throw err;            
+        // }
     }
 
     async createInstance(project: Project, instance: Instance): Promise<Job> {
-        const logger = getLogger('create-instance-job');
-        try {
+        throw new Error("Method not implemented.");
+        // const logger = getLogger('create-instance-job');
+        // try {
 
-            const job = await queues.createInstance(project, instance);
+        //     const job = await queues.createInstance(project, instance);
 
-            const projRepo = beanFactory.getProjectRepository();
-            await projRepo.addInstanceJob(instance.id as string, job.id as string);
+        //     const projRepo = beanFactory.getProjectRepository();
+        //     await projRepo.addInstanceJob(instance.id as string, job.id as string);
 
-            return await createJob(job);
-        } catch (err: any) {
-            throw err;            
-        }
+        //     return await createJob(job);
+        // } catch (err: any) {
+        //     throw err;            
+        // }
     }
 
     async updateInstance(project: Project, instance: Instance): Promise<Job> {
-        const logger = getLogger('update-instance-job');
-        try {
+        throw new Error("Method not implemented.");
+        // const logger = getLogger('update-instance-job');
+        // try {
 
-            const job = await queues.updateInstance(project, instance);
+        //     const job = await queues.updateInstance(project, instance);
 
-            const projRepo = beanFactory.getProjectRepository();
-            await projRepo.addInstanceJob(instance.id as string, job.id as string);
+        //     const projRepo = beanFactory.getProjectRepository();
+        //     await projRepo.addInstanceJob(instance.id as string, job.id as string);
 
-            return await createJob(job);
-        } catch (err: any) {
-            throw err;            
-        }
+        //     return await createJob(job);
+        // } catch (err: any) {
+        //     throw err;            
+        // }
 
     }
 
     async repairInstance(project: Project, instance: Instance): Promise<Job> {
-        const logger = getLogger('repair-instance-job');
-        try {
+        throw new Error("Method not implemented.");
+        // const logger = getLogger('repair-instance-job');
+        // try {
 
-            const job = await queues.repairInstance(project, instance);
+        //     const job = await queues.repairInstance(project, instance);
 
-            const projRepo = beanFactory.getProjectRepository();
-            await projRepo.addInstanceJob(instance.id as string, job.id as string);
+        //     const projRepo = beanFactory.getProjectRepository();
+        //     await projRepo.addInstanceJob(instance.id as string, job.id as string);
 
-            return await createJob(job);
-        } catch (err: any) {
-            throw err;            
-        }
+        //     return await createJob(job);
+        // } catch (err: any) {
+        //     throw err;            
+        // }
 
     }
 
     async deleteInstance(project: Project, instance: Instance): Promise<Job> {
-        const logger = getLogger('delete-instance-job');
-        try {
+        throw new Error("Method not implemented.");
+        // const logger = getLogger('delete-instance-job');
+        // try {
 
-            const job = await queues.deleteInstance(project, instance);
+        //     const job = await queues.deleteInstance(project, instance);
 
-            const projRepo = beanFactory.getProjectRepository();
-            await projRepo.addInstanceJob(instance.id as string, job.id as string);
+        //     const projRepo = beanFactory.getProjectRepository();
+        //     await projRepo.addInstanceJob(instance.id as string, job.id as string);
 
-            return await createJob(job);
-        } catch (err: any) {
-            throw err;            
-        }
+        //     return await createJob(job);
+        // } catch (err: any) {
+        //     throw err;            
+        // }
 
     }
 
     async startInstance(project: Project, instance: Instance): Promise<Job> {
-        const logger = getLogger('start-instance-job');
-        try {
+        throw new Error("Method not implemented.");
+        // const logger = getLogger('start-instance-job');
+        // try {
 
-            const job = await queues.startInstance(project, instance);
+        //     const job = await queues.startInstance(project, instance);
 
-            const projRepo = beanFactory.getProjectRepository();
-            await projRepo.addInstanceJob(instance.id as string, job.id as string);
+        //     const projRepo = beanFactory.getProjectRepository();
+        //     await projRepo.addInstanceJob(instance.id as string, job.id as string);
 
-            return await createJob(job);
-        } catch (err: any) {
-            throw err;            
-        }
+        //     return await createJob(job);
+        // } catch (err: any) {
+        //     throw err;            
+        // }
     }
 
     async stopInstance(project: Project, instance: Instance): Promise<Job> {
-        const logger = getLogger('stop-instance-job');
-        try {
+        throw new Error("Method not implemented.");
+        // const logger = getLogger('stop-instance-job');
+        // try {
 
-            const job = await queues.stopInstance(project, instance);
+        //     const job = await queues.stopInstance(project, instance);
  
-            const projRepo = beanFactory.getProjectRepository();
-            await projRepo.addInstanceJob(instance.id as string, job.id as string);
+        //     const projRepo = beanFactory.getProjectRepository();
+        //     await projRepo.addInstanceJob(instance.id as string, job.id as string);
 
-            return await createJob(job);
-        } catch (err: any) {
-            throw err;            
-        }
+        //     return await createJob(job);
+        // } catch (err: any) {
+        //     throw err;            
+        // }
     }
 
     async createInstanceSnapshot(project: Project, instance: Instance): Promise<Job> {
-        const logger = getLogger('instance-snapshot-job');
-        try {
+        throw new Error("Method not implemented.");
+        // const logger = getLogger('instance-snapshot-job');
+        // try {
 
-            const job = await queues.stopInstance(project, instance);
+        //     const job = await queues.stopInstance(project, instance);
  
-            const projRepo = beanFactory.getProjectRepository();
-            await projRepo.addInstanceJob(instance.id as string, job.id as string);
+        //     const projRepo = beanFactory.getProjectRepository();
+        //     await projRepo.addInstanceJob(instance.id as string, job.id as string);
 
-            return await createJob(job);
-        } catch (err: any) {
-            throw err;            
-        }
-
+        //     return await createJob(job);
+        // } catch (err: any) {
+        //     throw err;            
+        // }
     }
 
     /*

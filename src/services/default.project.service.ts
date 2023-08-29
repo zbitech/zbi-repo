@@ -152,18 +152,26 @@ class DefaultProjectService implements ProjectService {
     }
 
     async createInstance(project: Project, request: InstanceRequest): Promise<Instance> {
-        let logger = getLogger('psvc-purge-project');
+        let logger = getLogger('psvc-create-instance');
         try {
+
+            let sourceProject = project.name, sourceName = "", snapshot = "";
+            if( request.volume?.source === VolumeSourceType.volume) {
+                const instance = await this.findInstance(request.volume?.instance as string);
+                sourceName = instance.id as string;
+            } else if( request.volume?.source === VolumeSourceType.snapshot ) {
+                sourceName = request.volume.snapshot as string;
+            }
+
             const projectRepository = beanFactory.getProjectRepository();
 
             const projectId: string = project.id as string;
             const volumeType = request.volume?.type as VolumeType;
             const volumeSource = request.volume?.source as VolumeSourceType;
-            const sourceName = request.volume?.instance as string;
-            const sourceProject = request.volume?.project as string;
             const peers = request.peers as string[];
+            const properties = request.properties;
 
-            const resourceRequest = createResourceRequest(request.type, volumeType, volumeSource, sourceName, sourceProject, peers);
+            const resourceRequest = createResourceRequest(request.type, volumeType, volumeSource, sourceName, sourceProject, peers, properties);
 
             const instance = {name: request.name,
                 type: request.type,

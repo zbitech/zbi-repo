@@ -1,0 +1,159 @@
+{{- $databaseName := include "zbi-control-plane.databasename" . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "zbi-control-plane.fullname" . }}
+  labels:
+    {{- include "zbi-control-plane.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "zbi-control-plane.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "zbi-control-plane.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "zbi-control-plane.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: ZBI_CONTROLLER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "zbi-control-plane.fullname" . }}-cm-conf
+                  key: ZBI_CONTROLLER_URL
+            {{- if .Values.database.create }}
+            - name: MONGO_DB_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: "{{$databaseName}}-zbirepo-zbi"
+                  key: "connectionString.standardSrv"
+            {{- else }}
+            - name: MONGO_DB_CONNECTION_STRING
+              value: {{ .Values.databaseConnectionString }}
+            {{- end }}
+            - name: ACCESS_TOKEN_TTL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "zbi-control-plane.fullname" . }}-cm-conf
+                  key: ACCESS_TOKEN_TTL
+            - name: REFRESH_TOKEN_TTL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "zbi-control-plane.fullname" . }}-cm-conf
+                  key: REFRESH_TOKEN_TTL
+            - name: SALT_WORK_FACTOR
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "zbi-control-plane.fullname" . }}-cm-conf
+                  key: SALT_WORK_FACTOR
+            - name: ACCESS_TOKEN_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "zbi-control-plane.fullname" . }}-secret
+                  key: ACCESS_TOKEN_PRIVATE_KEY
+            - name: ACCESS_TOKEN_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "zbi-control-plane.fullname" . }}-secret
+                  key: ACCESS_TOKEN_PUBLIC_KEY
+            - name: REFRESH_TOKEN_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "zbi-control-plane.fullname" . }}-secret
+                  key: REFRESH_TOKEN_PRIVATE_KEY
+            - name: REFRESH_TOKEN_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "zbi-control-plane.fullname" . }}-secret
+                  key: REFRESH_TOKEN_PUBLIC_KEY
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- if .Values.database.create }}
+---
+{{- if .Values.database.express.enabled }}
+{{- $svcPort := .Values.database.express.service.port -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{$databaseName}}-express
+  labels:
+    {{- include "zbi-control-plane.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "zbi-control-plane.expressSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "zbi-control-plane.expressSelectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: mongo-express
+          image: "{{ .Values.database.express.image.repository }}:{{ .Values.database.express.image.tag }}"
+          imagePullPolicy: {{ .Values.database.express.image.pullPolicy }}
+          ports:
+            - containerPort: {{.Values.database.express.service.port}}
+          env:
+            - name: ME_CONFIG_MONGODB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{$databaseName}}-zbirepo-zbi
+                  key: "connectionString.standardSrv"
+            - name: ME_CONFIG_MONGODB_ENABLE_ADMIN
+              value: "true"
+            - name: ME_CONFIG_BASICAUTH_USERNAME
+              value: "admin"
+            - name: ME_CONFIG_BASICAUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{$databaseName}}-repo-password
+                  key: password
+
+{{- end }}
+{{- end }}

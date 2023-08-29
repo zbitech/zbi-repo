@@ -133,7 +133,7 @@ export const schemas = {
 
     instanceRequest: Joi.object({
         body: Joi.object({
-            name: Joi.string().alphanum().required().label("name"),
+            name: Joi.string().alphanum().required().label("name").messages({"any.required": "name is required"}),
             type: Joi.string().valid(NodeType.zcash, NodeType.lwd).required().label("type"),
             description: Joi.string().label("description"),
             peers: Joi.array().items(Joi.string()),
@@ -141,8 +141,8 @@ export const schemas = {
                 type: Joi.string().valid(VolumeType.ephemeral, VolumeType.persistentvolumeclaim).label("type"),
                 source: Joi.string().valid(VolumeSourceType.new, VolumeSourceType.volume, VolumeSourceType.snapshot).label("source"),
                 name: Joi.string().label("name")
-            })
-
+            }),
+            properties: Joi.any().label("properties")
         }),
         query: {},
         params: {

@@ -4,7 +4,6 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./ 
 COPY tsconfig.json ./ 
-COPY *.key* ./
 
 RUN npm install 
 
@@ -12,6 +11,7 @@ COPY . .
 
 RUN npm run build
 
-EXPOSE 3000
+EXPOSE 4000
 
-CMD ["node", "start"]
+RUN ls -al /usr/src/app
+CMD ["node", "./dist/index.js"]

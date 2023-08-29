@@ -24,7 +24,7 @@ class ProjectController {
 
             logger.info(`project request: ${JSON.stringify(projectRequest)}`);
 
-            projectValidator.validateProjectRequest(response.locals.subject, projectRequest);
+            await projectValidator.validateProjectRequest(response.locals.subject, projectRequest);
             const project: Project = await projectService.createProject(projectRequest)
             response.status(HttpStatusCode.Created).json(project);
         } catch (err:any) {
@@ -212,11 +212,11 @@ class ProjectController {
 
         try {
             let projectService: ProjectService = beanFactory.getProjectService();
-            const projectName = request.params.projectid;
+            const projectId = request.params.project;
 
-            const project = await projectService.findProjectByName(projectName);
+            const project = await projectService.findProject(projectId);
             const instanceRequest: InstanceRequest = request.body;
-            logger.info(`project name = ${projectName}, instance = ${JSON.stringify(instanceRequest)}`);
+            logger.info(`project name = ${project.name}, instance = ${JSON.stringify(instanceRequest)}`);
 
             const instance = await projectService.createInstance(project, instanceRequest);
             if(instance) {

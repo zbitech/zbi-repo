@@ -26,9 +26,6 @@ const opt = {
 console.log(`creating queues ...`);
 const projectQueue = new Queue('project', opt);
 const instanceQueue = new Queue('instance', opt);
-//const snapshotQueue = new Queue('resource', opt);
-//const scheduleQueue = new Queue('resource', opt);
-//const emailQueue = new Queue('email', opt);
 
 console.log(`creating queue workers ...`);
 const projectQueueWorker = new Worker('project', async (job: Job) => handleProjectTask(job), opt);

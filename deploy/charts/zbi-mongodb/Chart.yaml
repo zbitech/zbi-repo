@@ -1,0 +1,13 @@
+apiVersion: v2
+name: zbi-mongodb
+description: A Helm chart for Kubernetes
+
+# dependencies:
+#   - name: community-operator
+#     repository: https://mongodb.github.io/helm-charts
+#     version: 0.8.1
+
+
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

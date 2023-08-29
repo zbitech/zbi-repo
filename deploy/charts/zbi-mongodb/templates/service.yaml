@@ -1,0 +1,25 @@
+{{- if .Values.database.enabled -}}
+
+{{- if .Values.express.enabled -}}
+
+{{- $fullName := include "zbi-mongodb.fullname" . -}}
+{{- $svcPort := .Values.express.service.port -}}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{$fullName}}-express-svc
+  labels:
+    {{- include "zbi-mongodb.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "zbi-mongodb.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{$svcPort}}
+      targetPort: {{$svcPort}}
+
+{{- end}}
+
+{{- end }}

@@ -1,0 +1,46 @@
+{{- if .Values.database.enabled -}}
+
+{{- if .Values.express.enabled -}}
+{{- $fullName := include "zbi-mongodb.fullname" . -}}
+{{- $svcPort := .Values.express.service.port -}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{$fullName}}-express
+  labels:
+    {{- include "zbi-mongodb.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "zbi-mongodb.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "zbi-mongodb.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: mongo-express
+          image: "{{ .Values.express.image.repository }}:{{ .Values.express.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.express.image.pullPolicy }}
+          ports:
+            - containerPort: {{.Values.express.service.port}}
+          env:
+            - name: ME_CONFIG_MONGODB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{$fullName}}-zbirepo-zbi
+                  key: {{ include "db.ConnectionStringName" . }}
+            - name: ME_CONFIG_MONGODB_ENABLE_ADMIN
+              value: "true"
+            - name: ME_CONFIG_BASICAUTH_USERNAME
+              value: "{{.Values.express.user}}"
+            - name: ME_CONFIG_BASICAUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{$fullName}}-repo-password
+                  key: password
+{{- end}}
+
+{{- end}}

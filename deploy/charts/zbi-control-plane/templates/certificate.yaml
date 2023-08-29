@@ -1,0 +1,45 @@
+{{- if .Values.ingress.enabled }}
+{{- $fullName := include "zbi-control-plane.fullname" . }}
+{{- $labels := include "zbi-control-plane.labels" . }}
+{{- $svcPort := .Values.service.port }}
+
+{{- if .Values.ingress.host.certificate.create }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{$fullName}}-cert
+spec:
+  commonName: "{{ .Values.ingress.host.domain }}"
+  dnsNames: ["{{ .Values.ingress.host.domain }}"]
+  duration: 8760h
+  renewBefore: 730h
+  issuerRef:
+    kind: ClusterIssuer
+    name: cert-issuer
+  secretName: {{.Values.ingress.host.tls.secretName}}
+{{- end }}
+{{- end }}
+
+{{- if .Values.database.create }}
+{{- if .Values.database.express.ingress.enabled }}
+{{- $databaseName := include "zbi-control-plane.databasename" . }}
+{{- $svcPort := .Values.database.express.service.port }}
+
+{{- if .Values.database.express.ingress.host.certificate.create }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{$databaseName}}-express-cert
+spec:
+  commonName: "{{.Values.database.express.ingress.host.domain}}"
+  dnsNames: ["{{.Values.database.express.ingress.host.domain}}"]
+  duration: {{.Values.database.express.ingress.host.certificate.duration}}
+  renewBefore: {{.Values.database.express.ingress.host.certificate.renewBefore}}
+  issuerRef:
+    kind: {{.Values.database.express.ingress.host.certificate.issuerKind}}
+    name: {{.Values.database.express.ingress.host.certificate.issuerName}}
+  secretName: {{.Values.database.express.ingress.host.tls.secretName}}
+{{- end }}
+{{- end }}
+{{- end }}

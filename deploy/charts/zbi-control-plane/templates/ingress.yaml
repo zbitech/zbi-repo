@@ -1,0 +1,50 @@
+{{- if .Values.ingress.enabled }}
+{{- $fullName := include "zbi-control-plane.fullname" . -}}
+{{- $labels := include "zbi-control-plane.labels" . -}}
+{{- $svcPort := .Values.service.port -}}
+
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: {{$fullName}}-proxy
+  labels:
+    {{- $labels | nindent 4 }}
+spec:
+  virtualhost:
+    fqdn: {{.Values.ingress.host.domain}}
+    tls:
+      secretName: {{.Values.ingress.host.tls.secretName}}
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: {{ include "zbi-control-plane.fullname" . }}-svc
+          port: {{$svcPort}}
+{{- end }}
+
+{{- if .Values.database.create }}
+{{- if .Values.database.express.enabled }}
+---
+{{- if .Values.database.express.ingress.enabled -}}
+{{- $databaseName := include "zbi-control-plane.databasename" . -}}
+{{- $svcPort := .Values.database.express.service.port -}}
+
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: {{$databaseName}}-express-proxy
+spec:
+  virtualhost:
+    fqdn: {{.Values.database.express.ingress.host.domain}}
+    tls:
+      secretName: {{.Values.database.express.ingress.host.tls.secretName}}
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: {{$databaseName}}-express-svc
+          port: {{$svcPort}}
+{{- end }}
+{{- end }}
+{{- end }}
+

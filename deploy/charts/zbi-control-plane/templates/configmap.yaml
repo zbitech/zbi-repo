@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "zbi-control-plane.fullname" . }}-cm-conf
+  labels:
+    {{- include "zbi-control-plane.labels" . | nindent 4 }}
+data:
+  CREATE_ADMIN: "false"
+  ACCESS_TOKEN_TTL: {{ .Values.jwtKeys.accessToken.ttl }}
+  REFRESH_TOKEN_TTL: {{ .Values.jwtKeys.refreshToken.ttl }}
+  SALT_WORK_FACTOR: {{ .Values.jwtKeys.saltWorkFactor | quote }}
+  ZBI_CONTROLLER_URL: {{ include "zbiControllerURL" . }}

@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "zbi-control-plane.fullname" . }}-svc
+  labels:
+    {{- include "zbi-control-plane.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "zbi-control-plane.selectorLabels" . | nindent 4 }}
+{{- if .Values.database.create }}
+{{- if .Values.database.express.enabled }}
+---
+{{- $databaseName := include "zbi-control-plane.databasename" . -}}
+{{- $svcPort := .Values.database.express.service.port -}}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{$databaseName}}-express-svc
+  labels:
+    {{- include "zbi-control-plane.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "zbi-control-plane.expressSelectorLabels" . | nindent 4 }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{$svcPort}}
+      targetPort: {{$svcPort}}
+
+{{- end }}
+{{- end }}

@@ -1,0 +1,6 @@
+dependencies:
+- name: community-operator
+  repository: https://mongodb.github.io/helm-charts
+  version: 0.8.1
+digest: sha256:e58ae46b37fcce9ac4d9eadabad1159862e31cfb94a3def3a0059691d840d00f
+generated: "2023-08-03T19:31:39.868734-04:00"

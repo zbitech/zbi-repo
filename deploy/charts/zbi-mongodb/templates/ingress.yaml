@@ -1,0 +1,42 @@
+{{- if .Values.database.enabled -}}
+{{- if .Values.express.enabled -}}
+
+{{- if .Values.express.ingress.enabled -}}
+{{- $fullName := include "zbi-mongodb.fullname" . -}}
+{{- $svcPort := .Values.express.service.port -}}
+
+{{- if .Values.express.ingress.certificate.enabled -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{$fullName}}-express-cert
+spec:
+  commonName: "{{.Values.express.ingress.host.domain}}"
+  dnsNames: ["{{.Values.express.ingress.host.domain}}"]
+  duration: {{.Values.express.ingress.certificate.duration}}
+  renewBefore: {{.Values.express.ingress.certificate.renewBefore}}
+  issuerRef:
+    kind: {{.Values.express.ingress.certificate.issuerKind}}
+    name: {{.Values.express.ingress.certificate.issuerName}}
+  secretName: {{.Values.express.ingress.host.tls.secretName}}
+---
+{{- end }}
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: {{$fullName}}-express-proxy
+spec:
+  virtualhost:
+    fqdn: {{.Values.express.ingress.host.domain}}
+    tls:
+      secretName: {{.Values.express.ingress.host.tls.secretName}}
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: {{$fullName}}-express-svc
+          port: {{$svcPort}}
+{{- end }}
+
+{{- end }}
+{{- end }}

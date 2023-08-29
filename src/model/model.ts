@@ -163,8 +163,9 @@ export interface InstanceRequest {
         size?: string;
         source: VolumeSourceType;
         instance?: string;
-        project?: string;    
-    }
+        snapshot?: string;    
+    };
+    properties: any;
 }
 
 export interface VolumeRequest {
